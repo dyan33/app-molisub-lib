@@ -12,11 +12,9 @@ ext {// ext is a gradle closure allowing the declaration of global properties
 uploadArchives {
     repositories.mavenDeployer {
 
-
-
         //这里就是最后输出地址，在自己电脑上新建个文件夹，把文件夹路径粘贴在此
         //注意”file://“ + 路径，有三个斜杠，别漏了
-        repository(url: "file:///${projectDir.absolutePath}/repos/subsdk")
+        repository(url: "file:///${projectDir.parent}/repos/releases")
 
         pom.project {
             groupId project.PUBLISH_GROUP_ID
