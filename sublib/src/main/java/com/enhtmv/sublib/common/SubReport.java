@@ -1,5 +1,6 @@
 package com.enhtmv.sublib.common;
 
+import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.util.StringUtil;
 
 import java.text.SimpleDateFormat;
@@ -7,7 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubReport extends SubHttp {
+public class SubReport {
 
     private String androidId;
     private String packageName;
@@ -21,11 +22,15 @@ public class SubReport extends SubHttp {
     private static final String SUCCESS = "SUCCESS";
 
 
+    private SubHttp http;
+
+
     public SubReport(String host, String androidId, String packageName) {
         this.androidId = androidId;
         this.packageName = packageName;
         this.host = host;
-        setHttpLog(false);
+        this.http = new SubHttp();
+
     }
 
 
@@ -48,7 +53,7 @@ public class SubReport extends SubHttp {
                     body.put("info", info);
                     body.put("date", date);
 
-                    form(host + "/app/log", body);
+                    http.form(host + "/app/log", body);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

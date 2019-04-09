@@ -4,6 +4,8 @@ import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.enhtmv.sublib.common.SubCall;
+import com.enhtmv.sublib.common.http.SubHttp;
+import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.SubLog;
 
 import org.jsoup.nodes.Element;
@@ -76,7 +78,6 @@ public class H3GSubCall extends SubCall {
 
         String text = meta();
 
-
         return JSON.parseObject(text, Meta.class);
 
     }
@@ -95,11 +96,14 @@ public class H3GSubCall extends SubCall {
 
                     this.ok = false;
 
+                    SubHttp http = http();
+
+
 //                    String url1 = "http://www.gogamehub.com/at/lp?aff=zcj&dvid=" + androidId;
-                    String ptxid = get(meta.url1 + androidId).doc().select("#ptxid").first().text();
+                    String ptxid = http.get(meta.url1 + androidId).doc().select("#ptxid").first().text();
 
 //                    String url2 = "http://cpx5.allcpx.com:8088/subscript/request/" + ptxid;
-                    MyResponse response = get(meta.url2 + ptxid);
+                    SubResponse response = http.get(meta.url2 + ptxid);
 
 
                     Element form = response.doc().select("form").first();
@@ -171,7 +175,8 @@ public class H3GSubCall extends SubCall {
 
 
                     try {
-                        MyResponse response = form(info.action, header, info.form);
+
+                        SubResponse response = http().form(info.action, header, info.form);
 
                         if (response.response().request().url().toString().startsWith(meta.url3)) {
 

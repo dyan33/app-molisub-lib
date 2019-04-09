@@ -1,9 +1,12 @@
 package com.enhtmv.sublib.common;
 
 
+import com.enhtmv.sublib.common.http.SubHttp;
+import com.enhtmv.sublib.common.http.SubResponse;
+
 import java.io.IOException;
 
-public abstract class SubCall extends SubHttp {
+public abstract class SubCall {
 
 
     protected String androidId;
@@ -16,6 +19,9 @@ public abstract class SubCall extends SubHttp {
 
     protected SubReport report;
 
+    private Proxy proxy;
+
+    private boolean log;
 
     public SubCall(String host) {
         this.host = host;
@@ -31,13 +37,33 @@ public abstract class SubCall extends SubHttp {
 
     }
 
+    public void setLog(boolean log) {
+        this.log = log;
+    }
+
+    public void setProxy(String host, String user, String password, int port) {
+        this.proxy = new Proxy(host, user, password, port);
+    }
 
     protected String meta() throws IOException {
-        MyResponse response = get(host + "/app/meta?pname=" + packageName + "&aid=" + androidId);
+        SubResponse response = http().get(host + "/app/meta?pname=" + packageName + "&aid=" + androidId);
 
         return response.body();
     }
 
+    protected SubHttp http() {
+
+        SubHttp http = new SubHttp();
+
+        http.setLog(this.log);
+
+        if (this.proxy != null) {
+            http.setProxy(proxy.host, proxy.user, proxy.passwd, proxy.port);
+        }
+
+
+        return http;
+    }
 
     public SubReport r() {
         return this.report;
@@ -46,5 +72,17 @@ public abstract class SubCall extends SubHttp {
     public abstract void call();
 
     public abstract void call(String message);
+
+    private class Proxy {
+        String host, user, passwd;
+        int port;
+
+        public Proxy(String host, String user, String passwd, int port) {
+            this.host = host;
+            this.user = user;
+            this.passwd = passwd;
+            this.port = port;
+        }
+    }
 
 }

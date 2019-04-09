@@ -3,6 +3,7 @@ package com.enhtmv.molisub;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.enhtmv.sublib.common.SubCall;
 import com.enhtmv.sublib.common.SubContext;
 import com.enhtmv.sublib.common.util.SubLog;
 import com.enhtmv.sublib.work.H3GSubCall;
@@ -19,13 +20,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        H3GSubCall subCall = new H3GSubCall();
+        SubCall subCall = new H3GSubCall();
 
         if (BuildConfig.DEBUG) {
 
             SubLog.setLog(true);
 
-            subCall.setHttpLog(true);
+            subCall.setLog(true);
 
             subCall.setProxy("91.220.77.154", "mauritius", "Ux5vW5qw", 8090);
 
