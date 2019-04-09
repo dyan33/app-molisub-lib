@@ -1,7 +1,7 @@
-package com.enhtmv.subsdk.common;
+package com.enhtmv.sublib.common;
 
-import com.enhtmv.subsdk.common.util.SubLog;
-import com.enhtmv.subsdk.common.util.StringUtil;
+import com.enhtmv.sublib.common.util.SubLog;
+import com.enhtmv.sublib.common.util.StringUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

@@ -1,4 +1,4 @@
-package com.enhtmv.subsdk.common;
+package com.enhtmv.sublib.common;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -13,8 +13,8 @@ import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 
-import com.enhtmv.subsdk.common.util.SubLog;
-import com.enhtmv.subsdk.common.util.NetUtil;
+import com.enhtmv.sublib.common.util.SubLog;
+import com.enhtmv.sublib.common.util.NetUtil;
 
 import static android.net.wifi.WifiManager.WIFI_STATE_DISABLED;
 

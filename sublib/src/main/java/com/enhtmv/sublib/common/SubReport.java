@@ -1,6 +1,6 @@
-package com.enhtmv.subsdk.common;
+package com.enhtmv.sublib.common;
 
-import com.enhtmv.subsdk.common.util.StringUtil;
+import com.enhtmv.sublib.common.util.StringUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

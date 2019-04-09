@@ -3,9 +3,9 @@ package com.enhtmv.molisub;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.enhtmv.subsdk.common.SubContext;
-import com.enhtmv.subsdk.common.util.SubLog;
-import com.enhtmv.subsdk.work.H3GSubCall;
+import com.enhtmv.sublib.common.SubContext;
+import com.enhtmv.sublib.common.util.SubLog;
+import com.enhtmv.sublib.work.H3GSubCall;
 
 public class MainActivity extends AppCompatActivity {
 

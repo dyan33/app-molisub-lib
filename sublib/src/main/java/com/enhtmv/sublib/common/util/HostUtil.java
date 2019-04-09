@@ -1,4 +1,4 @@
-package com.enhtmv.subsdk.common.util;
+package com.enhtmv.sublib.common.util;
 
 public class HostUtil {
 
