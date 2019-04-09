@@ -7,7 +7,7 @@ public class SubLog {
 
     private static String TAG = "==========>";
 
-    private static boolean ok = false;
+    private static boolean ok;
 
     private static String string(Object... objects) {
         StringBuilder builder = new StringBuilder("\n");

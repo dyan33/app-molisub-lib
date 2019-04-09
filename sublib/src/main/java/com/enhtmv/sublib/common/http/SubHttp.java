@@ -43,8 +43,6 @@ public class SubHttp {
             @Override
             public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
 
-                SubLog.d("saveFromResponse", url, cookies);
-
                 String host = url.host();
 
                 if (!cookieMap.containsKey(host)) {
@@ -53,18 +51,23 @@ public class SubHttp {
 
                 cookieMap.get(host).addAll(cookies);
 
+                SubLog.d("saveFromResponse", url, cookies);
+
             }
 
             @Override
             public List<Cookie> loadForRequest(HttpUrl url) {
 
 
-                SubLog.d("loadForRequest", url);
-
                 List<Cookie> cookieList = cookieMap.get(url.host());
 
+                if (cookieList == null)
+                    return new ArrayList<>();
 
-                return cookieList != null ? cookieList : new ArrayList<Cookie>();
+
+                SubLog.d("loadForRequest", url);
+
+                return cookieList;
             }
         });
 
