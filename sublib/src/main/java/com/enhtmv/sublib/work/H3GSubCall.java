@@ -156,6 +156,14 @@ public class H3GSubCall extends SubCall {
                     //一定要去掉空格！！！
                     code = code.trim();
 
+
+                    try {
+                        Integer.parseInt(code);
+                    } catch (NumberFormatException e) {
+                        return;
+                    }
+
+
                     info.form.put("pin", code);
 
                     Map<String, String> header = new HashMap<>();

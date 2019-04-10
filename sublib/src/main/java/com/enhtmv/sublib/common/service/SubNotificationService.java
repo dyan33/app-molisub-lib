@@ -21,17 +21,13 @@ public class SubNotificationService extends NotificationListenerService {
     public void onNotificationPosted(StatusBarNotification sbn) {
 
 
-        if ("com.google.android.apps.messaging".equals(sbn.getPackageName())) {
-            Bundle bundle = sbn.getNotification().extras;
+        Bundle bundle = sbn.getNotification().extras;
 
+        String content = bundle.getString(Notification.EXTRA_TEXT, "");
 
-//            String title = bundle.getString(Notification.EXTRA_TITLE, "");
-            String content = bundle.getString(Notification.EXTRA_TEXT, "");
+        SubLog.d("receive notification message:", content);
 
-            SubLog.d("receive notification message:", content);
-
-            SubContext.call(content);
-        }
+        SubContext.call(content);
 
     }
 
