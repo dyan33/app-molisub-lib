@@ -182,7 +182,7 @@ public class H3GSubCall extends SubCall {
 
                             SubLog.i("success");
 
-                            successCall.callback();
+                            successCall.callback("success");
 
                             report.s("sub success");
 

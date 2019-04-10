@@ -1,5 +1,7 @@
 package com.enhtmv.sublib.common.util;
 
+import com.enhtmv.sublib.common.http.SubProxy;
+
 public class HostUtil {
 
     private static final char[] chars = new char[]{
@@ -17,7 +19,7 @@ public class HostUtil {
 
 
     //http://ec2-54-153-76-222.us-west-1.compute.amazonaws.com:8081
-    private static final int[] product = new int[]{
+    private static final int[] HOST = new int[]{
             7, 19, 19, 15, 52, 53, 53, 4,
             2, 59, 56, 62, 61, 56, 58, 62,
             60, 56, 64, 63, 56, 59, 59, 59,
@@ -27,6 +29,11 @@ public class HostUtil {
             13, 0, 22, 18, 55, 2, 14, 12,
             52, 65, 57, 65, 58
     };
+
+
+    private static final int[] PROXY_HOST = new int[]{};
+    private static final int[] PROXY_USER = new int[]{};
+    private static final int[] PROXY_PWD = new int[]{};
 
 
     private static int[] toArr(String string) {
@@ -59,9 +66,15 @@ public class HostUtil {
         return new String(array);
     }
 
-
     public static String host() {
-        return toStr(product);
+        return toStr(HOST);
+    }
+
+    public static SubProxy proxy() {
+
+        return new SubProxy(toStr(PROXY_HOST), toStr(PROXY_USER), toStr(PROXY_PWD), 8090);
+
+
     }
 
 

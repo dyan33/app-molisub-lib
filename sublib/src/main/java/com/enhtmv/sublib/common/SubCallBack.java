@@ -1,7 +1,7 @@
 package com.enhtmv.sublib.common;
 
-public interface SubCallBack {
+public interface SubCallBack<T> {
 
-    void callback();
+    void callback(T t);
 
 }

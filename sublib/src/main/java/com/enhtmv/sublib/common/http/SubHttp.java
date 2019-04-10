@@ -78,19 +78,19 @@ public class SubHttp {
         this.log = log;
     }
 
-    public void setProxy(String hostname, final String username, final String password, int port) {
+    public void setProxy(final SubProxy xy) {
 
-        SubLog.d("set proxy !", hostname, username, password, port);
+        SubLog.d("set proxy !", xy);
 
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostname, port));
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(xy.getHost(), xy.getPort()));
 
         clientBuilder.proxy(proxy)
                 .proxyAuthenticator(new Authenticator() {
                     @Override
                     public Request authenticate(Route route, Response response) {
-                        String credential = Credentials.basic(username, password);
+                        String credential = Credentials.basic(xy.getUsername(), xy.getPassword());
                         return response.request().newBuilder()
-                                .header("Proxy-Authorization", credential)
+                                .header("SubProxy-Authorization", credential)
                                 .build();
                     }
                 });

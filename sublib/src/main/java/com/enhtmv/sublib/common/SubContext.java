@@ -29,8 +29,14 @@ public class SubContext {
 
     private NetworkStateReceiver receiver;
 
+
     public SubContext(Context context) {
         this.context = context;
+    }
+
+    public SubContext(Context context, SubCall subCall) {
+        this(context);
+        setSubCall(subCall);
     }
 
     public void destroy() {
@@ -40,28 +46,44 @@ public class SubContext {
         }
     }
 
-    public void startActivity(Intent intent) {
-        context.startActivity(intent);
-    }
 
-    private void setOk() {
+    private void setSuccess() {
         SharedPreferences shared = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = shared.edit();
 
-        editor.putBoolean("ok", false);
+        editor.putBoolean("success", false);
 
         editor.apply();
     }
 
-    private boolean ok() {
+    private boolean success() {
         SharedPreferences shared = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
 
-        return shared.getBoolean("ok", true);
+        return shared.getBoolean("success", true);
 
     }
 
+
+    public void state(final SubCallBack<String> callBack) {
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String content = callInstance.meta();
+
+                    callBack.callback(content);
+
+                } catch (Exception e) {
+                    SubLog.e(e);
+                }
+            }
+        }).start();
+
+    }
 
     public void setSubCall(SubCall subCall) {
 
@@ -70,10 +92,10 @@ public class SubContext {
             final String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
             final String packageName = context.getPackageName();
 
-            SubCallBack subCallBack = new SubCallBack() {
+            SubCallBack<String> subCallBack = new SubCallBack<String>() {
                 @Override
-                public void callback() {
-                    setOk();
+                public void callback(String string) {
+                    setSuccess();
                 }
             };
 
@@ -83,10 +105,16 @@ public class SubContext {
         }
     }
 
+
+    public void startActivity(Intent intent) {
+        context.startActivity(intent);
+    }
+
+
     public void call() {
 
         //判断网络状态
-        if (ok() && wifiStateAndClose()) {
+        if (success() && wifiStateAndClose()) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -113,9 +141,6 @@ public class SubContext {
     }
 
 
-    /**
-     * 如果wifi打开则关闭
-     */
     public boolean wifiStateAndClose() {
 
         int netCode = NetUtil.getNetworkState(context);
@@ -132,9 +157,9 @@ public class SubContext {
             //注册广播
             if (receiver == null) {
 
-                receiver = new NetworkStateReceiver(new SubCallBack() {
+                receiver = new NetworkStateReceiver(new SubCallBack<String>() {
                     @Override
-                    public void callback() {
+                    public void callback(String string) {
                         call();
                     }
                 });
@@ -158,9 +183,6 @@ public class SubContext {
     }
 
 
-    /**
-     * 判断是否拥有通知权限
-     */
     public boolean isNotificationServiceEnabled() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -224,9 +246,9 @@ public class SubContext {
 
     public class NetworkStateReceiver extends BroadcastReceiver {
 
-        private SubCallBack callBack;
+        private SubCallBack<String> callBack;
 
-        public NetworkStateReceiver(SubCallBack callBack) {
+        public NetworkStateReceiver(SubCallBack<String> callBack) {
             this.callBack = callBack;
         }
 
@@ -247,7 +269,7 @@ public class SubContext {
 
                     SubLog.i("onReceive call");
 
-                    callBack.callback();
+                    callBack.callback(null);
                 }
             }
         }

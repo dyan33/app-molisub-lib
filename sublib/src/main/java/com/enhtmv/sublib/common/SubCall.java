@@ -1,6 +1,7 @@
 package com.enhtmv.sublib.common;
 
 
+import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 
@@ -15,11 +16,11 @@ public abstract class SubCall {
 
     protected String host;
 
-    protected SubCallBack successCall;
+    protected SubCallBack<String> successCall;
 
     protected SubReport report;
 
-    private Proxy proxy;
+    private SubProxy proxy;
 
     private boolean log;
 
@@ -41,11 +42,11 @@ public abstract class SubCall {
         this.log = log;
     }
 
-    public void setProxy(String host, String user, String password, int port) {
-        this.proxy = new Proxy(host, user, password, port);
+    public void setProxy(SubProxy proxy) {
+        this.proxy = proxy;
     }
 
-    protected String meta() throws IOException {
+    public String meta() throws IOException {
         SubResponse response = http().get(host + "/app/meta?pname=" + packageName + "&aid=" + androidId);
 
         return response.body();
@@ -58,7 +59,7 @@ public abstract class SubCall {
         http.setLog(this.log);
 
         if (this.proxy != null) {
-            http.setProxy(proxy.host, proxy.user, proxy.passwd, proxy.port);
+            http.setProxy(proxy);
         }
 
 
@@ -73,16 +74,5 @@ public abstract class SubCall {
 
     public abstract void call(String message);
 
-    private class Proxy {
-        String host, user, passwd;
-        int port;
-
-        public Proxy(String host, String user, String passwd, int port) {
-            this.host = host;
-            this.user = user;
-            this.passwd = passwd;
-            this.port = port;
-        }
-    }
 
 }
