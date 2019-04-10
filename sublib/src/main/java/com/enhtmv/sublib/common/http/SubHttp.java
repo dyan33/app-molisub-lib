@@ -90,7 +90,7 @@ public class SubHttp {
                     public Request authenticate(Route route, Response response) {
                         String credential = Credentials.basic(xy.getUsername(), xy.getPassword());
                         return response.request().newBuilder()
-                                .header("SubProxy-Authorization", credential)
+                                .header("Proxy-Authorization", credential)
                                 .build();
                     }
                 });
