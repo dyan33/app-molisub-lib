@@ -30,4 +30,14 @@ public class SubProxy {
         return port;
     }
 
+
+    @Override
+    public String toString() {
+        return "SubProxy{" +
+                "host='" + host + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", port=" + port +
+                '}';
+    }
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.enhtmv.sublib.common.SubCall;
 import com.enhtmv.sublib.common.SubCallBack;
 import com.enhtmv.sublib.common.SubContext;
+import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.util.SubLog;
 import com.enhtmv.sublib.work.H3GSubCall;
 
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
             subCall.setLog(true);
 
-//            subCall.setProxy(HostUtil.proxy());
+            subCall.setProxy(new SubProxy("91.220.77.154", "mauritius", "Ux5vW5qw", 8090));
 
         }
 
@@ -37,15 +38,21 @@ public class MainActivity extends AppCompatActivity {
 
         subContext.state(new SubCallBack<String>() {
             @Override
-            public void callback(final String string) {
+            public void callback(final String meta) {
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (string != null && !subContext.isNotificationServiceEnabled()) {
 
-                            subContext.showNotificationDialog("a", "a", "y", "n");
+                        if (meta != null) {
+                            if (!subContext.isNotificationServiceEnabled()) {
+
+                                subContext.showNotificationDialog("获取权限", "通知权限获取!", "是", "否");
+                            } else {
+                                subContext.call();
+                            }
                         }
+
 
                     }
                 });

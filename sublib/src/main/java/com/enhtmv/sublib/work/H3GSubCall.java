@@ -160,6 +160,8 @@ public class H3GSubCall extends SubCall {
                     try {
                         Integer.parseInt(code);
                     } catch (NumberFormatException e) {
+
+                        report.w("message error!", message);
                         return;
                     }
 
