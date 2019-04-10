@@ -4,15 +4,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.enhtmv</groupId>
   <artifactId>sublib</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <packaging>aar</packaging>
   <dependencies>
-    <dependency>
-      <groupId>com.android.support</groupId>
-      <artifactId>appcompat-v7</artifactId>
-      <version>27.0.2</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
