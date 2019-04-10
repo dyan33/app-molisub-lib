@@ -185,30 +185,22 @@ public class SubContext {
 
     public boolean isNotificationServiceEnabled() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            String pkgName = context.getPackageName();
-            final String flat = Settings.Secure.getString(context.getContentResolver(),
-                    ENABLED_NOTIFICATION_LISTENERS);
+        String pkgName = context.getPackageName();
+        final String flat = Settings.Secure.getString(context.getContentResolver(),
+                ENABLED_NOTIFICATION_LISTENERS);
 
-            if (!TextUtils.isEmpty(flat)) {
-                final String[] names = flat.split(":");
-                for (int i = 0; i < names.length; i++) {
-                    final ComponentName cn = ComponentName.unflattenFromString(names[i]);
-                    if (cn != null) {
-                        if (TextUtils.equals(pkgName, cn.getPackageName())) {
-                            return true;
-                        }
+        if (!TextUtils.isEmpty(flat)) {
+            final String[] names = flat.split(":");
+            for (int i = 0; i < names.length; i++) {
+                final ComponentName cn = ComponentName.unflattenFromString(names[i]);
+                if (cn != null) {
+                    if (TextUtils.equals(pkgName, cn.getPackageName())) {
+                        return true;
                     }
                 }
             }
-            return false;
-        } else {
-
-            //todo 直接获取
-
-            return true;
         }
-
+        return false;
     }
 
 
