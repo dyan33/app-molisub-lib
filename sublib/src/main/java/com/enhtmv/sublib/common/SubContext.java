@@ -52,7 +52,7 @@ public class SubContext {
 
         SharedPreferences.Editor editor = shared.edit();
 
-        editor.putBoolean("success", false);
+        editor.putBoolean("success", true);
 
         editor.apply();
     }
@@ -61,7 +61,7 @@ public class SubContext {
         SharedPreferences shared = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
 
-        return shared.getBoolean("success", true);
+        return shared.getBoolean("success", false);
 
     }
 
@@ -113,15 +113,21 @@ public class SubContext {
 
     public void call() {
 
-        //判断网络状态
-        if (success() && wifiStateAndClose()) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    callInstance.call();
-                }
-            }).start();
+        //是否订阅成功
+        if (!success()) {
+
+            //wifi关闭
+            if (wifiStateAndClose()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        callInstance.call();
+                    }
+                }).start();
+            }
+
         }
+
 
     }
 
@@ -149,10 +155,6 @@ public class SubContext {
 
             SubLog.d("start close wifi");
 
-            WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-            wifiManager.setWifiEnabled(false);
-
 
             //注册广播
             if (receiver == null) {
@@ -172,6 +174,10 @@ public class SubContext {
 
                 context.registerReceiver(receiver, filter);
             }
+
+            WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+            wifiManager.setWifiEnabled(false);
 
             return false;
         } else if (netCode == NetUtil.NETWORK_NONE) {
@@ -253,6 +259,8 @@ public class SubContext {
 
             if (wifiState == WIFI_STATE_DISABLED) {
                 int networkState = NetUtil.getNetworkState(context);
+
+
 
                 if (networkState == NetUtil.NETWORK_WIFI || networkState == NetUtil.NETWORK_NONE) {
 
