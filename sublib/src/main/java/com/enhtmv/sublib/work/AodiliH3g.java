@@ -15,7 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class H3GSubCall extends SubCall {
+/**
+ * 奥地利H3G
+ */
+public class AodiliH3g extends SubCall {
 
 
     private Info info;
@@ -70,7 +73,7 @@ public class H3GSubCall extends SubCall {
         }
     }
 
-    public H3GSubCall() {
+    public AodiliH3g() {
         super("http://54.153.76.222:8081");
     }
 

@@ -8,8 +8,7 @@ import com.enhtmv.sublib.common.SubCallBack;
 import com.enhtmv.sublib.common.SubContext;
 import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.util.StringUtil;
-import com.enhtmv.sublib.common.util.SubLog;
-import com.enhtmv.sublib.work.H3GSubCall;
+import com.enhtmv.sublib.work.AodiliH3g;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        SubCall subCall = new H3GSubCall();
+        SubCall subCall = new AodiliH3g();
 
         if (BuildConfig.DEBUG) {
 

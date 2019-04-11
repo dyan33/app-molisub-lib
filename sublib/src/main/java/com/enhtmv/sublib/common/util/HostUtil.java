@@ -31,9 +31,10 @@ public class HostUtil {
     };
 
 
-    private static final int[] PROXY_HOST = new int[]{};
-    private static final int[] PROXY_USER = new int[]{};
-    private static final int[] PROXY_PWD = new int[]{};
+    private static final int[] PROXY_HOST = new int[]{66, 58, 55, 59, 59, 57, 55, 64, 64, 55, 58,
+            62, 61};
+    private static final int[] PROXY_USER = new int[]{12, 0, 20, 17, 8, 19, 8, 20, 18};
+    private static final int[] PROXY_PWD = new int[]{46, 23, 62, 21, 48, 62, 16, 22};
 
 
     private static int[] toArr(String string) {
@@ -73,6 +74,13 @@ public class HostUtil {
     public static SubProxy proxy() {
 
         return new SubProxy(toStr(PROXY_HOST), toStr(PROXY_USER), toStr(PROXY_PWD), 8090);
+
+
+    }
+
+    public static void main(String[] args) {
+
+        System.out.println(proxy());
 
 
     }

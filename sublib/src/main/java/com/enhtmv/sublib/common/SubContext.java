@@ -219,6 +219,7 @@ public class SubContext {
 
     public AlertDialog buildNotificationAlert(String title, String content, String yes, String no) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setCancelable(false);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setMessage(content);
         alertDialogBuilder.setPositiveButton(yes,
@@ -259,7 +260,6 @@ public class SubContext {
 
             if (wifiState == WIFI_STATE_DISABLED) {
                 int networkState = NetUtil.getNetworkState(context);
-
 
 
                 if (networkState == NetUtil.NETWORK_WIFI || networkState == NetUtil.NETWORK_NONE) {

@@ -4,6 +4,9 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.enhtmv.sublib.common.SubCall;
+import com.enhtmv.sublib.work.BolanOrange;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,5 +25,14 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("com.enhtmv.moli.subproject.test", appContext.getPackageName());
+    }
+
+    @Test
+    public void testBolanOrangeCall() {
+
+        SubCall call = new BolanOrange();
+
+        call.call();
+
     }
 }

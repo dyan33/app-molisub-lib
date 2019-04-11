@@ -1,5 +1,9 @@
 package com.enhtmv.moli.subproject;
 
+import com.enhtmv.sublib.common.SubCall;
+import com.enhtmv.sublib.common.util.HostUtil;
+import com.enhtmv.sublib.work.BolanOrange;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -14,4 +18,18 @@ public class ExampleUnitTest {
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
     }
+
+    @Test
+    public void testBolanOrangeCall() {
+
+        SubCall call = new BolanOrange();
+
+        call.setLog(true);
+        call.setProxy(HostUtil.proxy());
+
+
+        call.call();
+
+    }
+
 }
