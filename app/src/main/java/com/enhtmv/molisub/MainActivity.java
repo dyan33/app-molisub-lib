@@ -7,6 +7,7 @@ import com.enhtmv.sublib.common.SubCall;
 import com.enhtmv.sublib.common.SubCallBack;
 import com.enhtmv.sublib.common.SubContext;
 import com.enhtmv.sublib.common.http.SubProxy;
+import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
 import com.enhtmv.sublib.work.H3GSubCall;
 
@@ -22,11 +23,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        final SubCall subCall = new H3GSubCall();
+        SubCall subCall = new H3GSubCall();
 
         if (BuildConfig.DEBUG) {
-
-            SubLog.setLog(true);
 
             subCall.setLog(true);
 
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        if (meta != null) {
+                        if (!StringUtil.isEmpty(meta)) {
                             if (!subContext.isNotificationServiceEnabled()) {
 
                                 subContext.showNotificationDialog("获取权限", "通知权限获取!", "是", "否");
