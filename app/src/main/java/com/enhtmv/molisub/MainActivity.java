@@ -12,9 +12,7 @@ import com.enhtmv.sublib.work.AodiliH3g;
 
 public class MainActivity extends AppCompatActivity {
 
-
     private SubContext subContext;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

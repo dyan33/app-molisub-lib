@@ -29,7 +29,7 @@ public abstract class SubCall {
         this.host = host;
     }
 
-    void init(String packageName, String androidId, SubCallBack successCall) {
+    void init(String packageName, String androidId, SubCallBack<String> successCall) {
 
         this.packageName = packageName;
         this.androidId = androidId;

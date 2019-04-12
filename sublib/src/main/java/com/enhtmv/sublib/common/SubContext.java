@@ -13,6 +13,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
 import com.enhtmv.sublib.common.util.NetUtil;
 
@@ -46,8 +47,7 @@ public class SubContext {
         }
     }
 
-
-    private void setSuccess() {
+    private void success() {
         SharedPreferences shared = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = shared.edit();
@@ -57,14 +57,13 @@ public class SubContext {
         editor.apply();
     }
 
-    private boolean success() {
+    private boolean getSuccess() {
         SharedPreferences shared = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
 
         return shared.getBoolean("success", false);
 
     }
-
 
     public void state(final SubCallBack<String> callBack) {
 
@@ -95,7 +94,7 @@ public class SubContext {
             SubCallBack<String> subCallBack = new SubCallBack<String>() {
                 @Override
                 public void callback(String string) {
-                    setSuccess();
+                    success();
                 }
             };
 
@@ -114,18 +113,28 @@ public class SubContext {
     public void call() {
 
         //是否订阅成功
-        if (!success()) {
+        if (!getSuccess()) {
 
-            //wifi关闭
-            if (wifiStateAndClose()) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        callInstance.call();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+
+                        if (!StringUtil.isEmpty(callInstance.meta())) {
+
+                            //关闭wifi
+                            if (wifiStateAndClose()) {
+                                callInstance.call();
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        SubLog.e(e);
                     }
-                }).start();
-            }
 
+                }
+
+            }).start();
         }
 
 
