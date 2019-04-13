@@ -193,6 +193,7 @@ public class SubContext {
             return false;
         }
 
+        callInstance.r().s(OPEN_4G_NETWORK);
         return true;
     }
 
