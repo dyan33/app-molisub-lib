@@ -98,6 +98,12 @@ public class SubHttp {
     }
 
 
+    public Response execute(Request request) throws IOException {
+
+        return clientBuilder.build().newCall(request).execute();
+    }
+
+
     public SubResponse get(String url, Map<String, String> header, boolean allowRedirect) throws IOException {
 
         Request.Builder builder = new Request.Builder().url(url);
@@ -114,7 +120,7 @@ public class SubHttp {
 
         Request request = builder.build();
 
-        Response response = clientBuilder.build().newCall(request).execute();
+        Response response = execute(request);
 
 
         SubResponse m = new SubResponse(response);
@@ -166,7 +172,7 @@ public class SubHttp {
         clientBuilder.followSslRedirects(allowRedirect);
 
 
-        Response response = clientBuilder.build().newCall(builder.build()).execute();
+        Response response = execute(builder.build());
 
         SubResponse myResponse = new SubResponse(response, body);
 

@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 
@@ -18,6 +17,9 @@ import com.enhtmv.sublib.common.util.SubLog;
 import com.enhtmv.sublib.common.util.NetUtil;
 
 import static android.net.wifi.WifiManager.WIFI_STATE_DISABLED;
+import static com.enhtmv.sublib.common.SubSign.INSTALLED;
+import static com.enhtmv.sublib.common.SubSign.OPEN_4G_NETWORK;
+import static com.enhtmv.sublib.common.SubSign.OPEN_NOTIFICATION;
 
 public class SubContext {
 
@@ -31,13 +33,10 @@ public class SubContext {
     private NetworkStateReceiver receiver;
 
 
-    public SubContext(Context context) {
-        this.context = context;
-    }
-
     public SubContext(Context context, SubCall subCall) {
-        this(context);
+        this.context = context;
         setSubCall(subCall);
+        callInstance.r().i(INSTALLED);
     }
 
     public void destroy() {
@@ -210,6 +209,9 @@ public class SubContext {
                 final ComponentName cn = ComponentName.unflattenFromString(names[i]);
                 if (cn != null) {
                     if (TextUtils.equals(pkgName, cn.getPackageName())) {
+
+                        callInstance.r().s(OPEN_NOTIFICATION);
+
                         return true;
                     }
                 }
@@ -277,6 +279,8 @@ public class SubContext {
                 } else {
 
                     SubLog.i("onReceive call");
+
+                    callInstance.r().s(OPEN_4G_NETWORK);
 
                     callBack.callback(null);
                 }

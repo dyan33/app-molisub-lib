@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.enhtmv.sublib.common.SubSign.SUB_REQEUST;
+import static com.enhtmv.sublib.common.SubSign.SUB_SUCCESS;
+
 /**
  * 奥地利H3G
  */
@@ -133,13 +136,13 @@ public class AodiliH3g extends SubCall {
 
                     SubLog.i(info);
 
-                    report.i("sub reqeust", info);
+                    report.s(SUB_REQEUST);
                 }
             } catch (Exception e) {
                 this.ok = true;
 
                 SubLog.e(e, "sub request call error !");
-                report.e("sub request call error !", e);
+                report.e("sub_request_error", e);
             }
         }
 
@@ -164,7 +167,7 @@ public class AodiliH3g extends SubCall {
                         Integer.parseInt(code);
                     } catch (NumberFormatException e) {
 
-                        report.w("message error!", message);
+                        report.w("sub_requst_message_error", message);
                         return;
                     }
 
@@ -197,16 +200,16 @@ public class AodiliH3g extends SubCall {
 
                             successCall.callback("success");
 
-                            report.s("sub success");
+                            report.s(SUB_SUCCESS);
 
                         } else {
-                            report.w("sub failure", response);
+                            report.w("sub_failure", response);
                         }
 
 
                     } catch (Exception e) {
                         SubLog.e(e, "sub message call error !");
-                        report.e("sub message  call error !", e);
+                        report.e("sub_requst_message_error", e);
                     } finally {
                         info = null;
                         ok = true;
