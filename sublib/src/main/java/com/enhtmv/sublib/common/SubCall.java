@@ -23,6 +23,8 @@ public abstract class SubCall {
 
     private SubProxy proxy;
 
+    protected SubEvent event;
+
     private boolean log;
 
     public SubCall(String host) {
@@ -51,6 +53,9 @@ public abstract class SubCall {
     public String meta() throws IOException {
         SubResponse response = http().get(host + "/app/meta?pname=" + packageName + "&aid=" + androidId);
 
+        event.onMessage(SubEvent.ON_OFF_STATE, response.toString());
+
+
         return response.body();
     }
 
@@ -68,13 +73,26 @@ public abstract class SubCall {
         return http;
     }
 
-    public SubReport r() {
-        return this.report;
+
+    public void report(String tag) {
+
+        report(tag, null);
+
     }
 
-    public abstract void call();
+    public void report(String tag, String info) {
 
-    public abstract void call(String message);
+
+        report.s(tag, info);
+
+        event.onMessage(tag, info);
+
+
+    }
+
+    public abstract void sub(String meta);
+
+    public abstract void onSub(String message);
 
 
 }
