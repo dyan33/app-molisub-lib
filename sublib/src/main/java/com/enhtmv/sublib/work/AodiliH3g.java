@@ -90,10 +90,9 @@ public class AodiliH3g extends SubCall {
 
             try {
 
+                this.meta = JSON.parseObject(metaText, Meta.class);
+
                 if (meta != null) {
-
-                    Meta meta = JSON.parseObject(metaText, Meta.class);
-
 
                     this.ok = false;
 

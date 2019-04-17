@@ -30,12 +30,12 @@ public class MainActivity extends AppCompatActivity {
         SubCall subCall = new AodiliH3g(new SubEvent() {
             @Override
             public void onMessage(String tag, String content) {
-
+                System.out.println(tag);
             }
 
             @Override
             public void onError(Throwable throwable) {
-
+                System.out.println(throwable);
             }
         });
 
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
             subCall.setLog(true);
 
-            subCall.setProxy(new SubProxy("91.220.77.154", "mauritius", "Ux5vW5qw", 8090));
+//            subCall.setProxy(new SubProxy("91.220.77.154", "mauritius", "Ux5vW5qw", 8090));
 
         }
 
