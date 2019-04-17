@@ -1,9 +1,11 @@
 package com.enhtmv.sublib.common.util;
 
 
+import android.util.Log;
+
 public class SubLog {
 
-    private static String TAG = "------------------------------------------------------------\n";
+    private static String TAG = "--------------------\n";
 
     private static boolean ok;
 
@@ -21,33 +23,33 @@ public class SubLog {
 
     public static void w(Object... objects) {
         if (ok) {
-            System.out.println(TAG + string(objects));
+            Log.w(TAG, string(objects));
         }
     }
 
     public static void i(Object... objects) {
         if (ok) {
-            System.out.println(TAG + string(objects));
+            Log.i(TAG, string(objects));
         }
 
     }
 
     public static void e(Object... objects) {
         if (ok) {
-            System.out.println(TAG + string(objects));
+            Log.e(TAG, string(objects));
         }
     }
 
-    public static void e(Throwable throwable, Object... objects) {
+    public static void e(Throwable throwable) {
         if (ok) {
-            System.out.println(TAG + string(objects) + "\n" + StringUtil.getStackTrace(throwable));
+            Log.e(TAG, StringUtil.getStackTrace(throwable));
         }
     }
 
     public static void d(Object... objects) {
         if (ok) {
 
-            System.out.println(TAG + string(objects));
+            Log.d(TAG, string(objects));
 
         }
     }
