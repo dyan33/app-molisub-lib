@@ -25,10 +25,14 @@ public abstract class SubCall {
 
     protected SubEvent event;
 
+    protected String operatorName;
+
     private boolean log;
 
-    public SubCall(String host) {
+    public SubCall(String host, String operatorName, SubEvent subEvent) {
         this.host = host;
+        this.operatorName = operatorName;
+        this.event = subEvent;
     }
 
     void init(String packageName, String androidId, SubCallBack<String> successCall) {
@@ -75,9 +79,7 @@ public abstract class SubCall {
 
 
     public void report(String tag) {
-
-        report(tag, null);
-
+        report(tag, operatorName);
     }
 
     public void report(String tag, String info) {

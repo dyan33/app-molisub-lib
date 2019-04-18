@@ -2,19 +2,13 @@ package com.enhtmv.molisub;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.WindowManager;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
-import com.enhtmv.sublib.common.SubCall;
-import com.enhtmv.sublib.common.SubCallBack;
 import com.enhtmv.sublib.common.SubContext;
 import com.enhtmv.sublib.common.SubEvent;
-import com.enhtmv.sublib.common.util.StringUtil;
-import com.enhtmv.sublib.webview.PutaoyaMEOSub;
+import com.enhtmv.sublib.webview.putaoya.MeoSub;
+import com.enhtmv.sublib.webview.putaoya.NosSub;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +26,20 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient());
 
 
-        PutaoyaMEOSub subCall = new PutaoyaMEOSub(webView, new SubEvent() {
+//        NosSub subCall = new NosSub(webView, new SubEvent() {
+//            @Override
+//            public void onMessage(String tag, String content) {
+//                System.out.println(tag);
+//            }
+//
+//            @Override
+//            public void onError(Throwable throwable) {
+//                System.out.println(throwable);
+//            }
+//        });
+
+
+        MeoSub subCall = new MeoSub(webView, new SubEvent() {
             @Override
             public void onMessage(String tag, String content) {
                 System.out.println(tag);

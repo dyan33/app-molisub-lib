@@ -11,7 +11,6 @@ import com.enhtmv.sublib.common.util.SubLog;
 
 import org.jsoup.nodes.Element;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -77,8 +76,7 @@ public class AodiliH3g extends SubCall {
     }
 
     public AodiliH3g(SubEvent event) {
-        super("http://54.153.76.222:8081");
-        this.event = event;
+        super("http://54.153.76.222:8081", "h3g", event);
     }
 
 

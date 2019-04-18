@@ -14,7 +14,7 @@ public class SubReport {
     private String packageName;
     private String host;
 
-    private static final String spearator = "\n--------------------------------------------\n";
+    private static final String spearator = "\n------\n";
 
     private static final String ERROR = "ERROR";
     private static final String WARNING = "WARNING";

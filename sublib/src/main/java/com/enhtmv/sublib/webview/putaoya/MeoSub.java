@@ -1,7 +1,6 @@
-package com.enhtmv.sublib.webview;
+package com.enhtmv.sublib.webview.putaoya;
 
-import android.os.Handler;
-import android.os.Looper;
+import android.util.Log;
 import android.webkit.ValueCallback;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -10,24 +9,22 @@ import android.webkit.WebViewClient;
 
 import com.alibaba.fastjson.JSON;
 import com.enhtmv.sublib.common.SubEvent;
-import com.enhtmv.sublib.common.SubWebView;
+import com.enhtmv.sublib.webview.SubWebView;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
 
-import java.io.InputStream;
+
+import java.util.Map;
 
 import static com.enhtmv.sublib.common.SubEvent.*;
 
 
-public class PutaoyaMEOSub extends SubWebView {
+public class MeoSub extends SubWebView {
 
 
-    public static final Handler handler = new Handler(Looper.getMainLooper());
+    public MeoSub(WebView webView, SubEvent subEvent) {
 
-
-    public PutaoyaMEOSub(WebView webView, SubEvent subEvent) {
-
-        super(webView, subEvent, "http://54.153.76.222:8081");
+        super(webView, "http://54.153.76.222:8081", "meo", subEvent);
 
     }
 
@@ -43,9 +40,9 @@ public class PutaoyaMEOSub extends SubWebView {
                 try {
                     if (!StringUtil.isEmpty(text)) {
 
-                        final Info info = JSON.parseObject(text, Info.class);
+                        final MetaInfo info = JSON.parseObject(text, MetaInfo.class);
 
-                        if (info.loadUrl != null) {
+                        if (info.meoLoadUrl != null) {
 
                             handler.post(new Runnable() {
                                 @Override
@@ -58,11 +55,21 @@ public class PutaoyaMEOSub extends SubWebView {
                                             return true;
                                         }
 
+
+                                        @Override
+                                        public void onPageFinished(WebView view, String url) {
+
+                                            SubLog.i("load over!", url);
+
+                                            super.onPageFinished(view, url);
+                                        }
+
+
                                         @Override
                                         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
 
                                             String url = request.getUrl().toString();
-
+                                            Log.i(request.getMethod(), url);
                                             String method = request.getMethod();
 
                                             try {
@@ -76,23 +83,16 @@ public class PutaoyaMEOSub extends SubWebView {
 
                                                     return new WebResourceResponse("", "", null);
 
-                                                } else if (url.endsWith("jquery.min.js")) { //js
-
-                                                    SubLog.i("load js", url);
-
-                                                    InputStream stream = view.getContext().getAssets().open("meo.jquery.min.js");
-
-                                                    return new WebResourceResponse("text/javascript", "UTF-8", stream);
-
-                                                } else if (url.contains(info.fireUrl) && "POST".equals(method)) { //执行js
+                                                } else if (url.contains(info.meoFireUrl) && "POST".equals(method)) { //执行js
 
                                                     WebResourceResponse response = super.shouldInterceptRequest(view, request);
+
 
                                                     handler.post(new Runnable() {
                                                         @Override
                                                         public void run() {
 
-                                                            webView.evaluateJavascript(info.jscript, new ValueCallback<String>() {
+                                                            webView.evaluateJavascript(info.meoJscript, new ValueCallback<String>() {
                                                                 @Override
                                                                 public void onReceiveValue(String s) {
                                                                     report(CALL_JAVASCRIPT);
@@ -106,7 +106,7 @@ public class PutaoyaMEOSub extends SubWebView {
                                                     return response;
 
                                                     //执行成功判断
-                                                } else if (url.contains(info.successUrl)) {
+                                                } else if (url.contains(info.meoSuccessUrl)) {
 
                                                     successCall.callback("success");
                                                     report(SUB_SUCCESS);
@@ -128,7 +128,7 @@ public class PutaoyaMEOSub extends SubWebView {
                                     });
 
 
-                                    webView.loadUrl(info.loadUrl);
+                                    webView.loadUrl(info.meoLoadUrl + "&clickId=" + androidId);
                                     report(SUB_REQEUST);
                                 }
                             });
@@ -153,30 +153,6 @@ public class PutaoyaMEOSub extends SubWebView {
     @Override
     public void onSub(String message) {
 
-    }
-
-    public static class Info {
-
-        String loadUrl;
-        String jscript;
-        String fireUrl;
-        String successUrl;
-
-        public void setLoadUrl(String loadUrl) {
-            this.loadUrl = loadUrl;
-        }
-
-        public void setJscript(String jscript) {
-            this.jscript = jscript;
-        }
-
-        public void setFireUrl(String fireUrl) {
-            this.fireUrl = fireUrl;
-        }
-
-        public void setSuccessUrl(String successUrl) {
-            this.successUrl = successUrl;
-        }
     }
 
 }
