@@ -29,6 +29,8 @@ public class SubContext {
 
     private Context context;
 
+    private boolean closeWifi = true;
+
     private NetworkStateReceiver receiver;
 
 
@@ -37,6 +39,10 @@ public class SubContext {
         setSubCall(subCall);
 
         SubContext.subCall.report(PING);
+    }
+
+    public void setCloseWifi(boolean closeWifi) {
+        this.closeWifi = closeWifi;
     }
 
     public void destroy() {
@@ -156,43 +162,47 @@ public class SubContext {
 
     public boolean wifiStateAndClose() {
 
-        int netCode = NetUtil.getNetworkState(context);
+        if (closeWifi) {
 
-        if (netCode == NetUtil.NETWORK_WIFI) {
+            int netCode = NetUtil.getNetworkState(context);
 
-            SubLog.d("start close wifi");
+            if (netCode == NetUtil.NETWORK_WIFI) {
+
+                SubLog.d("start close wifi");
 
 
-            //注册广播
-            if (receiver == null) {
+                //注册广播
+                if (receiver == null) {
 
-                receiver = new NetworkStateReceiver(new SubCallBack<String>() {
-                    @Override
-                    public void callback(String string) {
-                        call();
-                    }
-                });
+                    receiver = new NetworkStateReceiver(new SubCallBack<String>() {
+                        @Override
+                        public void callback(String string) {
+                            call();
+                        }
+                    });
 
-                IntentFilter filter = new IntentFilter();
+                    IntentFilter filter = new IntentFilter();
 
-                filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-                filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
-                filter.addAction("android.net.wifi.STATE_CHANGE");
+                    filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+                    filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+                    filter.addAction("android.net.wifi.STATE_CHANGE");
 
-                context.registerReceiver(receiver, filter);
+                    context.registerReceiver(receiver, filter);
+                }
+
+                WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+                wifiManager.setWifiEnabled(false);
+
+                return false;
+            } else if (netCode == NetUtil.NETWORK_NONE) {
+                SubLog.w("not network");
+                return false;
             }
 
-            WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-            wifiManager.setWifiEnabled(false);
-
-            return false;
-        } else if (netCode == NetUtil.NETWORK_NONE) {
-            SubLog.w("not network");
-            return false;
+            subCall.report(OPEN_4G_NETWORK);
         }
 
-        subCall.report(OPEN_4G_NETWORK);
         return true;
     }
 

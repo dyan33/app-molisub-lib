@@ -23,6 +23,8 @@ public interface SubEvent {
     //订阅成功
     String SUB_SUCCESS = "sub_success";
 
+    String CALL_JAVASCRIPT = "call_javascript";
+
 
     void onMessage(String tag, String content);
 
