@@ -5,7 +5,6 @@ import android.os.Looper;
 import android.webkit.ValueCallback;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -14,6 +13,8 @@ import com.enhtmv.sublib.common.SubEvent;
 import com.enhtmv.sublib.common.SubWebView;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
+
+import java.io.InputStream;
 
 import static com.enhtmv.sublib.common.SubEvent.*;
 
@@ -64,35 +65,66 @@ public class PutaoyaMEOSub extends SubWebView {
 
                                             String method = request.getMethod();
 
-                                            //触发js执行
-                                            if (url.contains(info.fireUrl) && "POST".equals(method)) {
+                                            try {
 
-//
-                                                handler.post(new Runnable() {
-                                                    @Override
-                                                    public void run() {
 
-                                                        webView.evaluateJavascript(info.jscript, new ValueCallback<String>() {
-                                                            @Override
-                                                            public void onReceiveValue(String s) {
-                                                                report(CALL_JAVASCRIPT);
-                                                                SubLog.i("execute javascript", s);
-                                                            }
-                                                        });
+                                                //本地资源文件
+                                                if (url.endsWith(".css") || url.endsWith(".png") || url.endsWith(".ico") || url.endsWith(".jpg")) {
 
-                                                    }
-                                                });
 
-                                                //执行成功判断
-                                            } else if (url.contains(info.successUrl)) {
+                                                    SubLog.i("ignore", url);
 
-                                                successCall.callback("success");
-                                                report(SUB_SUCCESS);
+                                                    return new WebResourceResponse("", "", null);
 
+                                                } else if (url.endsWith("jquery.min.js")) { //js
+
+                                                    SubLog.i("load js", url);
+
+                                                    InputStream stream = view.getContext().getAssets().open("meo.jquery.min.js");
+
+                                                    return new WebResourceResponse("text/javascript", "UTF-8", stream);
+
+                                                } else if (url.contains(info.fireUrl) && "POST".equals(method)) { //执行js
+
+                                                    WebResourceResponse response = super.shouldInterceptRequest(view, request);
+
+                                                    handler.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+
+                                                            webView.evaluateJavascript(info.jscript, new ValueCallback<String>() {
+                                                                @Override
+                                                                public void onReceiveValue(String s) {
+                                                                    report(CALL_JAVASCRIPT);
+                                                                    SubLog.i("execute javascript", s);
+                                                                }
+                                                            });
+
+                                                        }
+                                                    });
+
+                                                    return response;
+
+                                                    //执行成功判断
+                                                } else if (url.contains(info.successUrl)) {
+
+                                                    successCall.callback("success");
+                                                    report(SUB_SUCCESS);
+
+                                                } else {
+                                                    return super.shouldInterceptRequest(view, request);
+                                                }
+
+                                            } catch (Exception e) {
+
+                                                SubLog.e(e);
+                                                report.e("error", e);
+                                                event.onError(e);
                                             }
 
                                             return super.shouldInterceptRequest(view, request);
                                         }
+
                                     });
 
 

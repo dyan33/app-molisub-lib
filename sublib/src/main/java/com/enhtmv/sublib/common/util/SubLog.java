@@ -5,7 +5,7 @@ import android.util.Log;
 
 public class SubLog {
 
-    private static String TAG = "--------------------\n";
+    private static String TAG = "--------------------";
 
     private static boolean ok;
 
@@ -14,7 +14,7 @@ public class SubLog {
         for (Object object : objects) {
             builder.append(object == null ? null : object.toString()).append("  ");
         }
-        return builder.append("\n").toString();
+        return builder.toString();
     }
 
     public static void setLog(boolean ok) {
