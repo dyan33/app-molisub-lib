@@ -14,13 +14,12 @@ import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
 
 
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.enhtmv.sublib.common.SubEvent.*;
 
 
 public class MeoSub extends SubWebView {
-
 
     public MeoSub(WebView webView, SubEvent subEvent) {
 
@@ -44,6 +43,8 @@ public class MeoSub extends SubWebView {
 
                         if (info.meoLoadUrl != null) {
 
+                            final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -60,6 +61,31 @@ public class MeoSub extends SubWebView {
                                         public void onPageFinished(WebView view, String url) {
 
                                             SubLog.i("load over!", url);
+
+                                            if (atomicBoolean.get()) {
+
+                                                atomicBoolean.set(false);
+
+                                                handler.post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+
+                                                        //String javascript = "console.log(document.getElementById(\"btn_continuar\").getAttribute('value'))";
+
+                                                        webView.evaluateJavascript(info.meoJscript, new ValueCallback<String>() {
+                                                            @Override
+                                                            public void onReceiveValue(String s) {
+                                                                report(CALL_JAVASCRIPT);
+                                                                SubLog.i("execute javascript", s);
+                                                            }
+
+                                                        });
+
+                                                    }
+
+                                                });
+
+                                            }
 
                                             super.onPageFinished(view, url);
                                         }
@@ -87,21 +113,7 @@ public class MeoSub extends SubWebView {
 
                                                     WebResourceResponse response = super.shouldInterceptRequest(view, request);
 
-
-                                                    handler.post(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-
-                                                            webView.evaluateJavascript(info.meoJscript, new ValueCallback<String>() {
-                                                                @Override
-                                                                public void onReceiveValue(String s) {
-                                                                    report(CALL_JAVASCRIPT);
-                                                                    SubLog.i("execute javascript", s);
-                                                                }
-                                                            });
-
-                                                        }
-                                                    });
+                                                    atomicBoolean.set(true);
 
                                                     return response;
 

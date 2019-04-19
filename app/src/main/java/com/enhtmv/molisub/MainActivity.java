@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) {
 
             subCall.setLog(true);
-//            subContext.setCloseWifi(false);
+            subContext.setCloseWifi(false);
         }
 
         subContext.call();
