@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import com.enhtmv.sublib.common.SubCall;
 import com.enhtmv.sublib.common.SubContext;
 import com.enhtmv.sublib.common.SubEvent;
 import com.enhtmv.sublib.webview.putaoya.MeoSub;
@@ -26,20 +27,9 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient());
 
 
-//        NosSub subCall = new NosSub(webView, new SubEvent() {
-//            @Override
-//            public void onMessage(String tag, String content) {
-//                System.out.println(tag);
-//            }
-//
-//            @Override
-//            public void onError(Throwable throwable) {
-//                System.out.println(throwable);
-//            }
-//        });
 
 
-        MeoSub subCall = new MeoSub(webView, new SubEvent() {
+        SubCall subCall = new MeoSub(webView, new SubEvent() {
             @Override
             public void onMessage(String tag, String content) {
                 System.out.println(tag);
@@ -55,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) {
 
             subCall.setLog(true);
-            subContext.setCloseWifi(false);
+//            subContext.setCloseWifi(false);
         }
 
         subContext.call();

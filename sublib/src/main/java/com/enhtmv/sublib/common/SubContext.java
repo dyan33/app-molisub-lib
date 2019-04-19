@@ -280,7 +280,9 @@ public class SubContext {
 
             int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
 
+
             if (wifiState == WIFI_STATE_DISABLED) {
+
                 int networkState = NetUtil.getNetworkState(context);
 
 
@@ -289,11 +291,26 @@ public class SubContext {
                     SubLog.w("current wifi state or not network");
                 } else {
 
-                    SubLog.i("onReceive subCall");
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
 
-                    subCall.report(OPEN_4G_NETWORK);
+                            try {
 
-                    callBack.callback(null);
+                                Thread.sleep(2000);
+
+                                SubLog.i("onReceive subCall");
+
+                                subCall.report(OPEN_4G_NETWORK);
+
+                                callBack.callback(null);
+                            } catch (Exception e) {
+                                SubLog.e(e);
+                                subCall.report.e("4g call error", e);
+                            }
+
+                        }
+                    }).start();
                 }
             }
         }
