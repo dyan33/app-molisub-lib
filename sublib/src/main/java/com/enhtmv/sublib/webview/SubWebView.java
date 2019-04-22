@@ -2,11 +2,13 @@ package com.enhtmv.sublib.webview;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.enhtmv.sublib.common.SubCall;
 import com.enhtmv.sublib.common.SubEvent;
+import com.enhtmv.sublib.common.util.SubLog;
 
 public abstract class SubWebView extends SubCall {
 
@@ -26,4 +28,27 @@ public abstract class SubWebView extends SubCall {
 
 
     }
+
+
+    protected boolean ignore(WebResourceRequest request) {
+
+        String url = request.getUrl().toString();
+
+        String path = request.getUrl().getPath();
+        if (path != null && (
+                path.endsWith(".gif") ||
+                        path.endsWith(".css") ||
+                        path.endsWith(".png") ||
+                        path.endsWith(".ico") ||
+                        path.endsWith(".jpg") ||
+                        path.endsWith(".woff"))) {
+
+            SubLog.i("ignore", url);
+            return true;
+        }
+
+        return false;
+    }
+
+
 }

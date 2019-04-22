@@ -14,6 +14,7 @@ import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
 
 
+import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.enhtmv.sublib.common.SubEvent.*;
@@ -43,7 +44,7 @@ public class MeoSub extends SubWebView {
 
                         if (info.meoLoadUrl != null) {
 
-                            final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+                            final AtomicBoolean atomicBoolean = new AtomicBoolean(true);
 
                             handler.post(new Runnable() {
                                 @Override
@@ -62,30 +63,7 @@ public class MeoSub extends SubWebView {
 
                                             SubLog.i("load over!", url);
 
-                                            if (atomicBoolean.get()) {
-
-                                                atomicBoolean.set(false);
-
-                                                handler.post(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-
-                                                        //String javascript = "console.log(document.getElementById(\"btn_continuar\").getAttribute('value'))";
-
-                                                        webView.evaluateJavascript(info.meoJscript, new ValueCallback<String>() {
-                                                            @Override
-                                                            public void onReceiveValue(String s) {
-                                                                report(CALL_JAVASCRIPT);
-                                                                SubLog.i("execute javascript", s);
-                                                            }
-
-                                                        });
-
-                                                    }
-
-                                                });
-
-                                            }
+                                            report.i(url);
 
                                             super.onPageFinished(view, url);
                                         }
@@ -101,19 +79,49 @@ public class MeoSub extends SubWebView {
                                             try {
 
 
-                                                //本地资源文件
-                                                if (url.endsWith(".css") || url.endsWith(".png") || url.endsWith(".ico") || url.endsWith(".jpg")) {
-
-
-                                                    SubLog.i("ignore", url);
+                                                //过滤资源
+                                                if (ignore(request) || url.startsWith("http://enabler.dvbs.com/session/cardpic")) {
 
                                                     return new WebResourceResponse("", "", null);
 
-                                                } else if (url.contains(info.meoFireUrl) && "POST".equals(method)) { //执行js
+                                                } else if (url.endsWith("jquery.min.js")) {
+
+                                                    InputStream inputStream = webView.getContext().getAssets().open("meo.jquery-3.1.1.min.js");
+
+                                                    return new WebResourceResponse("text/javascript", "UTF-8", inputStream);
+
+                                                }
+
+                                                // js 触发条件
+                                                else if (url.contains(info.meoFireUrl) && "POST".equals(method)) {
 
                                                     WebResourceResponse response = super.shouldInterceptRequest(view, request);
 
-                                                    atomicBoolean.set(true);
+
+                                                    if (atomicBoolean.get()) {
+
+                                                        atomicBoolean.set(false);
+
+                                                        handler.postDelayed(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+
+                                                                //String javascript = "console.log(document.getElementById(\"btn_continuar\").getAttribute('value'))";
+
+                                                                webView.evaluateJavascript(info.meoJscript, new ValueCallback<String>() {
+                                                                    @Override
+                                                                    public void onReceiveValue(String s) {
+                                                                        report(CALL_JAVASCRIPT);
+                                                                        SubLog.i("execute javascript", s);
+                                                                    }
+
+                                                                });
+
+                                                            }
+
+                                                        }, 2000);
+
+                                                    }
 
                                                     return response;
 
