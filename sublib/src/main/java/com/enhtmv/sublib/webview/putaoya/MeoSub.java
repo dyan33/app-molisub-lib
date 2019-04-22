@@ -63,8 +63,6 @@ public class MeoSub extends SubWebView {
 
                                             SubLog.i("load over!", url);
 
-                                            report.i(url);
-
                                             super.onPageFinished(view, url);
                                         }
 

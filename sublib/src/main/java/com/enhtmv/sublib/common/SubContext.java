@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -38,7 +39,19 @@ public class SubContext {
         this.context = context;
         setSubCall(subCall);
 
-        SubContext.subCall.report(PING);
+        int version = 0;
+
+        try {
+            PackageInfo packageInfo = context.getApplicationContext()
+                    .getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            version = packageInfo.versionCode;
+        } catch (Exception e) {
+            SubLog.e(e);
+        }
+
+
+        SubContext.subCall.report(PING, "version: " + version);
     }
 
     public void setCloseWifi(boolean closeWifi) {
