@@ -1,4 +1,4 @@
-package com.enhtmv.sublib.webview.putaoya;
+package com.enhtmv.sublib.work.putaoya;
 
 import android.util.Log;
 import android.webkit.ValueCallback;
@@ -9,7 +9,7 @@ import android.webkit.WebViewClient;
 
 import com.alibaba.fastjson.JSON;
 import com.enhtmv.sublib.common.SubEvent;
-import com.enhtmv.sublib.webview.SubWebView;
+import com.enhtmv.sublib.common.WebViewSubCall;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
 
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.enhtmv.sublib.common.SubEvent.*;
 
 
-public class MeoSub extends SubWebView {
+public class MeoSub extends WebViewSubCall {
 
     public MeoSub(WebView webView, SubEvent subEvent) {
 

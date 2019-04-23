@@ -51,8 +51,6 @@ public class SubHttp {
 
                 cookieMap.get(host).addAll(cookies);
 
-                SubLog.d("saveFromResponse", url, cookies);
-
             }
 
             @Override
@@ -65,7 +63,7 @@ public class SubHttp {
                     return new ArrayList<>();
 
 
-                SubLog.d("loadForRequest", url);
+                SubLog.d("loadForRequest", url,cookieList);
 
                 return cookieList;
             }

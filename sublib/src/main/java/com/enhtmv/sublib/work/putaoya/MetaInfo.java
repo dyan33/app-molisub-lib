@@ -1,4 +1,4 @@
-package com.enhtmv.sublib.webview.putaoya;
+package com.enhtmv.sublib.work.putaoya;
 
 public class MetaInfo {
 
@@ -8,10 +8,7 @@ public class MetaInfo {
     String meoSuccessUrl;
 
     String nosLoadUrl;
-    String nosFireUrl1;
-    String nosFireUrl2;
-    String nosJscript1;
-    String nosJscript2;
+    String nosBaseUrl;
 
 
     public void setMeoLoadUrl(String meoLoadUrl) {
@@ -34,19 +31,7 @@ public class MetaInfo {
         this.nosLoadUrl = nosLoadUrl;
     }
 
-    public void setNosFireUrl1(String nosFireUrl1) {
-        this.nosFireUrl1 = nosFireUrl1;
-    }
-
-    public void setNosFireUrl2(String nosFireUrl2) {
-        this.nosFireUrl2 = nosFireUrl2;
-    }
-
-    public void setNosJscript1(String nosJscript1) {
-        this.nosJscript1 = nosJscript1;
-    }
-
-    public void setNosJscript2(String nosJscript2) {
-        this.nosJscript2 = nosJscript2;
+    public void setNosBaseUrl(String nosBaseUrl) {
+        this.nosBaseUrl = nosBaseUrl;
     }
 }

@@ -1,4 +1,4 @@
-package com.enhtmv.sublib.webview;
+package com.enhtmv.sublib.common;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -10,14 +10,14 @@ import com.enhtmv.sublib.common.SubCall;
 import com.enhtmv.sublib.common.SubEvent;
 import com.enhtmv.sublib.common.util.SubLog;
 
-public abstract class SubWebView extends SubCall {
+public abstract class WebViewSubCall extends SubCall {
 
     protected static final Handler handler = new Handler(Looper.getMainLooper());
 
     protected WebView webView;
 
 
-    public SubWebView(WebView webView, String host, String name, SubEvent subEvent) {
+    public WebViewSubCall(WebView webView, String host, String name, SubEvent subEvent) {
 
         super(host, name, subEvent);
         this.webView = webView;

@@ -3,6 +3,8 @@ package com.enhtmv.sublib.common.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtil {
 
@@ -43,12 +45,23 @@ public class StringUtil {
         }
     }
 
-
     public static boolean isEmpty(String string) {
 
         return string == null || "".equals(string.trim());
     }
 
+    public static String findByReg(String patternStr, String content) {
+
+
+        Pattern pattern = Pattern.compile(patternStr);
+
+        Matcher matcher = pattern.matcher(content);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
 
 }
 

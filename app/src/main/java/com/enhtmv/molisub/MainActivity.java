@@ -8,8 +8,8 @@ import android.webkit.WebView;
 import com.enhtmv.sublib.common.SubCall;
 import com.enhtmv.sublib.common.SubContext;
 import com.enhtmv.sublib.common.SubEvent;
-import com.enhtmv.sublib.webview.putaoya.MeoSub;
-import com.enhtmv.sublib.webview.putaoya.NosSub;
+import com.enhtmv.sublib.common.http.SubProxy;
+import com.enhtmv.sublib.work.putaoya.MeoSub;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,8 +27,6 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient());
 
 
-
-
         SubCall subCall = new MeoSub(webView, new SubEvent() {
             @Override
             public void onMessage(String tag, String content) {
@@ -41,9 +39,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+//        SubCall subCall = new NosSub(new SubEvent() {
+//            @Override
+//            public void onMessage(String tag, String content) {
+//                System.out.println(tag + ": " + content);
+//            }
+//
+//            @Override
+//            public void onError(Throwable throwable) {
+//                throwable.printStackTrace();
+//            }
+//        });
+
+
         subContext = new SubContext(this, subCall);
         if (BuildConfig.DEBUG) {
 
+
+            subCall.setProxy(new SubProxy("37.48.98.160","engineer@foxseek.com","0c4263",11310));
+//            subCall.setProxy(HostUtil.proxy());
             subCall.setLog(true);
             subContext.setCloseWifi(false);
         }

@@ -39,13 +39,13 @@ public class SubContext {
         this.context = context;
         setSubCall(subCall);
 
-        int version = 0;
+        String version = "";
 
         try {
             PackageInfo packageInfo = context.getApplicationContext()
                     .getPackageManager()
                     .getPackageInfo(context.getPackageName(), 0);
-            version = packageInfo.versionCode;
+            version = packageInfo.versionName;
         } catch (Exception e) {
             SubLog.e(e);
         }
