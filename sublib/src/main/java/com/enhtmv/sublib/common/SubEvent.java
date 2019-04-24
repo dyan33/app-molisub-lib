@@ -5,6 +5,9 @@ public interface SubEvent {
 
     String PING = "ping";
 
+    String INSTALLED = "installed";
+
+
     //开关状态
     String ON_OFF_STATE = "on_off_state";
 

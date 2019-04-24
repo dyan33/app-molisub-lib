@@ -10,6 +10,7 @@ import com.enhtmv.sublib.common.SubContext;
 import com.enhtmv.sublib.common.SubEvent;
 import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.work.putaoya.MeoSub;
+import com.enhtmv.sublib.work.putaoya.NosSub;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,29 +28,29 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient());
 
 
-        SubCall subCall = new MeoSub(webView, new SubEvent() {
-            @Override
-            public void onMessage(String tag, String content) {
-                System.out.println(tag);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                System.out.println(throwable);
-            }
-        });
-
-//        SubCall subCall = new NosSub(new SubEvent() {
+//        SubCall subCall = new MeoSub(webView, new SubEvent() {
 //            @Override
 //            public void onMessage(String tag, String content) {
-//                System.out.println(tag + ": " + content);
+//                System.out.println(tag);
 //            }
 //
 //            @Override
 //            public void onError(Throwable throwable) {
-//                throwable.printStackTrace();
+//                System.out.println(throwable);
 //            }
 //        });
+
+        SubCall subCall = new NosSub(new SubEvent() {
+            @Override
+            public void onMessage(String tag, String content) {
+                System.out.println(tag + ": " + content);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        });
 
 
         subContext = new SubContext(this, subCall);

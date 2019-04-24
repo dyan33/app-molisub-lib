@@ -50,8 +50,14 @@ public class SubContext {
             SubLog.e(e);
         }
 
+        SharedPreferences shared = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
-        SubContext.subCall.report(PING, "version: " + version);
+
+        if (!shared.getBoolean(INSTALLED, false)) {
+            SubContext.subCall.report(INSTALLED, "version: " + version);
+            shared.edit().putBoolean(INSTALLED, true).apply();
+        }
+
     }
 
     public void setCloseWifi(boolean closeWifi) {
