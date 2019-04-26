@@ -1,4 +1,4 @@
-package com.enhtmv.sublib.work;
+package com.enhtmv.sublib.work.aodili;
 
 import android.text.TextUtils;
 
@@ -193,7 +193,7 @@ public class AodiliH3g extends SubCall {
 
                     try {
 
-                        SubResponse response = http().form(info.action, header, info.form);
+                        SubResponse response = http().post(info.action, header, info.form);
 
                         event.onMessage("step2", response.toString());
 

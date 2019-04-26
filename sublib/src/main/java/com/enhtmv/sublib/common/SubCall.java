@@ -41,7 +41,7 @@ public abstract class SubCall {
         this.androidId = androidId;
         this.successCall = successCall;
 
-        this.report = new SubReport(this.host, androidId, packageName);
+        this.report = SubReport.getReport();
 
     }
 
@@ -54,14 +54,6 @@ public abstract class SubCall {
         this.proxy = proxy;
     }
 
-    public String meta() throws IOException {
-        SubResponse response = http().get(host + "/app/meta?pname=" + packageName + "&aid=" + androidId);
-
-        event.onMessage(SubEvent.ON_OFF_STATE, response.toString());
-
-
-        return response.body();
-    }
 
     protected SubHttp http() {
 

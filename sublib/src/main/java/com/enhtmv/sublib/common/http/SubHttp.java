@@ -26,6 +26,7 @@ public class SubHttp {
 
     private OkHttpClient.Builder clientBuilder;
 
+    private Map<String, List<Cookie>> cookieMap = new HashMap<>();
 
     private boolean log;
 
@@ -37,8 +38,6 @@ public class SubHttp {
 
         clientBuilder.cookieJar(new CookieJar() {
 
-
-            private Map<String, List<Cookie>> cookieMap = new HashMap<>();
 
             @Override
             public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
@@ -57,13 +56,13 @@ public class SubHttp {
             public List<Cookie> loadForRequest(HttpUrl url) {
 
 
-                List<Cookie> cookieList = cookieMap.get(url.host());
+                String host = url.host();
+
+
+                List<Cookie> cookieList = cookieMap.get(host);
 
                 if (cookieList == null)
                     return new ArrayList<>();
-
-
-                SubLog.d("loadForRequest", url,cookieList);
 
                 return cookieList;
             }
@@ -71,6 +70,19 @@ public class SubHttp {
 
     }
 
+
+    public void setCookie(String host, String name, String vaule) {
+
+        if (!cookieMap.containsKey(host)) {
+            cookieMap.put(host, new ArrayList<Cookie>());
+        }
+
+        Cookie.Builder builder = new Cookie.Builder().name(name).value(vaule).domain(host);
+
+
+        cookieMap.get(host).add(builder.build());
+
+    }
 
     public void setLog(boolean log) {
         this.log = log;
@@ -96,7 +108,8 @@ public class SubHttp {
     }
 
 
-    public Response execute(Request request) throws IOException {
+    private Response execute(Request request) throws IOException {
+
 
         return clientBuilder.build().newCall(request).execute();
     }
@@ -143,11 +156,11 @@ public class SubHttp {
         return get(url, null, true);
     }
 
-    public SubResponse form(String url, Map<String, String> body) throws IOException {
-        return form(url, null, body);
+    public SubResponse post(String url, Map<String, String> body) throws IOException {
+        return post(url, null, body);
     }
 
-    public SubResponse form(String url, Map<String, String> header, Map<String, String> body, boolean allowRedirect) throws IOException {
+    public SubResponse post(String url, Map<String, String> header, Map<String, String> body, boolean allowRedirect) throws IOException {
 
 
         FormBody.Builder formBody = new FormBody.Builder();
@@ -180,8 +193,8 @@ public class SubHttp {
         return myResponse;
     }
 
-    public SubResponse form(String url, Map<String, String> header, Map<String, String> body) throws IOException {
-        return form(url, header, body, true);
+    public SubResponse post(String url, Map<String, String> header, Map<String, String> body) throws IOException {
+        return post(url, header, body, true);
     }
 
 

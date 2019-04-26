@@ -1,8 +1,11 @@
 package com.enhtmv.sublib.common;
 
 import com.enhtmv.sublib.common.http.SubHttp;
+import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.StringUtil;
+import com.enhtmv.sublib.common.util.SubLog;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,9 +13,6 @@ import java.util.Map;
 
 public class SubReport {
 
-    private String androidId;
-    private String packageName;
-    private String host;
 
     private static final String spearator = "\n------\n";
 
@@ -21,16 +21,33 @@ public class SubReport {
     private static final String INFO = "INFO";
     private static final String SUCCESS = "SUCCESS";
 
+    private static SubReport report;
+
+    private String androidId;
+    private String packageName;
+    private String host;
+    private String version;
 
     private SubHttp http;
 
 
-    public SubReport(String host, String androidId, String packageName) {
-        this.androidId = androidId;
-        this.packageName = packageName;
-        this.host = host;
-        this.http = new SubHttp();
+    public static void init(String host, String androidId, String packageName, String version) {
 
+        if (report == null) {
+
+            report = new SubReport();
+
+            report.androidId = androidId;
+            report.packageName = packageName;
+            report.host = host;
+            report.version = version;
+            report.http = new SubHttp();
+        }
+
+    }
+
+    public static SubReport getReport() {
+        return report;
     }
 
 
@@ -52,8 +69,9 @@ public class SubReport {
                     body.put("level", level);
                     body.put("info", info);
                     body.put("date", date);
+                    body.put("version", version);
 
-                    http.form(host + "/app/log", body);
+                    http.post(host + "/app/log", body);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -100,5 +118,21 @@ public class SubReport {
         r(SUCCESS, message + spearator + object);
     }
 
+
+    public String info() {
+
+        String content = null;
+
+        try {
+            SubResponse response = http.get(host + "/app/meta?pname=" + packageName + "&aid=" + androidId);
+
+            content = response.body();
+
+        } catch (Exception e) {
+            SubLog.e(e);
+        }
+        return content;
+
+    }
 
 }

@@ -53,7 +53,7 @@ public class NetUtil {
      * @return int
      */
     public static int getNetworkState(Context context) {
-        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE); // 获取网络服务
+            ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE); // 获取网络服务
         if (null == connManager) { // 为空则认为无网络
             return NETWORK_NONE;
         }

