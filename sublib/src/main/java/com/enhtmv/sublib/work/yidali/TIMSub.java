@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,7 +31,8 @@ public class TIMSub extends SubCall {
 
 
         header = new HashMap<>();
-        header.put("User-Agent", "Mozilla/5.0 (Linux; U; Android 8.1.0; zh-cn; BLA-AL00 Build/HUAWEIBLA-AL00) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.132 MQQBrowser/8.9 Mobile Safari/537.36");
+        header.put("User-Agent", "Mozilla/5.0 (Linux; Android 7.0; PLUS Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.98 Mobile Safari/537.36");
+        header.put("DNT", "1");
     }
 
 
@@ -56,9 +58,11 @@ public class TIMSub extends SubCall {
 
     private String isoDate() {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        return sdf.format(new Date());
+
+        return sdf.format(new Date()) + "Z";
     }
 
 
@@ -102,7 +106,21 @@ public class TIMSub extends SubCall {
             String host = "vastracking.tim.it";
 
 
-            SubResponse response = http.get("http://offer.allcpx.com/offer/track?offer=219&pubId={pub_id}&clickId=" + androidId, header);
+//            SubResponse response = http.get("http://offer.allcpx.com/offer/track?offer=219&pubId={pub_id}&clickId=" + androidId, header);
+            SubResponse response = http.get("http://lit.gbbgame.com/sub/req", header);
+
+
+            String nextUrl = StringUtil.findByReg("<meta http-equiv=\"refresh\" content=\"0;URL='(.*)'\" />", response.body());
+
+            header.put("Host", "vastracking.tim.it");
+            if (!StringUtil.isEmpty(nextUrl)) {
+
+                nextUrl = nextUrl.replace("amp;", "");
+
+                response = http.get(nextUrl, header);
+
+
+            }
 
 
             String referer = response.response().request().url().toString();
@@ -123,12 +141,15 @@ public class TIMSub extends SubCall {
             http.setCookie(host, "CLIENTY", "400");
             http.setCookie(host, "ai_user", aiUser);
 
+            Date date = new Date();
+
+            String aiSession = newid() + "|" + date.getTime() + "|" + date.getTime();
+
+            http.setCookie("vastracking.tim.it", "ai_session", aiSession);
 
             header.put("Referer", referer);
-            header.put("DNT", "1");
-            header.put("Host", "vastracking.tim.it");
 
-
+            //点击 第一次ajax
             response = http.get(url + "&=1556096956016", header);
 
             if (!"OK".equals(response.body())) {
@@ -137,21 +158,44 @@ public class TIMSub extends SubCall {
             }
 
 
-            Date date = new Date();
-
-            String aiSession = newid() + "|" + date.getTime() + "|" + date.getTime();
-
             SubLog.i("ai_user", aiUser);
             SubLog.i("ai_session", aiSession);
 
 
-            http.setCookie("vastracking.tim.it", "ai_session", aiSession);
-
             url = url.replace("&sc=T", "");
 
+            //点击 第二次跳转
             response = http.get(url, header);
 
-            String url3 = parseUrl(response);
+            Element element = response.doc().select("a[target=_parent]").first();
+
+            if (element == null) {
+                report.w("tim_request3_error", response);
+                return;
+            }
+
+//            String subUrl = element.attr("href");
+            String subUrl = parseUrl(response);
+
+            http.setCookie(host, "CLIENT_BINFO", "B-N");
+            http.setCookie(host, "CLIENTX", "725");
+            http.setCookie(host, "CLIENTY", "400");
+
+
+            header.put("Referer", url);
+
+            response = http.get(subUrl, header);
+
+            if (!"OK".equals(response.body())) {
+
+                report.w("tim_request4_error", response);
+
+                return;
+
+            }
+
+
+            response = http.get(subUrl.replace("&sc=T", ""), header);
 
 
         } catch (Exception e) {

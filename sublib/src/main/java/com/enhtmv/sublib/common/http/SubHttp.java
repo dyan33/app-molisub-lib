@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Authenticator;
 import okhttp3.Cookie;
@@ -26,7 +27,7 @@ public class SubHttp {
 
     private OkHttpClient.Builder clientBuilder;
 
-    private Map<String, List<Cookie>> cookieMap = new HashMap<>();
+    private Map<String, Map<String, Cookie>> cookieMap = new HashMap<>();
 
     private boolean log;
 
@@ -35,6 +36,9 @@ public class SubHttp {
 
         clientBuilder = new OkHttpClient.Builder();
 
+        clientBuilder.connectTimeout(60, TimeUnit.SECONDS);
+        clientBuilder.readTimeout(60, TimeUnit.SECONDS);
+        clientBuilder.writeTimeout(60, TimeUnit.SECONDS);
 
         clientBuilder.cookieJar(new CookieJar() {
 
@@ -45,10 +49,18 @@ public class SubHttp {
                 String host = url.host();
 
                 if (!cookieMap.containsKey(host)) {
-                    cookieMap.put(host, new ArrayList<Cookie>());
+                    cookieMap.put(host, new HashMap<String, Cookie>());
                 }
 
-                cookieMap.get(host).addAll(cookies);
+
+                Map<String, Cookie> map = cookieMap.get(host);
+
+                for (Cookie cookie : cookies) {
+
+                    map.put(cookie.name(), cookie);
+
+                }
+
 
             }
 
@@ -59,12 +71,19 @@ public class SubHttp {
                 String host = url.host();
 
 
-                List<Cookie> cookieList = cookieMap.get(host);
+                List<Cookie> cookies = new ArrayList<>();
 
-                if (cookieList == null)
-                    return new ArrayList<>();
 
-                return cookieList;
+                Map<String, Cookie> map = cookieMap.get(host);
+
+                if (map != null && map.size() > 0) {
+                    cookies.addAll(map.values());
+                }
+
+
+                SubLog.i("loading cookie!", url, cookies);
+
+                return cookies;
             }
         });
 
@@ -74,13 +93,12 @@ public class SubHttp {
     public void setCookie(String host, String name, String vaule) {
 
         if (!cookieMap.containsKey(host)) {
-            cookieMap.put(host, new ArrayList<Cookie>());
+            cookieMap.put(host, new HashMap<String, Cookie>());
         }
 
-        Cookie.Builder builder = new Cookie.Builder().name(name).value(vaule).domain(host);
 
+        cookieMap.get(host).put(name, new Cookie.Builder().name(name).value(vaule).domain(host).build());
 
-        cookieMap.get(host).add(builder.build());
 
     }
 
