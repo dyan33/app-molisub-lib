@@ -99,7 +99,7 @@ public class TIMSub extends SubCall {
 
         try {
 
-            report("start sub", meta);
+            report("start_sub", meta);
 
             String host = "vastracking.tim.it";
 
@@ -207,7 +207,7 @@ public class TIMSub extends SubCall {
 
                 successCall.callback(successUrl);
 
-                report(SUB_SUCCESS);
+                report(SUB_SUCCESS, successUrl);
 
                 return;
             }
