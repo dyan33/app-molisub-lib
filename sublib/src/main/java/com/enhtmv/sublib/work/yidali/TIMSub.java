@@ -92,7 +92,7 @@ public class TIMSub extends SubCall {
 
 
     @Override
-    public void sub(String meta) {
+    public synchronized void sub(String meta) {
 
 
         SubHttp http = http();
@@ -192,6 +192,23 @@ public class TIMSub extends SubCall {
 
 
             response = http.get(subUrl.replace("&sc=T", ""), header);
+
+
+            String successUrl = response.response().request().url().toString();
+
+            String success = "http://offer.globaltraffictracking.com/sub_track/AAghaSoCYqVL?sub=";
+
+            if (successUrl.startsWith(success)) {
+                String subid = subUrl.replace(success, "");
+
+                successCall.callback(subid);
+
+                report(SUB_SUCCESS);
+
+                return;
+            }
+
+            report.w("tim_request5_error", response);
 
 
         } catch (Exception e) {
