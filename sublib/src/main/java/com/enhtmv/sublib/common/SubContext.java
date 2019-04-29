@@ -17,7 +17,7 @@ import com.enhtmv.sublib.common.util.SubLog;
 import com.enhtmv.sublib.common.util.NetUtil;
 
 import static android.net.wifi.WifiManager.WIFI_STATE_DISABLED;
-import static com.enhtmv.sublib.common.SubEvent.*;
+import static com.enhtmv.sublib.common.SubCall.*;
 
 
 public class SubContext {

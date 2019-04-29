@@ -5,9 +5,8 @@
   <versioning>
     <release>3.0.0-test</release>
     <versions>
-      <version>2.2.0</version>
       <version>3.0.0-test</version>
     </versions>
-    <lastUpdated>20190429025427</lastUpdated>
+    <lastUpdated>20190429031203</lastUpdated>
   </versioning>
 </metadata>

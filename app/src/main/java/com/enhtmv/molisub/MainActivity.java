@@ -6,7 +6,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 import com.cp.plugin.Plugin;
-import com.enhtmv.sublib.common.SubEvent;
+import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.util.HostUtil;
 

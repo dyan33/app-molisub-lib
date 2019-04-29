@@ -1,6 +1,5 @@
 package com.enhtmv.sublib.common.util;
 
-import com.enhtmv.sublib.common.SubReport;
 import com.enhtmv.sublib.common.http.SubResponse;
 
 import java.net.HttpCookie;

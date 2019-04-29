@@ -2,9 +2,9 @@ package com.cp.plugin;
 
 import android.content.Context;
 
+import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.SubCall;
 import com.enhtmv.sublib.common.SubContext;
-import com.enhtmv.sublib.common.SubEvent;
 import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.work.yidali.TIMSub;
 

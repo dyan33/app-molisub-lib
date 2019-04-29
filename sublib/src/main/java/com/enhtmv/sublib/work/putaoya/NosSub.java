@@ -2,7 +2,7 @@ package com.enhtmv.sublib.work.putaoya;
 
 import com.alibaba.fastjson.JSON;
 import com.enhtmv.sublib.common.SubCall;
-import com.enhtmv.sublib.common.SubEvent;
+import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.StringUtil;
@@ -11,7 +11,6 @@ import com.enhtmv.sublib.common.util.SubLog;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.enhtmv.sublib.common.SubEvent.*;
 
 
 public class NosSub extends SubCall {

@@ -8,6 +8,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.util.SubLog;
 
 public abstract class WebViewSubCall extends SubCall {

@@ -8,7 +8,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.alibaba.fastjson.JSON;
-import com.enhtmv.sublib.common.SubEvent;
+import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.WebViewSubCall;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
@@ -17,7 +17,6 @@ import com.enhtmv.sublib.common.util.SubLog;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.enhtmv.sublib.common.SubEvent.*;
 
 
 public class MeoSub extends WebViewSubCall {

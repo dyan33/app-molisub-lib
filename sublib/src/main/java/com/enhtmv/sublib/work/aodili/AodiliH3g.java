@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.enhtmv.sublib.common.SubCall;
-import com.enhtmv.sublib.common.SubEvent;
+import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.SubLog;
@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.enhtmv.sublib.common.SubEvent.*;
 
 /**
  * 奥地利H3G

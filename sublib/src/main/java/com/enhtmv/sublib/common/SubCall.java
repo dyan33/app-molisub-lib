@@ -1,12 +1,33 @@
 package com.enhtmv.sublib.common;
 
 
+import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.util.SubLog;
 
 
 public abstract class SubCall {
+
+
+    public static final String INSTALLED = "installed";
+
+    //打开通知
+    public static final String OPEN_NOTIFICATION = "open_notification";
+
+    //4g网络
+    public static final String OPEN_4G_NETWORK = "open_4g_network";
+
+    //发起订阅
+    public static final String SUB_REQEUST = "sub_reqeust";
+
+    //收到短信
+    public static final String RECEIVE_SMS = "receive_sms";
+
+    //订阅成功
+    public static final String SUB_SUCCESS = "sub_success";
+
+    public static final String CALL_JAVASCRIPT = "call_javascript";
 
 
     protected String androidId;
