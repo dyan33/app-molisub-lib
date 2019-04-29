@@ -4,18 +4,14 @@ import com.enhtmv.sublib.common.SubCall;
 import com.enhtmv.sublib.common.SubEvent;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
-import com.enhtmv.sublib.common.util.CookieUtil;
-import com.enhtmv.sublib.common.util.HostUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
 
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -106,8 +102,8 @@ public class TIMSub extends SubCall {
             String host = "vastracking.tim.it";
 
 
-//            SubResponse response = http.get("http://offer.allcpx.com/offer/track?offer=219&pubId={pub_id}&clickId=" + androidId, header);
-            SubResponse response = http.get("http://lit.gbbgame.com/sub/req", header);
+            SubResponse response = http.get("http://offer.allcpx.com/offer/track?offer=219&pubId={pub_id}&clickId=" + androidId, header);
+//            SubResponse response = http.get("http://lit.gbbgame.com/sub/req", header);
 
 
             String nextUrl = StringUtil.findByReg("<meta http-equiv=\"refresh\" content=\"0;URL='(.*)'\" />", response.body());

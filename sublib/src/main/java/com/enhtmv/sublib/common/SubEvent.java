@@ -3,13 +3,7 @@ package com.enhtmv.sublib.common;
 public interface SubEvent {
 
 
-    String PING = "ping";
-
     String INSTALLED = "installed";
-
-
-    //开关状态
-    String ON_OFF_STATE = "on_off_state";
 
     //打开通知
     String OPEN_NOTIFICATION = "open_notification";
