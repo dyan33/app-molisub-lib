@@ -3,10 +3,11 @@
   <groupId>com.enhtmv</groupId>
   <artifactId>sublib</artifactId>
   <versioning>
-    <release>3.0.0-test</release>
+    <release>3.0.1-test</release>
     <versions>
       <version>3.0.0-test</version>
+      <version>3.0.1-test</version>
     </versions>
-    <lastUpdated>20190429033506</lastUpdated>
+    <lastUpdated>20190429043321</lastUpdated>
   </versioning>
 </metadata>
