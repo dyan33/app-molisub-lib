@@ -99,6 +99,8 @@ public class TIMSub extends SubCall {
 
         try {
 
+            report.i("start sub", meta);
+
             String host = "vastracking.tim.it";
 
 
@@ -128,6 +130,7 @@ public class TIMSub extends SubCall {
                 report.w("tim_request1_error", response);
                 return;
             }
+            report("step1");
 
 
             String aiUser = newid() + "|" + isoDate();
@@ -152,6 +155,7 @@ public class TIMSub extends SubCall {
                 report.w("tim_request2_error", response);
                 return;
             }
+            report("step2");
 
 
             SubLog.i("ai_user", aiUser);
@@ -169,6 +173,7 @@ public class TIMSub extends SubCall {
                 report.w("tim_request3_error", response);
                 return;
             }
+            report("step3");
 
 //            String subUrl = element.attr("href");
             String subUrl = parseUrl(response);
@@ -189,6 +194,7 @@ public class TIMSub extends SubCall {
                 return;
 
             }
+            report("step4");
 
 
             response = http.get(subUrl.replace("&sc=T", ""), header);
@@ -196,12 +202,10 @@ public class TIMSub extends SubCall {
 
             String successUrl = response.response().request().url().toString();
 
-            String success = "http://offer.globaltraffictracking.com/sub_track/AAghaSoCYqVL?sub=";
 
-            if (successUrl.startsWith(success)) {
-                String subid = subUrl.replace(success, "");
+            if (successUrl.startsWith("http://offer.globaltraffictracking.com/sub_track")) {
 
-                successCall.callback(subid);
+                successCall.callback(successUrl);
 
                 report(SUB_SUCCESS);
 
