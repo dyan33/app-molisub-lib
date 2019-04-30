@@ -28,6 +28,6 @@
 -keep class com.alibaba.** {*;}
 -keep class com.squareup.okhttp3.** {*;}
 
--flattenpackagehierarchy 'c0a1'
+-flattenpackagehierarchy 'a0c1'
 
 
