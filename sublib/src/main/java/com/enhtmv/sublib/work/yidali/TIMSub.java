@@ -94,7 +94,7 @@ public class TIMSub extends SubCall {
     private void sleep() throws Exception {
 
 
-        int num = RandomUtil.i(1500, 2500);
+        int num = RandomUtil.i(2000, 3500);
 
         Thread.sleep(num);
 
@@ -215,7 +215,9 @@ public class TIMSub extends SubCall {
 
             }
             report("step4");
-            sleep();
+            //todo test
+//            sleep();
+            Thread.sleep(RandomUtil.i(6 * 1000, 12 * 1000));
 
 
             response = http.get(subUrl.replace("&sc=T", ""), header);

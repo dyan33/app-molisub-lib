@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.webkit.WebView;
 
@@ -145,6 +146,14 @@ public class SubContext {
     }
 
 
+    private String operator() {
+
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+        return telephonyManager.getSimOperator();
+    }
+
+
     public void call() {
 
         //是否订阅成功
@@ -161,6 +170,9 @@ public class SubContext {
 
                             //关闭wifi
                             if (wifiStateAndClose()) {
+
+                                subCall.report("operator_" + operator());
+
                                 subCall.sub(info);
                             }
                         }
