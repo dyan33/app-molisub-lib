@@ -4,6 +4,7 @@ import com.enhtmv.sublib.common.SubCall;
 import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
+import com.enhtmv.sublib.common.util.RandomUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
 
@@ -13,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +29,6 @@ public class TIMSub extends SubCall {
 
 
         header = new HashMap<>();
-        header.put("User-Agent", "Mozilla/5.0 (Linux; Android 7.0; PLUS Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.98 Mobile Safari/537.36");
         header.put("DNT", "1");
     }
 
@@ -90,6 +91,15 @@ public class TIMSub extends SubCall {
         return null;
     }
 
+    private void sleep() throws Exception {
+
+
+        int num = RandomUtil.i(1500, 2500);
+
+        Thread.sleep(num);
+
+    }
+
 
     @Override
     public synchronized void sub(String meta) {
@@ -97,11 +107,18 @@ public class TIMSub extends SubCall {
 
         SubHttp http = http();
 
+        String host = "vastracking.tim.it";
+
+
+        String y = RandomUtil.i(750, 1300) + "";
+        String x = RandomUtil.i(400, 700) + "";
+
+        header.put("User-Agent", this.userAgent);
+
+
         try {
 
             report("start_sub", meta);
-
-            String host = "vastracking.tim.it";
 
 
             SubResponse response = http.get("http://offer.allcpx.com/offer/track?offer=219&pubId={pub_id}&clickId=" + androidId, header);
@@ -131,38 +148,40 @@ public class TIMSub extends SubCall {
                 return;
             }
             report("step1");
+            sleep();
 
 
             String aiUser = newid() + "|" + isoDate();
 
             http.setCookie(host, "CLIENT_BINFO", "B-N");
-            http.setCookie(host, "CLIENTX", "725");
-            http.setCookie(host, "CLIENTY", "400");
+            http.setCookie(host, "CLIENTX", x);
+            http.setCookie(host, "CLIENTY", y);
             http.setCookie(host, "ai_user", aiUser);
 
+
+            header.put("Referer", referer);
+
+            //点击 第一次ajax
+            response = http.get(url, header);
+
+            if (!"OK".equals(response.body())) {
+                report.w("tim_request2_error", response);
+                return;
+            }
+
+            report("step2");
+            sleep();
+
+
+            url = url.replace("&sc=T", "");
+
+            //ai_session
             Date date = new Date();
 
             String aiSession = newid() + "|" + date.getTime() + "|" + date.getTime();
 
             http.setCookie("vastracking.tim.it", "ai_session", aiSession);
 
-            header.put("Referer", referer);
-
-            //点击 第一次ajax
-            response = http.get(url + "&=1556096956016", header);
-
-            if (!"OK".equals(response.body())) {
-                report.w("tim_request2_error", response);
-                return;
-            }
-            report("step2");
-
-
-            SubLog.i("ai_user", aiUser);
-            SubLog.i("ai_session", aiSession);
-
-
-            url = url.replace("&sc=T", "");
 
             //点击 第二次跳转
             response = http.get(url, header);
@@ -174,13 +193,14 @@ public class TIMSub extends SubCall {
                 return;
             }
             report("step3");
+            sleep();
 
 //            String subUrl = element.attr("href");
             String subUrl = parseUrl(response);
 
             http.setCookie(host, "CLIENT_BINFO", "B-N");
-            http.setCookie(host, "CLIENTX", "725");
-            http.setCookie(host, "CLIENTY", "400");
+            http.setCookie(host, "CLIENTX", x);
+            http.setCookie(host, "CLIENTY", y);
 
 
             header.put("Referer", url);
@@ -195,6 +215,7 @@ public class TIMSub extends SubCall {
 
             }
             report("step4");
+            sleep();
 
 
             response = http.get(subUrl.replace("&sc=T", ""), header);

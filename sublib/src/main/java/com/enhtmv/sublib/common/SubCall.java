@@ -46,6 +46,8 @@ public abstract class SubCall {
 
     protected String operatorName;
 
+    protected String userAgent;
+
     private boolean log;
 
     public SubCall(String host, String operatorName, SubEvent subEvent) {
@@ -62,6 +64,10 @@ public abstract class SubCall {
 
         this.report = SubReport.getReport();
 
+    }
+
+    public void setUserAgent(String userAgent){
+        this.userAgent=userAgent;
     }
 
     public void setLog(boolean log) {

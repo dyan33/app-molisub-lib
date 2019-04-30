@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.webkit.WebView;
 
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
@@ -116,8 +117,7 @@ public class SubContext {
 
     public void setSubCall(SubCall subCall) {
 
-        if (subCall != null) {
-
+        if (SubContext.subCall == null) {
 
             SubCallBack<String> subCallBack = new SubCallBack<String>() {
                 @Override
@@ -128,8 +128,15 @@ public class SubContext {
 
             subCall.init(packageName, androidId, subCallBack);
 
+
+            String useragent = new WebView(context).getSettings().getUserAgentString();
+
+            subCall.setUserAgent(useragent);
+
             SubContext.subCall = subCall;
+
         }
+
     }
 
 
