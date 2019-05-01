@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.enhtmv.sublib.common.SubCall;
+import com.enhtmv.sublib.sub.SubCall;
 import com.enhtmv.sublib.work.BolanOrange;
 
 import org.junit.Test;

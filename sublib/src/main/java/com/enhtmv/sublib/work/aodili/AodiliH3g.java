@@ -3,8 +3,7 @@ package com.enhtmv.sublib.work.aodili;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
-import com.enhtmv.sublib.common.SubCall;
-import com.cp.plugin.event.SubEvent;
+import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.SubLog;
@@ -74,10 +73,6 @@ public class AodiliH3g extends SubCall {
         }
     }
 
-    public AodiliH3g(SubEvent event) {
-        super("http://54.153.76.222:8081", "h3g", event);
-    }
-
 
     @Override
     public synchronized void sub(String metaText) {
@@ -136,7 +131,7 @@ public class AodiliH3g extends SubCall {
                 this.ok = true;
 
                 SubLog.e(e, "sub request call error !");
-                report.e("sub_request_error", e);
+                r.e("sub_request_error", e);
 
                 event.onError(e);
 
@@ -167,7 +162,7 @@ public class AodiliH3g extends SubCall {
                         Integer.parseInt(code);
                     } catch (NumberFormatException e) {
 
-                        report.w("sub_requst_message_error", message);
+                        r.w("sub_requst_message_error", message);
                         return;
                     }
 
@@ -198,22 +193,18 @@ public class AodiliH3g extends SubCall {
 
                         if (response.response().request().url().toString().startsWith(meta.url3)) {
 
-                            SubLog.i("success");
 
-                            successCall.callback("success");
-
-
-                            report(SUB_SUCCESS);
+                            success();
 
 
                         } else {
-                            report.w("sub_failure", response);
+                            r.w("sub_failure", response);
                         }
 
 
                     } catch (Exception e) {
                         SubLog.e(e, "sub message call error !");
-                        report.e("sub_requst_message_error", e);
+                        r.e("sub_requst_message_error", e);
 
                         event.onError(e);
 

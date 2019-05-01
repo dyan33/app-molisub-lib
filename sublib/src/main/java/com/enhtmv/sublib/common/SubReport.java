@@ -1,7 +1,11 @@
 package com.enhtmv.sublib.common;
 
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.DeviceUtils;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
+import com.enhtmv.sublib.common.util.NetUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
 
@@ -12,9 +16,6 @@ import java.util.Map;
 
 public class SubReport {
 
-
-    private static final String spearator = "\n------\n";
-
     private static final String ERROR = "ERROR";
     private static final String WARNING = "WARNING";
     private static final String INFO = "INFO";
@@ -22,25 +23,47 @@ public class SubReport {
 
     private static SubReport report;
 
+
     private String androidId;
     private String packageName;
     private String host;
     private String version;
+    private String sdkVersion;
+    private String deviceName;
+    private String operatorName;
+    private String operatorCode;
+
 
     private SubHttp http;
 
 
-    public static void init(String host, String androidId, String packageName, String version) {
+    private SubReport(String host) {
 
-        if (report == null) {
+        this.host = host;
 
-            report = new SubReport();
+        this.androidId = DeviceUtils.getAndroidID();
+        this.packageName = AppUtils.getAppPackageName();
+        this.version = AppUtils.getAppVersionName();
+        this.sdkVersion = DeviceUtils.getSDKVersionName();
+        this.deviceName = DeviceUtils.getModel();
+        this.operatorName = NetworkUtils.getNetworkOperatorName();
+        this.operatorCode = NetUtil.getOperator();
 
-            report.androidId = androidId;
-            report.packageName = packageName;
-            report.host = host;
-            report.version = version;
-            report.http = new SubHttp();
+        this.http = new SubHttp();
+    }
+
+
+    public static void init(String host) {
+
+
+        synchronized (SubReport.class) {
+
+            if (report == null) {
+
+                report = new SubReport(host);
+
+            }
+
         }
 
     }
@@ -50,7 +73,7 @@ public class SubReport {
     }
 
 
-    public void r(final String level, final String info) {
+    public void r(final String level, final String tag, final String info) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -61,14 +84,20 @@ public class SubReport {
             public void run() {
                 try {
 
-
                     Map<String, String> body = new HashMap<>();
                     body.put("android_id", androidId);
                     body.put("package_name", packageName);
                     body.put("level", level);
-                    body.put("info", info);
+                    body.put("info", info == null ? "" : info);
                     body.put("date", date);
+                    body.put("tag", tag);
                     body.put("version", version);
+                    body.put("sdk_version", sdkVersion);
+                    body.put("device_name", deviceName);
+                    body.put("operator_name", operatorName == null ? "" : operatorName);
+                    body.put("operator_code", operatorCode == null ? "" : operatorCode);
+                    body.put("network", NetUtil.getNetworkName());
+
 
                     http.post(host + "/app/log", body);
                 } catch (Exception e) {
@@ -79,42 +108,42 @@ public class SubReport {
 
     }
 
-    public void i(String message) {
-        r(INFO, message);
+    public void i(String tag) {
+        r(INFO, tag, null);
     }
 
-    public void i(String message, Object object) {
-        r(INFO, message + spearator + object);
+    public void i(String tag, Object object) {
+        r(INFO, tag, object.toString());
     }
 
-    public void w(String message) {
-        r(WARNING, message);
+    public void w(String tag) {
+        r(WARNING, tag, null);
     }
 
-    public void w(String message, Object object) {
+    public void w(String tag, Object object) {
 
-        r(WARNING, message + spearator + object);
+        r(WARNING, tag, object.toString());
 
     }
 
-    public void e(String message) {
-        r(ERROR, message);
+    public void e(String tag) {
+        r(ERROR, tag, null);
     }
 
-    public void e(String message, Throwable throwable) {
+    public void e(String tag, Throwable throwable) {
 
 
         String stack = StringUtil.getStackTrace(throwable);
 
-        r(ERROR, message + spearator + stack);
+        r(ERROR, tag, stack);
     }
 
     public void s(String message) {
-        r(SUCCESS, message);
+        r(SUCCESS, message, null);
     }
 
-    public void s(String message, Object object) {
-        r(SUCCESS, message + spearator + object);
+    public void s(String tag, Object object) {
+        r(SUCCESS, tag, object.toString());
     }
 
 

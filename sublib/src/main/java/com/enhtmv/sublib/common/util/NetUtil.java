@@ -5,6 +5,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
+import com.blankj.utilcode.util.Utils;
+
 /**
  * GPRS : 2G(2.5) General Packet Radia Service 114kbps
  * EDGE : 2G(2.75G) Enhanced Data Rate for GSM Evolution 384kbps
@@ -33,17 +35,42 @@ public class NetUtil {
     /**
      * 获取运营商名字
      *
-     * @param context context
      * @return int
      */
-    public static String getOperatorName(Context context) {
+    public static String getOperator() {
         /*
          * getSimOperatorName()就可以直接获取到运营商的名字
          * 也可以使用IMSI获取，getSimOperator()，然后根据返回值判断，例如"46000"为移动
          * IMSI相关链接：http://baike.baidu.com/item/imsi
          */
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        return telephonyManager.getSimOperator();
+        TelephonyManager tm = (TelephonyManager) Utils.getApp().getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (tm != null)
+            return tm.getSimOperator();
+        return "";
+    }
+
+
+    public static String getNetworkName() {
+
+
+        switch (getNetworkState(Utils.getApp())) {
+
+            case NETWORK_NONE:
+                return "None";
+            case NETWORK_2G:
+                return "2G";
+            case NETWORK_3G:
+                return "3G";
+            case NETWORK_4G:
+                return "4G";
+            case NETWORK_WIFI:
+                return "WIFI";
+            default:
+                return "Mobile";
+
+        }
+
     }
 
     /**
@@ -53,7 +80,7 @@ public class NetUtil {
      * @return int
      */
     public static int getNetworkState(Context context) {
-            ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE); // 获取网络服务
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE); // 获取网络服务
         if (null == connManager) { // 为空则认为无网络
             return NETWORK_NONE;
         }

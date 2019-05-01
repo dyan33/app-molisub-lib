@@ -3,41 +3,39 @@ package com.cp.plugin;
 import android.content.Context;
 
 import com.cp.plugin.event.SubEvent;
-import com.enhtmv.sublib.common.SubCall;
-import com.enhtmv.sublib.common.SubContext;
+import com.enhtmv.sublib.common.sub.SubContext;
 import com.enhtmv.sublib.common.http.SubProxy;
-import com.enhtmv.sublib.work.yidali.TIMSub;
 
 public class Plugin {
 
-    private SubCall s1;
-    private SubContext s2;
 
+    public static void init(Context context, SubEvent event) {
 
-    public Plugin(Context context, SubEvent event) {
-
-        this.s1 = new TIMSub(event);
-        this.s2 = new SubContext(context, s1);
-
+        SubContext.init(context, event);
 
     }
 
-    public void log(boolean log) {
-        this.s1.setLog(log);
+    public static void log(boolean log) {
+        SubContext.log(log);
 
     }
 
-    public void proxy(String host, String user, String password, int port) {
-        this.s1.setProxy(new SubProxy(host, user, password, port));
+    public static void proxy(String host, String user, String password, int port) {
+        SubContext.proxy(new SubProxy(host, user, password, port));
     }
 
-    public void closeWifi(boolean wifi) {
-        this.s2.setCloseWifi(wifi);
+    public static void closeWifi(boolean wifi) {
+        SubContext.closeWifi(wifi);
     }
 
 
-    public void call() {
-        this.s2.call();
+    public static void call() {
+        SubContext.call();
+    }
+
+    public static void destory() {
+
+        SubContext.destroy();
     }
 
 

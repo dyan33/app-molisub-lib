@@ -24,10 +24,11 @@
 
 -keep class com.cp.plugin.** {*;}
 
--keep class org.jsoup.** {*;}
--keep class com.alibaba.** {*;}
--keep class com.squareup.okhttp3.** {*;}
+#-keep class org.jsoup.** {*;}
+#-keep class com.alibaba.** {*;}
+#-keep class com.squareup.okhttp3.** {*;}
+#-keep class com.blankj.** {*;}
 
--flattenpackagehierarchy 'a0c1'
+-flattenpackagehierarchy 'a0b1.b1c'
 
 

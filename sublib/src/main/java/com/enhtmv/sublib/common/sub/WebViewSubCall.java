@@ -1,4 +1,4 @@
-package com.enhtmv.sublib.common;
+package com.enhtmv.sublib.common.sub;
 
 import android.os.Build;
 import android.os.Handler;
@@ -9,6 +9,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.cp.plugin.event.SubEvent;
+import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.util.SubLog;
 
 public abstract class WebViewSubCall extends SubCall {
@@ -20,7 +21,6 @@ public abstract class WebViewSubCall extends SubCall {
 
     public WebViewSubCall(WebView webView, String host, String name, SubEvent subEvent) {
 
-        super(host, name, subEvent);
         this.webView = webView;
 
         if (Build.VERSION.SDK_INT >= 21) {

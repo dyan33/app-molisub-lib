@@ -1,8 +1,7 @@
 package com.enhtmv.sublib.work.putaoya;
 
 import com.alibaba.fastjson.JSON;
-import com.enhtmv.sublib.common.SubCall;
-import com.cp.plugin.event.SubEvent;
+import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.StringUtil;
@@ -12,13 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-
 public class NosSub extends SubCall {
 
 
-    public NosSub(SubEvent subEvent) {
-        super("http://54.153.76.222:8081", "nos", subEvent);
-    }
 
     @Override
     public void sub(String message) {
@@ -78,7 +73,7 @@ public class NosSub extends SubCall {
 
             SubResponse response2 = subHttp.get(info.nosBaseUrl + query + "&commandname=confirm", header);
 
-            report.i("nos_reponse", response2);
+            r.i("nos_reponse", response2);
 
             //重试
 
@@ -96,7 +91,7 @@ public class NosSub extends SubCall {
             SubLog.e(e);
             event.onError(e);
 
-            report.e("nos_error", e);
+            r.e("nos_error", e);
         }
     }
 

@@ -27,22 +27,18 @@ public class MainActivity extends AppCompatActivity {
 
         SubEvent event = new TestSubEvent();
 
-
-        Plugin plugin = new Plugin(this, event);
-
+        Plugin.init(this, event);
 
         if (BuildConfig.DEBUG) {
 
-//            subCall.setProxy(new SubProxy("37.48.98.160","engineer@foxseek.com","0c4263",11310));
-
             SubProxy proxy = HostUtil.proxy();
 
-            plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
-            plugin.log(true);
-            plugin.closeWifi(false);
+//            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
+            Plugin.log(true);
+            Plugin.closeWifi(false);
         }
 
-        plugin.call();
+        Plugin.call();
 
 
     }

@@ -9,7 +9,7 @@ import android.webkit.WebViewClient;
 
 import com.alibaba.fastjson.JSON;
 import com.cp.plugin.event.SubEvent;
-import com.enhtmv.sublib.common.WebViewSubCall;
+import com.enhtmv.sublib.common.sub.WebViewSubCall;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.SubLog;
 
@@ -125,8 +125,7 @@ public class MeoSub extends WebViewSubCall {
                                                     //执行成功判断
                                                 } else if (url.contains(info.meoSuccessUrl)) {
 
-                                                    successCall.callback("success");
-                                                    report(SUB_SUCCESS);
+                                                    success();
 
                                                 } else {
                                                     return super.shouldInterceptRequest(view, request);
@@ -135,7 +134,7 @@ public class MeoSub extends WebViewSubCall {
                                             } catch (Exception e) {
 
                                                 SubLog.e(e);
-                                                report.e("error", e);
+                                                r.e("error", e);
                                                 event.onError(e);
                                             }
 
@@ -156,9 +155,7 @@ public class MeoSub extends WebViewSubCall {
                     }
 
                 } catch (Exception e) {
-                    SubLog.e(e);
-                    report.e("error", e);
-                    event.onError(e);
+                    r.e("error", e);
                 }
 
             }

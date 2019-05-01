@@ -1,11 +1,11 @@
-package com.enhtmv.sublib.common.service;
+package com.cp.plugin.service;
 
 import android.app.Notification;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 
-import com.enhtmv.sublib.common.SubContext;
+import com.enhtmv.sublib.common.sub.SubContext;
 import com.enhtmv.sublib.common.util.SubLog;
 
 
