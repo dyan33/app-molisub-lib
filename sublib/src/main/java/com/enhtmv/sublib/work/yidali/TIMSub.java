@@ -38,16 +38,15 @@ public class TIMSub extends SubCall {
 
         try {
 
-            report("start_sub", meta);
+            report(SUB_REQEUST);
 
 
             SubResponse response = http.get("http://offer.allcpx.com/offer/track?offer=219&pubId={pub_id}&clickId=" + androidId, header);
 //            SubResponse response = http.get("http://lit.gbbgame.com/sub/req", header);
 
+            //=====================================测试页面解析=======================================
 
             String nextUrl = StringUtil.findByReg("<meta http-equiv=\"refresh\" content=\"0;URL='(.*)'\" />", response.body());
-
-            header.put("Host", "vastracking.tim.it");
             if (!StringUtil.isEmpty(nextUrl)) {
 
                 nextUrl = nextUrl.replace("amp;", "");
@@ -57,6 +56,7 @@ public class TIMSub extends SubCall {
 
             }
 
+            header.put("Host", "vastracking.tim.it");
 
             String referer = response.response().request().url().toString();
 
@@ -70,6 +70,8 @@ public class TIMSub extends SubCall {
             report("step1");
             sleep();
 
+
+            //=====================================请求第二个页面=====================================
 
             String aiUser = newid() + "|" + isoDate();
 
@@ -115,6 +117,9 @@ public class TIMSub extends SubCall {
             report("step3");
             sleep();
 
+
+            //=====================================订阅请求==========================================
+
 //            String subUrl = element.attr("href");
             String subUrl = parseUrl(response);
 
@@ -122,6 +127,8 @@ public class TIMSub extends SubCall {
             http.setCookie(host, "CLIENTX", x);
             http.setCookie(host, "CLIENTY", y);
 
+
+            sleep();
 
             header.put("Referer", url);
 

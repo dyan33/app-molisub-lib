@@ -33,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
             SubProxy proxy = HostUtil.proxy();
 
-//            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
+            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
             Plugin.log(true);
-            Plugin.closeWifi(false);
+//            Plugin.closeWifi(false);
         }
 
         Plugin.call();

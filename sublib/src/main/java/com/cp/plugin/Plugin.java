@@ -33,10 +33,5 @@ public class Plugin {
         SubContext.call();
     }
 
-    public static void destory() {
-
-        SubContext.destroy();
-    }
-
 
 }

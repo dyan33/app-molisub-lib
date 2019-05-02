@@ -10,7 +10,6 @@ import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.webkit.WebView;
-import android.widget.Switch;
 
 import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.Utils;
@@ -23,7 +22,6 @@ import com.enhtmv.sublib.common.util.SubLog;
 import com.enhtmv.sublib.common.util.NetUtil;
 import com.enhtmv.sublib.work.yidali.TIMSub;
 
-import static android.net.wifi.WifiManager.WIFI_STATE_DISABLED;
 import static com.enhtmv.sublib.common.sub.SubCall.*;
 
 
@@ -127,7 +125,6 @@ public class SubContext {
 
                 if (wifiManager != null) {
                     wifiManager.setWifiEnabled(false);
-                    subContext.subCall.report(CLOSE_WIFI);
                 }
 
                 return false;
@@ -138,15 +135,6 @@ public class SubContext {
         }
 
         return true;
-    }
-
-    public static void destroy() {
-
-        if (subContext != null) {
-            if (subContext.receiver != null) {
-                subContext.context.unregisterReceiver(subContext.receiver);
-            }
-        }
     }
 
     public static void closeWifi(boolean wifi) {
@@ -246,22 +234,25 @@ public class SubContext {
 
     private static class NetworkStateReceiver extends BroadcastReceiver {
 
+
+        public void destroy() {
+            subContext.context.unregisterReceiver(this);
+            subContext.receiver = null;
+        }
+
+
         @Override
         public void onReceive(Context context, Intent intent) {
 
             SubLog.i("NetworkStateReceiver", intent.toString());
 
+            if (NetworkUtils.isConnected() && !NetworkUtils.isWifiConnected() && NetworkUtils.isMobileData()) {
 
-            int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
+                subContext.subCall.report(OPEN_4G_NETWORK);
 
-            if (wifiState == WIFI_STATE_DISABLED) {
+                call();
 
-                if (NetworkUtils.isConnected()) {
-
-                    call();
-                    subContext.subCall.report(OPEN_4G_NETWORK);
-
-                }
+                destroy();
 
             }
         }
