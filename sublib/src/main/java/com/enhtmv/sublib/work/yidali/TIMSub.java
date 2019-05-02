@@ -53,7 +53,12 @@ public class TIMSub extends SubCall {
 
                 response = http.get(nextUrl, header);
 
+            }
 
+            //40秒休息
+            long time = response.getTime();
+            if (time < 43591) {
+                Thread.sleep(43591 - time);
             }
 
             header.put("Host", "vastracking.tim.it");

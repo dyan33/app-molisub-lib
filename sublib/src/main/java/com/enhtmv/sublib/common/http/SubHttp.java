@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,10 +150,14 @@ public class SubHttp {
 
         Request request = builder.build();
 
+        long start = System.currentTimeMillis();
+
         Response response = execute(request);
 
+        long end = System.currentTimeMillis();
 
-        SubResponse m = new SubResponse(response);
+
+        SubResponse m = new SubResponse(response, end - start);
 
         if (log)
             SubLog.d("\n", m);
@@ -201,9 +206,13 @@ public class SubHttp {
         clientBuilder.followSslRedirects(allowRedirect);
 
 
+        long start = System.currentTimeMillis();
+
         Response response = execute(builder.build());
 
-        SubResponse myResponse = new SubResponse(response, body);
+        long end = System.currentTimeMillis();
+
+        SubResponse myResponse = new SubResponse(response, body, end - start);
 
         if (log)
             SubLog.d("\n", myResponse);

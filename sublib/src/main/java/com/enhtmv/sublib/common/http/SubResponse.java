@@ -22,17 +22,23 @@ public class SubResponse {
     private Response response;
     private Map<String, String> formbody;
 
-    public SubResponse(Response response) throws IOException {
+    private long time;
+
+
+    public SubResponse(Response response, long time) throws IOException {
         this.response = response;
 
         ResponseBody responseBody = response.body();
 
-        body = responseBody != null ? responseBody.string() : "";
+        this.body = responseBody != null ? responseBody.string() : "";
+
+        this.time = time;
+
 
     }
 
-    public SubResponse(Response response, Map<String, String> formbody) throws IOException {
-        this(response);
+    public SubResponse(Response response, Map<String, String> formbody, long time) throws IOException {
+        this(response, time);
         this.formbody = formbody;
     }
 
@@ -49,6 +55,9 @@ public class SubResponse {
         return Jsoup.parse(body);
     }
 
+    public long getTime() {
+        return time;
+    }
 
     public String cookie() {
 
@@ -79,6 +88,8 @@ public class SubResponse {
         String reqStr = String.format("\n%s %s\n%s\n\n%s\n", method, url, reqHeaders, formbody);
         String respStr = String.format("%s\n%s\n\n%s\n", response.code(), response.headers(), body);
 
-        return String.format("%s\n-------------------------------------\n%s\n", reqStr, respStr);
+        String line = "-------------------------------------";
+
+        return String.format("%s\n%s\n%s\n%s\ntime: %s", reqStr, line, respStr, line, time / 1000.0);
     }
 }
