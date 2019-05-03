@@ -41,8 +41,13 @@ public class TIMSub extends SubCall {
 
         header = new HashMap<>();
         header.put("DNT", "1");
-        header.put("User-Agent", userAgent);
 
+
+        String ua = "Mozilla/5.0 (Linux; Android 9; Android SDK built for x86 Build/PSR1.180720.075; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/73.0.3683.90 Mobile Safari/537.36";
+
+//        ua = "Mozilla/5.0 (Linux; Android 8.0.0; FIG-LX1 Build/HUAWEIFIG-LX1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/73.0.3683.90 Mobile Safari/537.36";
+
+        header.put("User-Agent", ua);
         times = 0;
     }
 
@@ -231,7 +236,7 @@ public class TIMSub extends SubCall {
 
             if (e instanceof RetryException) {
                 //10秒后重试
-                sub(60 * 1000);
+//                sub(60 * 1000);
             } else {
                 report("tim_error", e);
                 LogUtils.e(e);
