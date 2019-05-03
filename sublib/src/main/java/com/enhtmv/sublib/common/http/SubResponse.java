@@ -1,5 +1,6 @@
 package com.enhtmv.sublib.common.http;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.util.StringUtil;
 
 import org.jsoup.Jsoup;
@@ -13,14 +14,15 @@ import java.util.Map;
 
 import okhttp3.Headers;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.Buffer;
 
 public class SubResponse {
 
     private String body;
     private Response response;
-    private Map<String, String> formbody;
 
     private long time;
 
@@ -35,11 +37,6 @@ public class SubResponse {
         this.time = time;
 
 
-    }
-
-    public SubResponse(Response response, Map<String, String> formbody, long time) throws IOException {
-        this(response, time);
-        this.formbody = formbody;
     }
 
 
@@ -75,6 +72,28 @@ public class SubResponse {
         return StringUtil.join(";", stringList);
     }
 
+    private String reqeustBody() {
+        String body = null;
+        try {
+
+            RequestBody requestBody = response.request().body();
+
+            if (requestBody != null) {
+
+                Buffer buffer = new Buffer();
+                requestBody.writeTo(buffer);
+
+                body = buffer.readUtf8();
+            }
+
+        } catch (Exception e) {
+            LogUtils.e(e);
+        }
+
+        return body;
+    }
+
+
     @Override
     public String toString() {
 
@@ -83,13 +102,14 @@ public class SubResponse {
 
         String url = request.url().toString();
         String method = request.method();
-        Headers reqHeaders = request.headers();
+        Headers headers = request.headers();
 
-        String reqStr = String.format("\n%s %s\n%s\n\n%s\n", method, url, reqHeaders, formbody);
-        String respStr = String.format("%s\n%s\n\n%s\n", response.code(), response.headers(), body);
 
-        String line = "-------------------------------------";
+        String c1 = String.format("\n%s %s\n%s\n\n%s\n", method, url, headers, reqeustBody());
+        String c2 = String.format("%s\n%s\n\n%s\n", response.code(), response.headers(), body);
 
-        return String.format("%s\n%s\n%s\n%s\ntime: %s", reqStr, line, respStr, line, time / 1000.0);
+        String line = "---------------------------------------------------------------------------";
+
+        return String.format("%s\n%s\n%s\n%s\ntime: %ss\n", c1, line, c2, line, time / 1000.0);
     }
 }

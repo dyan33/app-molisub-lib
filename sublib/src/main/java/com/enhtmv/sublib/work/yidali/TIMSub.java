@@ -1,11 +1,12 @@
 package com.enhtmv.sublib.work.yidali;
 
+import com.blankj.utilcode.util.LogUtils;
+import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.RandomUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
-import com.enhtmv.sublib.common.util.SubLog;
 
 import org.jsoup.nodes.Element;
 
@@ -20,31 +21,76 @@ import java.util.regex.Pattern;
 public class TIMSub extends SubCall {
 
 
+    private int times;
+
+    private String x;
+    private String y;
+    private Map<String, String> header;
+    private String host;
+
+
     @Override
-    public synchronized void sub(String meta) {
+    public void init(String userAgent, SubEvent event) {
+        super.init(userAgent, event);
 
 
-        SubHttp http = http();
+        host = "vastracking.tim.it";
 
-        String host = "vastracking.tim.it";
+        y = RandomUtil.i(750, 1300) + "";
+        x = RandomUtil.i(400, 700) + "";
 
-        String y = RandomUtil.i(750, 1300) + "";
-        String x = RandomUtil.i(400, 700) + "";
-
-        Map<String, String> header = new HashMap<>();
+        header = new HashMap<>();
         header.put("DNT", "1");
-        header.put("User-Agent", this.userAgent);
+        header.put("User-Agent", userAgent);
 
+        times = 0;
+    }
+
+    @Override
+    public void sub(String info) {
+
+        sub(0);
+
+    }
+
+    @Override
+    public void onSub(String message) {
+
+    }
+
+
+    private void sub(int delay) {
 
         try {
 
-            report(SUB_REQEUST);
+            if (delay > 0) {
+                Thread.sleep(delay);
+            }
+
+            if (++times > 2) {
+                LogUtils.w("retry already max times !!!", times);
+                return;
+            }
+
+            SubHttp http = http();
+
+            report(SUB_REQEUST, "times: " + times);
 
 
             SubResponse response = http.get("http://offer.allcpx.com/offer/track?offer=219&pubId={pub_id}&clickId=" + androidId, header);
 //            SubResponse response = http.get("http://lit.gbbgame.com/sub/req", header);
 
-            //=====================================测试页面解析=======================================
+
+            //40秒休息
+            long time = response.getTime();
+            if (time < 30000) {
+                Thread.sleep(30000 - time);
+            }
+
+
+            report("step1.1", "time: " + response.getTime() / 1000.0);
+
+            //=====================================页面解析跳转=======================================
 
             String nextUrl = StringUtil.findByReg("<meta http-equiv=\"refresh\" content=\"0;URL='(.*)'\" />", response.body());
             if (!StringUtil.isEmpty(nextUrl)) {
@@ -55,11 +101,6 @@ public class TIMSub extends SubCall {
 
             }
 
-            //40秒休息
-            long time = response.getTime();
-            if (time < 43591) {
-                Thread.sleep(43591 - time);
-            }
 
             header.put("Host", "vastracking.tim.it");
 
@@ -69,10 +110,12 @@ public class TIMSub extends SubCall {
             String url = parseUrl(response);
 
             if (StringUtil.isEmpty(url)) {
+
                 r.w("tim_request1_error", response);
-                return;
+
+                throw new RetryException(response);
             }
-            report("step1");
+            report("step1.2", "time: " + response.getTime() / 1000.0);
             sleep();
 
 
@@ -93,10 +136,10 @@ public class TIMSub extends SubCall {
 
             if (!"OK".equals(response.body())) {
                 r.w("tim_request2_error", response);
-                return;
+                throw new RetryException(response);
             }
 
-            report("step2");
+            report("step2", "time: " + response.getTime() / 1000.0);
             sleep();
 
 
@@ -117,10 +160,28 @@ public class TIMSub extends SubCall {
 
             if (element == null) {
                 r.w("tim_request3_error", response);
-                return;
+                throw new RetryException(response);
             }
-            report("step3");
+
+
+            report("step3", "time: " + response.getTime() / 1000.0);
             sleep();
+
+
+            //------------------------OPTIONS---------------
+//            {
+//                Map<String, String> oHeader = new HashMap<>();
+//
+//                oHeader.put("Host", "dc.services.visualstudio.com");
+//                oHeader.put("Referer", "http://vastracking.tim.it/");
+//                oHeader.put("Origin", "http://vastracking.tim.it");
+//                oHeader.put("DNT", "1");
+//                oHeader.put("User-Agent", this.userAgent);
+//
+//
+//                http.options("https://dc.services.visualstudio.com/v2/track", oHeader);
+//
+//            }
 
 
             //=====================================订阅请求==========================================
@@ -143,10 +204,12 @@ public class TIMSub extends SubCall {
 
                 r.w("tim_request4_error", response);
 
-                return;
+                throw new RetryException(response);
 
             }
-            report("step4");
+
+
+            report("step4", "time: " + response.getTime() / 1000.0);
             response = http.get(subUrl.replace("&sc=T", ""), header);
 
 
@@ -161,18 +224,23 @@ public class TIMSub extends SubCall {
 
             r.w("tim_request5_error", response);
 
+            throw new RetryException(response);
+
 
         } catch (Exception e) {
-            report("tim_error", e);
-            SubLog.e(e);
+
+            if (e instanceof RetryException) {
+                //10秒后重试
+                sub(60 * 1000);
+            } else {
+                report("tim_error", e);
+                LogUtils.e(e);
+            }
+
         }
 
-
     }
 
-    @Override
-    public void onSub(String message) {
-    }
 
     private String newid() {
         double t = 1073741824 * Math.random();
@@ -235,10 +303,16 @@ public class TIMSub extends SubCall {
 
     private void sleep() throws Exception {
 
-
-        int num = RandomUtil.i(1000, 2500);
+        int num = RandomUtil.i(2000, 2500);
 
         Thread.sleep(num);
 
     }
+
+    private class RetryException extends Exception {
+        private RetryException(SubResponse response) {
+            super(response.toString());
+        }
+    }
+
 }

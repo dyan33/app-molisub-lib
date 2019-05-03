@@ -8,10 +8,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.alibaba.fastjson.JSON;
+import com.blankj.utilcode.util.LogUtils;
 import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.sub.WebViewSubCall;
 import com.enhtmv.sublib.common.util.StringUtil;
-import com.enhtmv.sublib.common.util.SubLog;
 
 
 import java.io.InputStream;
@@ -60,7 +60,7 @@ public class MeoSub extends WebViewSubCall {
                                         @Override
                                         public void onPageFinished(WebView view, String url) {
 
-                                            SubLog.i("load over!", url);
+                                            LogUtils.i("load over!", url);
 
                                             super.onPageFinished(view, url);
                                         }
@@ -109,7 +109,7 @@ public class MeoSub extends WebViewSubCall {
                                                                     @Override
                                                                     public void onReceiveValue(String s) {
                                                                         report(CALL_JAVASCRIPT);
-                                                                        SubLog.i("execute javascript", s);
+                                                                        LogUtils.i("execute javascript", s);
                                                                     }
 
                                                                 });
@@ -133,7 +133,7 @@ public class MeoSub extends WebViewSubCall {
 
                                             } catch (Exception e) {
 
-                                                SubLog.e(e);
+                                                LogUtils.e(e);
                                                 r.e("error", e);
                                                 event.onError(e);
                                             }

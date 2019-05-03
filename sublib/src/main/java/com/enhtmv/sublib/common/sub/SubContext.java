@@ -11,6 +11,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.webkit.WebView;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.Utils;
 import com.cp.plugin.event.SubEvent;
@@ -18,7 +19,6 @@ import com.enhtmv.sublib.common.SubReport;
 import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.util.SharedUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
-import com.enhtmv.sublib.common.util.SubLog;
 import com.enhtmv.sublib.common.util.NetUtil;
 import com.enhtmv.sublib.work.yidali.TIMSub;
 
@@ -105,7 +105,7 @@ public class SubContext {
 
             if (netCode == NetUtil.NETWORK_WIFI) {
 
-                SubLog.d("start close wifi");
+                LogUtils.d("start close wifi");
 
                 //注册广播
                 if (subContext.receiver == null) {
@@ -129,7 +129,7 @@ public class SubContext {
 
                 return false;
             } else if (netCode == NetUtil.NETWORK_NONE) {
-                SubLog.w("not network");
+                LogUtils.w("not network");
                 return false;
             }
         }
@@ -143,7 +143,7 @@ public class SubContext {
 
     public static void log(boolean log) {
 
-        subContext.subCall.setLog(log);
+        LogUtils.getConfig().setLogSwitch(log);
 
     }
 
@@ -181,7 +181,7 @@ public class SubContext {
                                 }
 
                             } catch (Exception e) {
-                                SubLog.e(e);
+                                LogUtils.e(e);
                             } finally {
                                 running = false;
                             }
@@ -244,7 +244,7 @@ public class SubContext {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            SubLog.i("NetworkStateReceiver", intent.toString());
+            LogUtils.i("NetworkStateReceiver", intent.toString());
 
             if (NetworkUtils.isConnected() && !NetworkUtils.isWifiConnected() && NetworkUtils.isMobileData()) {
 

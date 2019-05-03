@@ -8,9 +8,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.cp.plugin.event.SubEvent;
-import com.enhtmv.sublib.common.sub.SubCall;
-import com.enhtmv.sublib.common.util.SubLog;
 
 public abstract class WebViewSubCall extends SubCall {
 
@@ -72,7 +71,7 @@ public abstract class WebViewSubCall extends SubCall {
                         path.endsWith(".jpg") ||
                         path.endsWith(".woff"))) {
 
-            SubLog.i("ignore", url);
+            LogUtils.i("ignore", url);
             return true;
         }
 

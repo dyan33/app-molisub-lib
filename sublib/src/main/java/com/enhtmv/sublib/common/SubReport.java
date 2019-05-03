@@ -1,17 +1,19 @@
 package com.enhtmv.sublib.common;
 
+import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.DeviceUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.NetUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
-import com.enhtmv.sublib.common.util.SubLog;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class SubReport {
@@ -75,9 +77,10 @@ public class SubReport {
 
     public void r(final String level, final String tag, final String info) {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
 
         final String date = sdf.format(new Date());
+
 
         new Thread(new Runnable() {
             @Override
@@ -86,7 +89,6 @@ public class SubReport {
 
                     Map<String, String> body = new HashMap<>();
                     body.put("android_id", androidId);
-                    body.put("package_name", packageName);
                     body.put("level", level);
                     body.put("info", info == null ? "" : info);
                     body.put("date", date);
@@ -99,9 +101,12 @@ public class SubReport {
                     body.put("network", NetUtil.getNetworkName());
 
 
-                    http.post(host + "/app/log", body);
+                    String json = JSON.toJSONString(body);
+
+
+                    http.postJson(host + "/app/log?name=" + packageName, json);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtils.e(e);
                 }
             }
         }).start();
@@ -132,7 +137,6 @@ public class SubReport {
 
     public void e(String tag, Throwable throwable) {
 
-
         String stack = StringUtil.getStackTrace(throwable);
 
         r(ERROR, tag, stack);
@@ -146,7 +150,6 @@ public class SubReport {
         r(SUCCESS, tag, object.toString());
     }
 
-
     public String info() {
 
         String content = null;
@@ -157,7 +160,7 @@ public class SubReport {
             content = response.body();
 
         } catch (Exception e) {
-            SubLog.e(e);
+            LogUtils.e(e);
         }
         return content;
 

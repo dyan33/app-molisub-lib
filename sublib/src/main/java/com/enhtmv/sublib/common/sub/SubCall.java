@@ -2,12 +2,12 @@ package com.enhtmv.sublib.common.sub;
 
 
 import com.blankj.utilcode.util.DeviceUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.SubReport;
 import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.util.SharedUtil;
-import com.enhtmv.sublib.common.util.SubLog;
 
 
 public abstract class SubCall implements Sub {
@@ -22,7 +22,6 @@ public abstract class SubCall implements Sub {
 
     protected String userAgent;
 
-    private boolean log;
 
     public void init(String userAgent, SubEvent event) {
 
@@ -34,10 +33,6 @@ public abstract class SubCall implements Sub {
 
     }
 
-    public void setLog(boolean log) {
-        this.log = log;
-        SubLog.setLog(log);
-    }
 
     public void setProxy(SubProxy proxy) {
         this.proxy = proxy;
@@ -47,12 +42,11 @@ public abstract class SubCall implements Sub {
 
         SubHttp http = new SubHttp();
 
-        http.setLog(this.log);
+        http.setLog(LogUtils.getConfig().isLogSwitch());
 
         if (this.proxy != null) {
             http.setProxy(proxy);
         }
-
 
         return http;
     }
@@ -71,7 +65,6 @@ public abstract class SubCall implements Sub {
     }
 
     public void report(String message, Throwable throwable) {
-        SubLog.e(throwable);
         r.e(message, throwable);
         event.onError(throwable);
     }
@@ -79,7 +72,7 @@ public abstract class SubCall implements Sub {
 
     protected void success() {
 
-        SubLog.i("success !!!");
+        LogUtils.i("success !!!");
 
         SharedUtil.success();
         event.onMessage(SUB_SUCCESS, null);

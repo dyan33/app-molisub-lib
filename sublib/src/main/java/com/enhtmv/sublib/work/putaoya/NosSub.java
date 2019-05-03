@@ -1,11 +1,11 @@
 package com.enhtmv.sublib.work.putaoya;
 
 import com.alibaba.fastjson.JSON;
+import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.StringUtil;
-import com.enhtmv.sublib.common.util.SubLog;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,12 +61,12 @@ public class NosSub extends SubCall {
 
 
             for (int i = 0; i < 2; i++) {
-                SubLog.i("times", i);
+                LogUtils.i("times", i);
                 try {
                     SubResponse response1 = subHttp.get(info.nosBaseUrl + query + "&commandname=check-status", header);
                     Thread.sleep(3000);
                 } catch (Exception e) {
-                    SubLog.e(e);
+                    LogUtils.e(e);
                 }
             }
 
@@ -88,7 +88,7 @@ public class NosSub extends SubCall {
 
 
         } catch (Exception e) {
-            SubLog.e(e);
+            LogUtils.e(e);
             event.onError(e);
 
             r.e("nos_error", e);

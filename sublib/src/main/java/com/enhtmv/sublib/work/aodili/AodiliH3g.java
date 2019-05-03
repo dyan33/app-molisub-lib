@@ -3,10 +3,10 @@ package com.enhtmv.sublib.work.aodili;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
-import com.enhtmv.sublib.common.util.SubLog;
 
 import org.jsoup.nodes.Element;
 
@@ -123,14 +123,14 @@ public class AodiliH3g extends SubCall {
 
                     info = new Info(cookie, action, referer, values);
 
-                    SubLog.i(info);
+                    LogUtils.i(info);
 
                     report(SUB_REQEUST);
                 }
             } catch (Exception e) {
                 this.ok = true;
 
-                SubLog.e(e, "sub request call error !");
+                LogUtils.e(e, "sub request call error !");
                 r.e("sub_request_error", e);
 
                 event.onError(e);
@@ -187,7 +187,7 @@ public class AodiliH3g extends SubCall {
 
                     try {
 
-                        SubResponse response = http().post(info.action, header, info.form);
+                        SubResponse response = http().postForm(info.action, header, info.form);
 
                         event.onMessage("step2", response.toString());
 
@@ -203,7 +203,7 @@ public class AodiliH3g extends SubCall {
 
 
                     } catch (Exception e) {
-                        SubLog.e(e, "sub message call error !");
+                        LogUtils.e(e, "sub message call error !");
                         r.e("sub_requst_message_error", e);
 
                         event.onError(e);

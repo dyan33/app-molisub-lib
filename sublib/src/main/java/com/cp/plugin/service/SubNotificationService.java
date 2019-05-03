@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.sub.SubContext;
-import com.enhtmv.sublib.common.util.SubLog;
 
 
 public class SubNotificationService extends NotificationListenerService {
@@ -14,7 +14,7 @@ public class SubNotificationService extends NotificationListenerService {
     @Override
     public void onCreate() {
         super.onCreate();
-        SubLog.d("SubNotificationService onCreate !!!");
+        LogUtils.d("SubNotificationService onCreate !!!");
     }
 
     @Override
@@ -25,7 +25,7 @@ public class SubNotificationService extends NotificationListenerService {
 
         String content = bundle.getString(Notification.EXTRA_TEXT, "");
 
-        SubLog.d("receive notification message:", content);
+        LogUtils.d("receive notification message:", content);
 
         SubContext.call(content);
 

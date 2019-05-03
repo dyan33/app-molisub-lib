@@ -1,13 +1,12 @@
 package com.enhtmv.sublib.common.http;
 
-import com.enhtmv.sublib.common.util.SubLog;
+import com.blankj.utilcode.util.LogUtils;
 
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +18,10 @@ import okhttp3.CookieJar;
 import okhttp3.Credentials;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.Route;
 
@@ -32,14 +33,16 @@ public class SubHttp {
 
     private boolean log;
 
+    private int timeout = 30;
+
 
     public SubHttp() {
 
         clientBuilder = new OkHttpClient.Builder();
 
-        clientBuilder.connectTimeout(60, TimeUnit.SECONDS);
-        clientBuilder.readTimeout(60, TimeUnit.SECONDS);
-        clientBuilder.writeTimeout(60, TimeUnit.SECONDS);
+        clientBuilder.connectTimeout(timeout, TimeUnit.SECONDS);
+        clientBuilder.readTimeout(timeout, TimeUnit.SECONDS);
+        clientBuilder.writeTimeout(timeout, TimeUnit.SECONDS);
 
         clientBuilder.cookieJar(new CookieJar() {
 
@@ -82,7 +85,7 @@ public class SubHttp {
                 }
 
 
-                SubLog.i("loading cookie!", url, cookies);
+                LogUtils.i("load cookie", url, cookies);
 
                 return cookies;
             }
@@ -90,6 +93,9 @@ public class SubHttp {
 
     }
 
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
 
     public void setCookie(String host, String name, String vaule) {
 
@@ -109,7 +115,7 @@ public class SubHttp {
 
     public void setProxy(final SubProxy xy) {
 
-        SubLog.d("set proxy !", xy);
+        LogUtils.d("set proxy !", xy);
 
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(xy.getHost(), xy.getPort()));
 
@@ -127,42 +133,43 @@ public class SubHttp {
     }
 
 
-    private Response execute(Request request) throws IOException {
+    private SubResponse execute(Request.Builder builder, Map<String, String> header) throws IOException {
 
 
-        return clientBuilder.build().newCall(request).execute();
-    }
-
-
-    public SubResponse get(String url, Map<String, String> header, boolean allowRedirect) throws IOException {
-
-        Request.Builder builder = new Request.Builder().url(url);
-
+        //设置请求头
         if (header != null) {
             for (Map.Entry<String, String> entry : header.entrySet()) {
                 builder.addHeader(entry.getKey(), entry.getValue());
             }
         }
 
+
+        long t1 = System.currentTimeMillis();
+
+        Response response = clientBuilder.build().newCall(builder.build()).execute();
+
+        long t2 = System.currentTimeMillis();
+
+        SubResponse subResponse = new SubResponse(response, t2 - t1);
+
+        if (log) {
+            LogUtils.d(subResponse);
+        }
+
+
+        return subResponse;
+    }
+
+    public SubResponse get(String url, Map<String, String> header, boolean allowRedirect) throws IOException {
+
+        Request.Builder builder = new Request.Builder().url(url);
+
+
         clientBuilder.followRedirects(allowRedirect);
         clientBuilder.followRedirects(allowRedirect);
 
 
-        Request request = builder.build();
-
-        long start = System.currentTimeMillis();
-
-        Response response = execute(request);
-
-        long end = System.currentTimeMillis();
-
-
-        SubResponse m = new SubResponse(response, end - start);
-
-        if (log)
-            SubLog.d("\n", m);
-
-        return m;
+        return execute(builder, header);
     }
 
     public SubResponse get(String url, Map<String, String> header) throws IOException {
@@ -170,24 +177,19 @@ public class SubHttp {
         return get(url, header, true);
     }
 
-    public SubResponse get(String url, boolean allowRedirect) throws IOException {
-
-        return get(url, null, allowRedirect);
-    }
-
     public SubResponse get(String url) throws IOException {
         return get(url, null, true);
     }
 
-    public SubResponse post(String url, Map<String, String> body) throws IOException {
-        return post(url, null, body);
+    public SubResponse postForm(String url, Map<String, String> form) throws IOException {
+        return postForm(url, null, form);
     }
 
-    public SubResponse post(String url, Map<String, String> header, Map<String, String> body, boolean allowRedirect) throws IOException {
+    public SubResponse postForm(String url, Map<String, String> header, Map<String, String> form, boolean allowRedirect) throws IOException {
 
 
         FormBody.Builder formBody = new FormBody.Builder();
-        for (Map.Entry<String, String> entry : body.entrySet()) {
+        for (Map.Entry<String, String> entry : form.entrySet()) {
             formBody.add(entry.getKey(), entry.getValue());
         }
 
@@ -196,33 +198,42 @@ public class SubHttp {
                 .post(formBody.build());
 
 
-        if (header != null) {
-            for (Map.Entry<String, String> entry : header.entrySet()) {
-                builder.addHeader(entry.getKey(), entry.getValue());
-            }
-        }
-
         clientBuilder.followRedirects(allowRedirect);
         clientBuilder.followSslRedirects(allowRedirect);
 
 
-        long start = System.currentTimeMillis();
-
-        Response response = execute(builder.build());
-
-        long end = System.currentTimeMillis();
-
-        SubResponse myResponse = new SubResponse(response, body, end - start);
-
-        if (log)
-            SubLog.d("\n", myResponse);
-
-        return myResponse;
+        return execute(builder, header);
     }
 
-    public SubResponse post(String url, Map<String, String> header, Map<String, String> body) throws IOException {
-        return post(url, header, body, true);
+    public SubResponse postForm(String url, Map<String, String> header, Map<String, String> form) throws IOException {
+        return postForm(url, header, form, true);
     }
 
+    public SubResponse options(String url, Map<String, String> header) throws IOException {
 
+        Request.Builder builder = new Request.Builder()
+                .url(url)
+                .method("OPTIONS", null);
+
+
+        return execute(builder, header);
+
+
+    }
+
+    public SubResponse postJson(String url, String json) throws IOException {
+        return postJson(url, null, json);
+    }
+
+    public SubResponse postJson(String url, Map<String, String> header, String json) throws IOException {
+
+        Request.Builder builder = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json));
+
+
+        return execute(builder, header);
+
+
+    }
 }
