@@ -20,6 +20,9 @@ public interface Sub {
     //订阅成功
     String SUB_SUCCESS = "sub_success";
 
+    //已订阅
+    String ALREADY_SUB = "already_sub";
+
     //执行javascript
     String CALL_JAVASCRIPT = "call_javascript";
 

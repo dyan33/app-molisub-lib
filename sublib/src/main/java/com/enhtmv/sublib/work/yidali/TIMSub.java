@@ -13,6 +13,7 @@ import org.jsoup.nodes.Element;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -20,8 +21,6 @@ import java.util.regex.Pattern;
 
 public class TIMSub extends SubCall {
 
-
-    private int times;
 
     private String x;
     private String y;
@@ -43,19 +42,9 @@ public class TIMSub extends SubCall {
         header.put("DNT", "1");
 
 
-        String ua = "Mozilla/5.0 (Linux; Android 9; Android SDK built for x86 Build/PSR1.180720.075; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/73.0.3683.90 Mobile Safari/537.36";
+//        String ua = "Mozilla/5.0 (Linux; Android 9; Android SDK built for x86 Build/PSR1.180720.075; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/73.0.3683.90 Mobile Safari/537.36";
 
-//        ua = "Mozilla/5.0 (Linux; Android 8.0.0; FIG-LX1 Build/HUAWEIFIG-LX1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/73.0.3683.90 Mobile Safari/537.36";
-
-        header.put("User-Agent", ua);
-        times = 0;
-    }
-
-    @Override
-    public void sub(String info) {
-
-        sub(0);
-
+        header.put("User-Agent", userAgent);
     }
 
     @Override
@@ -63,23 +52,15 @@ public class TIMSub extends SubCall {
 
     }
 
-
-    private void sub(int delay) {
+    @Override
+    public void sub(String info) {
 
         try {
 
-            if (delay > 0) {
-                Thread.sleep(delay);
-            }
-
-            if (++times > 2) {
-                LogUtils.w("retry already max times !!!", times);
-                return;
-            }
 
             SubHttp http = http();
 
-            report(SUB_REQEUST, "times: " + times);
+            report(SUB_REQEUST);
 
 
             SubResponse response = http.get("http://offer.allcpx.com/offer/track?offer=219&pubId={pub_id}&clickId=" + androidId, header);
@@ -87,10 +68,10 @@ public class TIMSub extends SubCall {
 
 
             //40秒休息
-            long time = response.getTime();
-            if (time < 30000) {
-                Thread.sleep(30000 - time);
-            }
+//            long time = response.getTime();
+//            if (time < 30000) {
+//                Thread.sleep(30000 - time);
+//            }
 
 
             report("step1.1", "time: " + response.getTime() / 1000.0);
@@ -221,10 +202,32 @@ public class TIMSub extends SubCall {
             String successUrl = response.response().request().url().toString();
 
 
-            if (successUrl.startsWith("http://offer.globaltraffictracking.com/sub_track")) {
-
-                success();
+            if (subOk(response)) {
                 return;
+
+            } else if (successUrl.startsWith("http://api.servicelayer.mobi/pro/timokfrm.ashx")) {
+
+                int code = response.response().code();
+
+                if (code == 503 || code == 404) {
+
+                    for (int i = 0; i < 5; i++) {
+                        sleep();
+
+                        response = http.get(successUrl);
+
+                        r.i("step5." + i, response);
+
+                        if (subOk(response)) {
+                            return;
+                        }
+
+
+                    }
+
+
+                }
+
             }
 
             r.w("tim_request5_error", response);
@@ -234,15 +237,30 @@ public class TIMSub extends SubCall {
 
         } catch (Exception e) {
 
-            if (e instanceof RetryException) {
-                //10秒后重试
-//                sub(60 * 1000);
-            } else {
+            if (!(e instanceof RetryException)) {
                 report("tim_error", e);
-                LogUtils.e(e);
             }
-
+            LogUtils.e(e);
         }
+
+    }
+
+
+    private boolean subOk(SubResponse response) {
+
+        String url = response.response().request().url().toString();
+
+        if (url.startsWith("http://offer.globaltraffictracking.com/sub_track")) {
+            success();
+            return true;
+        } else if (url.startsWith("https://li.lpaosub.com/already_sub218")) {
+            r.s(ALREADY_SUB, url);
+            return true;
+        }
+
+
+        return false;
+
 
     }
 
@@ -270,7 +288,7 @@ public class TIMSub extends SubCall {
     private String isoDate() {
 
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 
