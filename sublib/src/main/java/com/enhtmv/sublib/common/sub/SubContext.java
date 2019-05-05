@@ -63,7 +63,7 @@ public class SubContext {
 
             Utils.init(context);
 
-            SubReport.init("http://54.153.76.222:8081");
+            SubReport.init("http://52.53.238.169:8081");
 
 
             if (subContext == null) {

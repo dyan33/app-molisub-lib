@@ -109,6 +109,12 @@ public class SubHttp {
 
     }
 
+    public void clearCookie(String host) {
+
+        this.cookieMap.remove(host);
+
+    }
+
     public void setLog(boolean log) {
         this.log = log;
     }

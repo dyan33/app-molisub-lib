@@ -6,6 +6,7 @@ import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.RandomUtil;
+import com.enhtmv.sublib.common.util.SharedUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
 
 import org.jsoup.nodes.Element;
@@ -26,6 +27,7 @@ public class TIMSub extends SubCall {
     private String y;
     private Map<String, String> header;
     private String host;
+    private int times = 0;
 
 
     @Override
@@ -38,13 +40,6 @@ public class TIMSub extends SubCall {
         y = RandomUtil.i(750, 1300) + "";
         x = RandomUtil.i(400, 700) + "";
 
-        header = new HashMap<>();
-        header.put("DNT", "1");
-
-
-//        String ua = "Mozilla/5.0 (Linux; Android 9; Android SDK built for x86 Build/PSR1.180720.075; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/73.0.3683.90 Mobile Safari/537.36";
-
-        header.put("User-Agent", userAgent);
     }
 
     @Override
@@ -55,24 +50,19 @@ public class TIMSub extends SubCall {
     @Override
     public void sub(String info) {
 
+        SubHttp http = http();
+
+        header = new HashMap<>();
+        header.put("DNT", "1");
+        header.put("User-Agent", userAgent);
+
         try {
 
-
-            SubHttp http = http();
-
-            report(SUB_REQEUST);
+            report(SUB_REQEUST, ++times + "");
 
 
             SubResponse response = http.get("http://offer.allcpx.com/offer/track?offer=219&pubId={pub_id}&clickId=" + androidId, header);
 //            SubResponse response = http.get("http://lit.gbbgame.com/sub/req", header);
-
-
-            //40秒休息
-//            long time = response.getTime();
-//            if (time < 30000) {
-//                Thread.sleep(30000 - time);
-//            }
-
 
             report("step1.1", "time: " + response.getTime() / 1000.0);
 
@@ -84,13 +74,9 @@ public class TIMSub extends SubCall {
                 nextUrl = nextUrl.replace("amp;", "");
 
                 response = http.get(nextUrl, header);
+                report("step1.2", "time: " + response.getTime() / 1000.0);
 
             }
-
-
-            header.put("Host", "vastracking.tim.it");
-
-            String referer = response.response().request().url().toString();
 
 
             String url = parseUrl(response);
@@ -98,14 +84,18 @@ public class TIMSub extends SubCall {
             if (StringUtil.isEmpty(url)) {
 
                 r.w("tim_request1_error", response);
-
-                throw new RetryException(response);
+                throw new RetryException(response.response().code() == 404 ? 0 : 60);
             }
-            report("step1.2", "time: " + response.getTime() / 1000.0);
+
+
+            sleep();
+            sleep();
             sleep();
 
 
             //=====================================请求第二个页面=====================================
+
+            //----------------------------------- ok -----------------------------------
 
             String aiUser = newid() + "|" + isoDate();
 
@@ -115,6 +105,9 @@ public class TIMSub extends SubCall {
             http.setCookie(host, "ai_user", aiUser);
 
 
+            String referer = response.response().request().url().toString();
+
+            header.put("Host", "vastracking.tim.it");
             header.put("Referer", referer);
 
             //点击 第一次ajax
@@ -122,11 +115,14 @@ public class TIMSub extends SubCall {
 
             if (!"OK".equals(response.body())) {
                 r.w("tim_request2_error", response);
-                throw new RetryException(response);
+                throw new RetryException(120);
             }
 
             report("step2", "time: " + response.getTime() / 1000.0);
             sleep();
+
+
+            //----------------------------------- click -----------------------------------
 
 
             url = url.replace("&sc=T", "");
@@ -146,31 +142,18 @@ public class TIMSub extends SubCall {
 
             if (element == null) {
                 r.w("tim_request3_error", response);
-                throw new RetryException(response);
+                throw new RetryException(120);
             }
 
 
             report("step3", "time: " + response.getTime() / 1000.0);
             sleep();
-
-
-            //------------------------OPTIONS---------------
-//            {
-//                Map<String, String> oHeader = new HashMap<>();
-//
-//                oHeader.put("Host", "dc.services.visualstudio.com");
-//                oHeader.put("Referer", "http://vastracking.tim.it/");
-//                oHeader.put("Origin", "http://vastracking.tim.it");
-//                oHeader.put("DNT", "1");
-//                oHeader.put("User-Agent", this.userAgent);
-//
-//
-//                http.options("https://dc.services.visualstudio.com/v2/track", oHeader);
-//
-//            }
+            sleep();
 
 
             //=====================================订阅请求==========================================
+
+            //----------------------------------- ok -----------------------------------
 
 //            String subUrl = element.attr("href");
             String subUrl = parseUrl(response);
@@ -180,81 +163,88 @@ public class TIMSub extends SubCall {
             http.setCookie(host, "CLIENTY", y);
 
 
-            sleep();
-
             header.put("Referer", url);
 
+            //ok
             response = http.get(subUrl, header);
 
             if (!"OK".equals(response.body()) || subUrl == null) {
 
                 r.w("tim_request4_error", response);
 
-                throw new RetryException(response);
+                throw new RetryException(120);
 
             }
 
-
             report("step4", "time: " + response.getTime() / 1000.0);
+            sleep();
+
+            //----------------------------------- click -----------------------------------
+
             response = http.get(subUrl.replace("&sc=T", ""), header);
 
-
             String successUrl = response.response().request().url().toString();
-
 
             if (subOk(response)) {
                 return;
 
             } else if (successUrl.startsWith("http://api.servicelayer.mobi/pro/timokfrm.ashx")) {
 
-                int code = response.response().code();
+                for (int i = 0; i < 5; i++) {
+                    sleep();
 
-                if (code == 503 || code == 404) {
+                    response = http.get(successUrl);
 
-                    for (int i = 0; i < 5; i++) {
-                        sleep();
+                    r.i("step5." + i, response);
 
-                        response = http.get(successUrl);
-
-                        r.i("step5." + i, response);
-
-                        if (subOk(response)) {
-                            return;
-                        }
-
-
+                    if (subOk(response)) {
+                        return;
                     }
-
-
                 }
-
             }
 
             r.w("tim_request5_error", response);
 
-            throw new RetryException(response);
+            throw new RetryException(120);
 
 
         } catch (Exception e) {
 
-            if (!(e instanceof RetryException)) {
+            http.clearCookie("offer.allcpx.com");
+
+            if (e instanceof RetryException) {
+
+                sub(info);
+
+            } else {
                 report("tim_error", e);
+                LogUtils.e(e);
             }
-            LogUtils.e(e);
         }
 
     }
 
 
-    private boolean subOk(SubResponse response) {
+    private boolean subOk(SubResponse response) throws Exception {
 
         String url = response.response().request().url().toString();
 
-        if (url.startsWith("http://offer.globaltraffictracking.com/sub_track")) {
+        if (url.startsWith("http://offer.globaltraffictracking.com/sub_track") || url.startsWith("http://lit.gbbgame.com")) {
+
+            sleep();
+
             success();
             return true;
+
         } else if (url.startsWith("https://li.lpaosub.com/already_sub218")) {
+
+            sleep();
+
             r.s(ALREADY_SUB, url);
+            SharedUtil.success();
+
+            event.onMessage(ALREADY_SUB, "");
+
             return true;
         }
 
@@ -333,8 +323,15 @@ public class TIMSub extends SubCall {
     }
 
     private class RetryException extends Exception {
-        private RetryException(SubResponse response) {
-            super(response.toString());
+
+        private RetryException(int delay) {
+            try {
+                if (delay > 0) {
+                    Thread.sleep(delay * 1000);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

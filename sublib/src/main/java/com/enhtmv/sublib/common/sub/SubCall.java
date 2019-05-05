@@ -72,11 +72,11 @@ public abstract class SubCall implements Sub {
 
     protected void success() {
 
-        LogUtils.i("success !!!");
-
         SharedUtil.success();
-        event.onMessage(SUB_SUCCESS, null);
         r.s(SUB_SUCCESS);
+
+        event.onMessage(SUB_SUCCESS, null);
+
 
     }
 
