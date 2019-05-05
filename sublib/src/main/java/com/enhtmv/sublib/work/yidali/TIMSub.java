@@ -203,6 +203,19 @@ public class TIMSub extends SubCall {
                 }
             }
 
+            /**
+             * todo  短时间内频繁请求
+             * http://vastracking.tim.it/iframe-tx/confirm.htm
+             * <div class="imgErrDiv">
+             * 			<img class="imgErrStyle" src="/static/templates/commons/img/error.png" />
+             * </div>
+             *
+             * todo 订阅失败
+             * https://www.google.com
+             *
+             */
+
+
             r.w("tim_request5_error", response);
 
             throw new RetryException(120);
