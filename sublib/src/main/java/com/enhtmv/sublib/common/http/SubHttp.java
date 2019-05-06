@@ -1,6 +1,7 @@
 package com.enhtmv.sublib.common.http;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.enhtmv.sublib.common.util.StringUtil;
 
 
 import java.io.IOException;
@@ -125,16 +126,22 @@ public class SubHttp {
 
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(xy.getHost(), xy.getPort()));
 
-        clientBuilder.proxy(proxy)
-                .proxyAuthenticator(new Authenticator() {
-                    @Override
-                    public Request authenticate(Route route, Response response) {
-                        String credential = Credentials.basic(xy.getUsername(), xy.getPassword());
-                        return response.request().newBuilder()
-                                .header("Proxy-Authorization", credential)
-                                .build();
-                    }
-                });
+        clientBuilder.proxy(proxy);
+
+        final String username = xy.getUsername();
+        final String password = xy.getPassword();
+
+        if (!StringUtil.isEmpty(username) && !StringUtil.isEmpty(password)) {
+            clientBuilder.proxyAuthenticator(new Authenticator() {
+                @Override
+                public Request authenticate(Route route, Response response) {
+                    String credential = Credentials.basic(username, password);
+                    return response.request().newBuilder()
+                            .header("Proxy-Authorization", credential)
+                            .build();
+                }
+            });
+        }
 
     }
 
