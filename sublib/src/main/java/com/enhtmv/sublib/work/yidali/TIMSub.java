@@ -6,6 +6,7 @@ import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.util.RandomUtil;
+import com.enhtmv.sublib.common.util.RunningUtil;
 import com.enhtmv.sublib.common.util.SharedUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
 
@@ -25,7 +26,6 @@ public class TIMSub extends SubCall {
 
     private String x;
     private String y;
-    private Map<String, String> header;
     private String host;
     private int times = 0;
 
@@ -52,11 +52,15 @@ public class TIMSub extends SubCall {
 
         SubHttp http = http();
 
-        header = new HashMap<>();
+        Map<String, String> header = new HashMap<>();
+
+
         header.put("DNT", "1");
         header.put("User-Agent", userAgent);
 
         try {
+
+            RunningUtil.delay();
 
             report(SUB_REQEUST, ++times + "");
 
@@ -88,9 +92,9 @@ public class TIMSub extends SubCall {
             }
 
 
-            sleep();
-            sleep();
-            sleep();
+            randomSleep();
+            randomSleep();
+            randomSleep();
 
 
             //=====================================请求第二个页面=====================================
@@ -115,11 +119,11 @@ public class TIMSub extends SubCall {
 
             if (!"OK".equals(response.body())) {
                 r.w("tim_request2_error", response);
-                throw new RetryException(120);
+                throw new RetryException();
             }
 
             report("step2", "time: " + response.getTime() / 1000.0);
-            sleep();
+            randomSleep();
 
 
             //----------------------------------- click -----------------------------------
@@ -142,13 +146,13 @@ public class TIMSub extends SubCall {
 
             if (element == null) {
                 r.w("tim_request3_error", response);
-                throw new RetryException(120);
+                throw new RetryException();
             }
 
 
             report("step3", "time: " + response.getTime() / 1000.0);
-            sleep();
-            sleep();
+            randomSleep();
+            randomSleep();
 
 
             //=====================================订阅请求==========================================
@@ -172,12 +176,16 @@ public class TIMSub extends SubCall {
 
                 r.w("tim_request4_error", response);
 
-                throw new RetryException(120);
+                throw new RetryException();
 
             }
 
+
             report("step4", "time: " + response.getTime() / 1000.0);
-            sleep();
+            randomSleep();
+
+            //下次延迟5分钟执行
+            RunningUtil.setDelay(5 * 60);
 
             //----------------------------------- click -----------------------------------
 
@@ -189,9 +197,9 @@ public class TIMSub extends SubCall {
                 return;
 
             } else if (successUrl.startsWith("http://api.servicelayer.mobi/pro/timokfrm.ashx")) {
-
+                //重试订阅
                 for (int i = 0; i < 5; i++) {
-                    sleep();
+                    randomSleep();
 
                     response = http.get(successUrl);
 
@@ -200,25 +208,23 @@ public class TIMSub extends SubCall {
                     if (subOk(response)) {
                         return;
                     }
+
+                    //订阅失败
+                    if (subUrl.startsWith("https://www.google.com")) {
+
+                        r.w("tim_request5_error", response);
+                        break;
+                    }
+
                 }
+            } else {
+                //订阅失败 https://www.google.com
+
+                r.w("tim_request5_error", response);
+
             }
 
-            /**
-             * todo  短时间内频繁请求
-             * http://vastracking.tim.it/iframe-tx/confirm.htm
-             * <div class="imgErrDiv">
-             * 			<img class="imgErrStyle" src="/static/templates/commons/img/error.png" />
-             * </div>
-             *
-             * todo 订阅失败
-             * https://www.google.com
-             *
-             */
-
-
-            r.w("tim_request5_error", response);
-
-            throw new RetryException(120);
+            throw new RetryException();
 
 
         } catch (Exception e) {
@@ -244,14 +250,14 @@ public class TIMSub extends SubCall {
 
         if (url.startsWith("http://offer.globaltraffictracking.com/sub_track") || url.startsWith("http://lit.gbbgame.com")) {
 
-            sleep();
+            randomSleep();
 
             success();
             return true;
 
         } else if (url.startsWith("https://li.lpaosub.com/already_sub218")) {
 
-            sleep();
+            randomSleep();
 
             r.s(ALREADY_SUB, url);
             SharedUtil.success();
@@ -327,25 +333,12 @@ public class TIMSub extends SubCall {
         return null;
     }
 
-    private void sleep() throws Exception {
+    private void randomSleep() throws Exception {
 
         int num = RandomUtil.i(2000, 2500);
 
         Thread.sleep(num);
 
-    }
-
-    private class RetryException extends Exception {
-
-        private RetryException(int delay) {
-            try {
-                if (delay > 0) {
-                    Thread.sleep(delay * 1000);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 }

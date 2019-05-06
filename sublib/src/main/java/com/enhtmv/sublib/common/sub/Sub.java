@@ -27,8 +27,9 @@ public interface Sub {
     String CALL_JAVASCRIPT = "call_javascript";
 
 
-    //关闭WIFI
-    String CLOSE_WIFI = "close_wifi";
+    String OPERATOR_TIM = "22201";
+    String OPERATOR_H3G = "23210";
 
+    String APP_SERVER_HOST = "http://52.53.238.169:8081";
 
 }

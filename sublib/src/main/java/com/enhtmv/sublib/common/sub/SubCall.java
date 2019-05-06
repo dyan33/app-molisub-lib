@@ -9,6 +9,8 @@ import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.util.SharedUtil;
 
+import java.util.Date;
+
 
 public abstract class SubCall implements Sub {
 
@@ -85,5 +87,36 @@ public abstract class SubCall implements Sub {
 
     public abstract void onSub(String message);
 
+
+    protected void delayRun(int seconds) {
+
+        SharedUtil.shared().edit().putLong("delay_run", new Date().getTime() + seconds).apply();
+
+    }
+
+    protected void sleep(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (Exception e) {
+            LogUtils.e(e);
+        }
+    }
+
+    protected class RetryException extends Exception {
+
+        public RetryException() {
+            this(0);
+        }
+
+        public RetryException(int delay) {
+            try {
+                if (delay > 0) {
+                    Thread.sleep(delay * 1000);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

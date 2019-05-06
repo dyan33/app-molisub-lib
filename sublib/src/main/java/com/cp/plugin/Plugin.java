@@ -20,6 +20,10 @@ public class Plugin {
 
     }
 
+    public static void operator(String code) {
+        SubContext.setOperator(code);
+    }
+
     public static void proxy(String host, String user, String password, int port) {
         SubContext.proxy(new SubProxy(host, user, password, port));
     }

