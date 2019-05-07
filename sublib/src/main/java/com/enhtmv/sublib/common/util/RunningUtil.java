@@ -26,6 +26,9 @@ public class RunningUtil {
         if (delay > time) {
 
             try {
+
+                LogUtils.i("delay running:", time - delay);
+
                 Thread.sleep(time - delay);
             } catch (Exception e) {
                 LogUtils.e(e);

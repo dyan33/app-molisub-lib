@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
             Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
             Plugin.log(true);
             Plugin.closeWifi(false);
-            Plugin.operator(Sub.OPERATOR_H3G);
+            Plugin.operator(Sub.OPERATOR_TIM);
         }
 
 

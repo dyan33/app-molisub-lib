@@ -110,10 +110,11 @@ public class SubHttp {
 
     }
 
-    public void clearCookie(String host) {
+    public boolean containsCookie(String host, String name) {
 
-        this.cookieMap.remove(host);
+        Map<String, Cookie> map = cookieMap.get(host);
 
+        return map != null && map.containsKey(name);
     }
 
     public void setLog(boolean log) {

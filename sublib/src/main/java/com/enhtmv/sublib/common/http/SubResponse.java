@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.Headers;
 import okhttp3.Request;
@@ -39,6 +38,10 @@ public class SubResponse {
 
     }
 
+
+    public String url() {
+        return this.response.request().url().toString();
+    }
 
     public String body() {
         return body;
