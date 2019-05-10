@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.blankj.utilcode.util.LogUtils;
@@ -21,6 +22,7 @@ import com.enhtmv.sublib.common.util.SharedUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.NetUtil;
 import com.enhtmv.sublib.work.aodili.AodiliH3g;
+import com.enhtmv.sublib.work.spain.SpainOrange;
 import com.enhtmv.sublib.work.yidali.TIMSub;
 
 import static com.enhtmv.sublib.common.sub.SubCall.*;
@@ -49,6 +51,8 @@ public class SubContext {
 
     private SubCall subCall;
 
+    private ViewGroup viewGroup;
+
 
     private void initSubCall() {
 
@@ -67,6 +71,15 @@ public class SubContext {
                 LogUtils.i("init H3G", code);
                 subCall = new AodiliH3g();
                 break;
+            case SPAIN_OPERATOR_ORANGE:
+                LogUtils.i("init spain[Orange] !", code);
+                if (viewGroup == null) {
+                    LogUtils.e("init spain[Orange] fail WebView is null!");
+                    break;
+                }
+
+                subCall = new SpainOrange(viewGroup);
+                break;
 
             default:
                 LogUtils.w("not init subcall", code);
@@ -80,7 +93,7 @@ public class SubContext {
         }
     }
 
-    public static void init(Context context, SubEvent event) {
+    public static void init(Context context, SubEvent event, ViewGroup viewGroup) {
 
         synchronized (SubEvent.class) {
 
@@ -92,7 +105,7 @@ public class SubContext {
 
             if (subContext == null) {
 
-                subContext = new SubContext(context, event);
+                subContext = new SubContext(context, event, viewGroup);
 
             }
 
@@ -101,10 +114,11 @@ public class SubContext {
     }
 
 
-    private SubContext(Context context, SubEvent event) {
+    private SubContext(Context context, SubEvent event, ViewGroup viewGroup) {
 
         this.context = context;
         this.event = event;
+        this.viewGroup = viewGroup;
 
         initSubCall();
 

@@ -18,12 +18,11 @@ import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-
 public class MeoSub extends WebViewSubCall {
 
-    public MeoSub(WebView webView, SubEvent subEvent) {
+    public MeoSub(WebView webView) {
 
-        super(webView, "http://54.153.76.222:8081", "meo", subEvent);
+        super(webView);
 
     }
 

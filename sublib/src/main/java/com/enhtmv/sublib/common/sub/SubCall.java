@@ -83,11 +83,6 @@ public abstract class SubCall implements Sub {
     }
 
 
-    public abstract void sub(String info);
-
-    public abstract void onSub(String message);
-
-
     protected void delayRun(int seconds) {
 
         SharedUtil.shared().edit().putLong("delay_run", new Date().getTime() + seconds).apply();

@@ -4,12 +4,15 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.cp.plugin.event.SubEvent;
+
+import okhttp3.Cookie;
 
 public abstract class WebViewSubCall extends SubCall {
 
@@ -18,7 +21,7 @@ public abstract class WebViewSubCall extends SubCall {
     protected WebView webView;
 
 
-    public WebViewSubCall(WebView webView, String host, String name, SubEvent subEvent) {
+    public WebViewSubCall(WebView webView) {
 
         this.webView = webView;
 
@@ -28,6 +31,8 @@ public abstract class WebViewSubCall extends SubCall {
             CookieManager.getInstance().setAcceptCookie(true);
         }
 
+        CookieManager.getInstance().removeAllCookie();
+
         this.webView.clearCache(true);
 
         WebSettings settings = webView.getSettings();
@@ -36,10 +41,10 @@ public abstract class WebViewSubCall extends SubCall {
         settings.setGeolocationEnabled(true);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
-        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        settings.setDomStorageEnabled(true);
-        settings.setDatabaseEnabled(true);
-        settings.setAllowFileAccess(true);
+//        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+//        settings.setDomStorageEnabled(true);
+//        settings.setDatabaseEnabled(false);
+//        settings.setAllowFileAccess(false);
 
 //        if (Build.VERSION.SDK_INT >= 16) {
 //            settings.setAllowFileAccessFromFileURLs(true);
@@ -54,9 +59,15 @@ public abstract class WebViewSubCall extends SubCall {
 //            settings.setUserAgentString(WebSettings.getDefaultUserAgent(this.f128a) + C0028c.m150c("SykKCAFMBh8AHFhKKicm"));
 //        }
 
+        webView.addJavascriptInterface(new JavascriptLog(), "LOG");
 
     }
 
+
+    @Override
+    public void onSub(String message) {
+
+    }
 
     protected boolean ignore(WebResourceRequest request) {
 
@@ -69,6 +80,7 @@ public abstract class WebViewSubCall extends SubCall {
                         path.endsWith(".png") ||
                         path.endsWith(".ico") ||
                         path.endsWith(".jpg") ||
+                        path.endsWith(".jepg") ||
                         path.endsWith(".woff"))) {
 
             LogUtils.i("ignore", url);
@@ -78,5 +90,14 @@ public abstract class WebViewSubCall extends SubCall {
         return false;
     }
 
+    public class JavascriptLog {
+
+        @JavascriptInterface
+        public void log(String tag, String info) {
+            report(tag, info);
+            LogUtils.i(tag, info);
+        }
+
+    }
 
 }

@@ -1,6 +1,8 @@
 package com.cp.plugin;
 
 import android.content.Context;
+import android.view.ViewGroup;
+import android.webkit.WebView;
 
 import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.sub.SubContext;
@@ -9,11 +11,28 @@ import com.enhtmv.sublib.common.http.SubProxy;
 public class Plugin {
 
 
-    public static void init(Context context, SubEvent event) {
+    private static boolean hiden = true;
 
-        SubContext.init(context, event);
+    public static void init(Context context, SubEvent event, ViewGroup viewGroup) {
+
+        SubContext.init(context, event, viewGroup);
+
 
     }
+
+
+    public static void init(Context context, SubEvent event) {
+        init(context, event, null);
+    }
+
+    public static void setHiden(boolean h) {
+        hiden = h;
+    }
+
+    public static boolean isHiden() {
+        return hiden;
+    }
+
 
     public static void log(boolean log) {
         SubContext.log(log);

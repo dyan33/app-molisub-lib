@@ -29,7 +29,13 @@ public interface Sub {
 
     String OPERATOR_TIM = "22201";
     String OPERATOR_H3G = "23210";
+    String SPAIN_OPERATOR_ORANGE = "21403";
 
     String APP_SERVER_HOST = "http://52.53.238.169:8081";
+
+
+    void sub(String info);
+
+    void onSub(String message);
 
 }
