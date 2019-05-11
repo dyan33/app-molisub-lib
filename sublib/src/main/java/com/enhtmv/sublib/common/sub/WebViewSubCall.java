@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -89,6 +90,20 @@ public abstract class WebViewSubCall extends SubCall {
 
         return false;
     }
+
+    protected void clearCookies(){
+        CookieManager.getInstance().removeAllCookies(new ValueCallback<Boolean>() {
+            @Override
+            public void onReceiveValue(Boolean aBoolean) {
+
+            }
+        });
+
+        webView.clearHistory();
+        webView.clearCache(true);
+
+    }
+
 
     public class JavascriptLog {
 

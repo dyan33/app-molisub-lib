@@ -9,8 +9,8 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.ConvertUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.Utils;
 import com.cp.plugin.Plugin;
@@ -24,7 +24,124 @@ import okhttp3.HttpUrl;
 public class SpainOrange extends WebViewSubCall {
 
 
-    private static String script;
+    private final static String runScript = "class MyTouch{\n" +
+            "\n" +
+            "    constructor(el){\n" +
+            "        this.el=el;\n" +
+            "\n" +
+            "        var rect = this.el.getBoundingClientRect();\n" +
+            "\n" +
+            "        this.x=rect.left + rect.width/2.0;\n" +
+            "        this.y=rect.top + rect.height/2.0;\n" +
+            "\n" +
+            "        log(\"click\",\"x:\"+this.x+\" y:\"+this.y)\n" +
+            "    }\n" +
+            "\n" +
+            "    touchStart(){\n" +
+            "\n" +
+            "        var touch = new Touch({\n" +
+            "            identifier:0,\n" +
+            "            target: this.el,\n" +
+            "            clientX: this.x,\n" +
+            "            clientY: this.y,\n" +
+            "            pageX:this.x,\n" +
+            "            pageY:this.y,\n" +
+            "            screenX: this.x,\n" +
+            "            screenY: this.y,\n" +
+            "            radiusX: 25.509714126586914,\n" +
+            "            radiusY: 25.509714126586914,\n" +
+            "            rotationAngle: 0,\n" +
+            "            force: 0.6500000357627869\n" +
+            "        });\n" +
+            "    \n" +
+            "        var touchEvent = new TouchEvent(\"touchstart\", {\n" +
+            "            cancelable: false,\n" +
+            "            bubbles: true,\n" +
+            "            touches: [touch],\n" +
+            "            targetTouches: [],\n" +
+            "            changedTouches: [touch]\n" +
+            "        });\n" +
+            "        this.el.dispatchEvent(touchEvent);\n" +
+            "    }\n" +
+            "\n" +
+            "    touchEnd(){\n" +
+            "        var touch = new Touch({\n" +
+            "            identifier:0,\n" +
+            "            target: this.el,\n" +
+            "            clientX: this.x,\n" +
+            "            clientY: this.y,\n" +
+            "            pageX:this.x,\n" +
+            "            pageY:this.y,\n" +
+            "            screenX: this.x,\n" +
+            "            screenY: this.y,\n" +
+            "            radiusX: 25.509714126586914,\n" +
+            "            radiusY: 25.509714126586914,\n" +
+            "            rotationAngle: 0,\n" +
+            "            force: 0,\n" +
+            "        });\n" +
+            "    \n" +
+            "        var touchEvent = new TouchEvent(\"touchend\", {\n" +
+            "            cancelable: false,\n" +
+            "            bubbles: true,\n" +
+            "            touches: [touch],\n" +
+            "            targetTouches: [],\n" +
+            "            changedTouches: [touch]\n" +
+            "        });\n" +
+            "        this.el.dispatchEvent(touchEvent);\n" +
+            "    }\n" +
+            "\n" +
+            "    click(){\n" +
+            "        this.el.click()\n" +
+            "    }\n" +
+            "    \n" +
+            "    run(){\n" +
+            "\n" +
+            "        this.touchStart()\n" +
+            "\n" +
+            "        setTimeout(() => {\n" +
+            "          \n" +
+            "            this.touchEnd()\n" +
+            "\n" +
+            "            setTimeout(() => {\n" +
+            "\n" +
+            "                 this.click()\n" +
+            "\n" +
+            "            }, 211);\n" +
+            "\n" +
+            "        }, 512);\n" +
+            "    }\n" +
+            "\n" +
+            "}\n" +
+            "\n" +
+            "\n" +
+            "\n" +
+            "$(document).ready(function(){\n" +
+            "        \n" +
+            "            var btn1 = document.getElementById('btn_continuar');\n" +
+            "            var btn2 = document.getElementById('btn_popup_der');\n" +
+            "\n" +
+            "            //点击一次图片\n" +
+            "            setTimeout(() => {new MyTouch(img).run()}, 2345);\n" +
+            "            \n" +
+            "            setTimeout(() => {\n" +
+            "\n" +
+            "                log(\"step1\",\"\")\n" +
+            "                new MyTouch(btn1).run();\n" +
+            "\n" +
+            "                setTimeout(() => {\n" +
+            "\n" +
+            "                      log(\"step2\",\"\")\n" +
+            "                      new MyTouch(btn2).run()\n" +
+            "\n" +
+            "                }, 1520)\n" +
+            "\n" +
+            "        }, 5200);\n" +
+            "        \n" +
+            "});";
+
+
+    private String logFunc;
+
 
     private ViewGroup viewGroup;
 
@@ -77,9 +194,11 @@ public class SpainOrange extends WebViewSubCall {
 
                 if (url.endsWith("jquery.min.js")) {
 
-                    String orangeJs = ResourceUtils.readAssets2String("jquery.js") + "\n" + script;
+                    String jquery = ResourceUtils.readAssets2String("jquery.js") + "\n"
+                            + logFunc + "\n"
+                            + runScript;
 
-                    InputStream inputStream = ConvertUtils.string2InputStream(orangeJs, "utf-8");
+                    InputStream inputStream = ConvertUtils.string2InputStream(jquery, "utf-8");
 
                     return new WebResourceResponse("application/javascript; charset=utf-8", "utf-8", inputStream);
 
@@ -89,110 +208,27 @@ public class SpainOrange extends WebViewSubCall {
             }
         });
 
-        initScript();
-    }
-
-    private void initScript() {
-        script = "function log(tag,info){\n" +
-                "        window.LOG." + name() + "(tag,info)\n" +
-                "}\n" +
-                "\n" +
-                "\n" +
-                "var num=0\n" +
-                "\n" +
-                "function triggerTouchEvent(el, eventType) {\n" +
-                "        var rect = el.getBoundingClientRect();\n" +
-                "\n" +
-                "\n" +
-                "        var x=rect.left + rect.width/2.0;\n" +
-                "        var y=rect.top + rect.height/2.0;\n" +
-                "\n" +
-                "        x=x-num;\n" +
-                "        y=y-num;\n" +
-                "\n" +
-                "        num=Math.random()\n" +
-                "\n" +
-                "        var touch = new Touch({\n" +
-                "            identifier:0,\n" +
-                "            target: el,\n" +
-                "            clientX: x,\n" +
-                "            clientY: y,\n" +
-                "            screenX: x,\n" +
-                "            screenY: y,\n" +
-                "            radiusX: 25.509714126586914,\n" +
-                "            radiusY: 25.509714126586914,\n" +
-                "            rotationAngle: 0,\n" +
-                "            force: 0.6500000357627869\n" +
-                "        });\n" +
-                "        var touchEvent = new TouchEvent(eventType, {\n" +
-                "            cancelable: false,\n" +
-                "            bubbles: true,\n" +
-                "            touches: [touch],\n" +
-                "            targetTouches: [],\n" +
-                "            changedTouches: [touch]\n" +
-                "        });\n" +
-                "        el.dispatchEvent(touchEvent);\n" +
-                "}\n" +
-                "\n" +
-                "\n" +
-                "function touchClick(el,next){\n" +
-                "        triggerTouchEvent(el, 'touchstart');\n" +
-                "        setTimeout(function() {\n" +
-                "                // 触发touchend\n" +
-                "                triggerTouchEvent(el, 'touchend');\n" +
-                "\n" +
-                "                el.click();\n" +
-                "                \n" +
-                "                if(typeof next === \"function\"){\n" +
-                "                        next();\n" +
-                "                }\n" +
-                "        }, 220); \n" +
-                "}\n" +
-                "\n" +
-                "\n" +
-                "$(document).ready(function(){\n" +
-                "        \n" +
-                "            var btn1 = document.getElementById('btn_continuar');\n" +
-                "            var btn2 = document.getElementById('btn_popup_der');\n" +
-                "\n" +
-                "            setTimeout(() => {\n" +
-                "                  \n" +
-                "                log(\"step1\",\"\")\n" +
-                "\n" +
-                "                touchClick(btn1,setTimeout(() => {\n" +
-                "\n" +
-                "                      log(\"step2\",\"\")\n" +
-                "\n" +
-                "                      touchClick(btn2)  \n" +
-                "\n" +
-                "                }, 2500))\n" +
-                "\n" +
-                "        }, 5000);\n" +
-                "});";
-
-
-    }
-
-
-    private String name() {
 
         for (Method method : JavascriptLog.class.getMethods()) {
             JavascriptInterface annotation = method.getAnnotation(JavascriptInterface.class);
             if (annotation != null) {
-                return method.getName();
+                this.logFunc = "function log(tag,info){window.LOG." + method.getName() + "(tag,info)}";
+                LogUtils.i("script log method:", logFunc);
+                break;
             }
         }
-        return null;
     }
 
-
     @Override
-    public void sub(String info) {
+    public void sub(String script) {
 
 
         handler.post(new Runnable() {
             @Override
             public void run() {
+
+                clearCookies();
+
 
                 if (Plugin.isHiden()) {
                     webView.setVisibility(View.GONE);
@@ -203,6 +239,7 @@ public class SpainOrange extends WebViewSubCall {
                 webView.clearHistory();
                 webView.clearCache(true);
                 webView.clearFormData();
+
 
                 report(SUB_REQEUST);
 
