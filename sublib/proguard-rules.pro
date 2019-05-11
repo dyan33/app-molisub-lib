@@ -29,6 +29,6 @@
 #-keep class com.squareup.okhttp3.** {*;}
 #-keep class com.blankj.** {*;}
 
--flattenpackagehierarchy 'x0i.jb'
+-flattenpackagehierarchy 's0b.jb'
 
 

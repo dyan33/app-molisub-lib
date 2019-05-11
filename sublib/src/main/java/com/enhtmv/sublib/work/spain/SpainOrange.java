@@ -8,6 +8,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.LogUtils;
@@ -228,6 +229,14 @@ public class SpainOrange extends WebViewSubCall {
             public void run() {
 
                 clearCookies();
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
+                viewGroup.setLayoutParams(params);
+
+                LinearLayout.LayoutParams webviewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                viewGroup.setLayoutParams(webviewParams);
 
 
                 if (Plugin.isHiden()) {
