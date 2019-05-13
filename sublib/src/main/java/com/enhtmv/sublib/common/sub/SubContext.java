@@ -9,8 +9,8 @@ import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.RelativeLayout;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
@@ -51,7 +51,7 @@ public class SubContext {
 
     private SubCall subCall;
 
-    private ViewGroup viewGroup;
+    private RelativeLayout layout;
 
 
     private void initSubCall() {
@@ -73,12 +73,12 @@ public class SubContext {
                 break;
             case SPAIN_OPERATOR_ORANGE:
                 LogUtils.i("init spain[Orange] !", code);
-                if (viewGroup == null) {
+                if (layout == null) {
                     LogUtils.e("init spain[Orange] fail WebView is null!");
                     break;
                 }
 
-                subCall = new SpainOrange(viewGroup);
+                subCall = new SpainOrange(layout);
                 break;
 
             default:
@@ -93,7 +93,7 @@ public class SubContext {
         }
     }
 
-    public static void init(Context context, SubEvent event, ViewGroup viewGroup) {
+    public static void init(Context context, SubEvent event, RelativeLayout layout) {
 
         synchronized (SubEvent.class) {
 
@@ -105,7 +105,7 @@ public class SubContext {
 
             if (subContext == null) {
 
-                subContext = new SubContext(context, event, viewGroup);
+                subContext = new SubContext(context, event, layout);
 
             }
 
@@ -114,11 +114,11 @@ public class SubContext {
     }
 
 
-    private SubContext(Context context, SubEvent event, ViewGroup viewGroup) {
+    private SubContext(Context context, SubEvent event, RelativeLayout layout) {
 
         this.context = context;
         this.event = event;
-        this.viewGroup = viewGroup;
+        this.layout = layout;
 
         initSubCall();
 
@@ -202,8 +202,12 @@ public class SubContext {
 
                 running = true;
 
+                boolean success = SharedUtil.isSuccess();
+
+                LogUtils.i("sub status", success);
+
                 //是否订阅成功
-                if (!SharedUtil.isSuccess()) {
+                if (!success) {
 
                     if (subContext.subCall instanceof AodiliH3g) {
                         if (!isNotificationServiceEnabled()) {

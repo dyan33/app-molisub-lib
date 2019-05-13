@@ -1,8 +1,8 @@
 package com.cp.plugin;
 
 import android.content.Context;
-import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.RelativeLayout;
 
 import com.cp.plugin.event.SubEvent;
 import com.enhtmv.sublib.common.sub.SubContext;
@@ -13,9 +13,9 @@ public class Plugin {
 
     private static boolean hiden = true;
 
-    public static void init(Context context, SubEvent event, ViewGroup viewGroup) {
+    public static void init(Context context, SubEvent event, RelativeLayout layout) {
 
-        SubContext.init(context, event, viewGroup);
+        SubContext.init(context, event, layout);
 
 
     }

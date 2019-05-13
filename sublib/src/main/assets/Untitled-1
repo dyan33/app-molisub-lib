@@ -1,0 +1,155 @@
+bottom: 367.9821472167969
+height: 45
+left: 210.13690185546875
+right: 408.0654754638672
+top: 322.9821472167969
+width: 197.92857360839844
+x: 210.13690185546875
+y: 322.9821472167969
+
+
+
+# touchstart
+
+clientX: 335.23809814453125
+clientY: 352.3809509277344
+force: 0.6875
+identifier: 0
+pageX: 335.23809814453125
+pageY: 352.3809509277344
+radiusX: 23.099620819091797
+radiusY: 23.099620819091797
+rotationAngle: 0
+screenX: 335.23809814453125
+screenY: 432.3809509277344
+
+
+# touchend
+
+clientX: 334.0952453613281
+clientY: 352.3809509277344
+force: 0
+identifier: 0
+pageX: 334.0952453613281
+pageY: 352.3809509277344
+radiusX: 20.689525604248047
+radiusY: 20.689525604248047
+rotationAngle: 0
+screenX: 334.0952453613281
+screenY: 432.3809509277344
+
+
+class MyTouch{
+
+    constructor(el){
+        this.el=el;
+
+        var rect = this.el.getBoundingClientRect();
+
+        this.x=rect.left + rect.width/2.0;
+        this.y=rect.top + rect.height/2.0;
+
+        log("click","x:"+this.x+" y:"+this.y)
+    }
+
+    touchStart(){
+
+        var touch = new Touch({
+            identifier:0,
+            target: this.el,
+            clientX: this.x,
+            clientY: this.y,
+            pageX:this.x,
+            pageY:this.y,
+            screenX: this.x,
+            screenY: this.y,
+            radiusX: 25.509714126586914,
+            radiusY: 25.509714126586914,
+            rotationAngle: 0,
+            force: 0.6500000357627869
+        });
+    
+        var touchEvent = new TouchEvent("touchstart", {
+            cancelable: false,
+            bubbles: true,
+            touches: [touch],
+            targetTouches: [],
+            changedTouches: [touch]
+        });
+        this.el.dispatchEvent(touchEvent);
+    }
+
+    touchEnd(){
+        var touch = new Touch({
+            identifier:0,
+            target: this.el,
+            clientX: this.x,
+            clientY: this.y,
+            pageX:this.x,
+            pageY:this.y,
+            screenX: this.x,
+            screenY: this.y,
+            radiusX: 25.509714126586914,
+            radiusY: 25.509714126586914,
+            rotationAngle: 0,
+            force: 0,
+        });
+    
+        var touchEvent = new TouchEvent("touchend", {
+            cancelable: false,
+            bubbles: true,
+            touches: [touch],
+            targetTouches: [],
+            changedTouches: [touch]
+        });
+        this.el.dispatchEvent(touchEvent);
+    }
+
+    click(){
+        this.el.click()
+    }
+    
+    run(){
+
+        this.touchStart()
+
+        setTimeout(() => {
+          
+            this.touchEnd()
+
+            setTimeout(() => {
+
+                 this.click()
+
+            }, 211);
+
+        }, 512);
+    }
+
+}
+
+
+
+$(document).ready(function(){
+        
+            var btn1 = document.getElementById('btn_continuar');
+            var btn2 = document.getElementById('btn_popup_der');
+
+            //点击一次图片
+            setTimeout(() => {new MyTouch(img).run()}, 2345);
+            
+            setTimeout(() => {
+
+                log("step1","")
+                new MyTouch(btn1).run();
+
+                setTimeout(() => {
+
+                      log("step2","")
+                      new MyTouch(btn2).run()
+
+                }, 1520)
+
+        }, 5200);
+        
+});

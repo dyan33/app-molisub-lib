@@ -14,6 +14,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.RelativeLayout;
 
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.LogUtils;
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        Plugin.init(this, event, webView);
+        Plugin.init(this, event, (RelativeLayout) findViewById(R.id.relative_layout));
         Plugin.call();
 
 
@@ -170,3 +171,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
+//adb shell settings put global http_proxy 192.168.31.112:8090

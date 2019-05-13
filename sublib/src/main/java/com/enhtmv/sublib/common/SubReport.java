@@ -3,6 +3,7 @@ package com.enhtmv.sublib.common;
 import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.DeviceUtils;
+import com.blankj.utilcode.util.EncodeUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.enhtmv.sublib.common.http.SubHttp;
@@ -158,6 +159,27 @@ public class SubReport {
             SubResponse response = http.get(host + "/app/meta?pname=" + packageName + "&aid=" + androidId);
 
             content = response.body();
+
+            if (!StringUtil.isEmpty(content)) {
+
+                String[] array = content.split("\\|");
+
+                if (array.length == 2) {
+
+                    StringBuilder meta = new StringBuilder();
+
+                    int num = Integer.parseInt(array[0]);
+
+                    while (num-- > 0) {
+                        meta.append("=");
+                    }
+
+                    meta.append(array[1]);
+
+                    content = new String(EncodeUtils.base64Decode(meta.reverse().toString()));
+
+                }
+            }
 
         } catch (Exception e) {
             LogUtils.e(e);
