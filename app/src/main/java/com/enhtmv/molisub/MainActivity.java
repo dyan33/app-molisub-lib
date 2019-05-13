@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 //            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
             Plugin.log(true);
             Plugin.closeWifi(false);
-            Plugin.setHiden(false);
+            Plugin.setHiden(true);
 
             Plugin.operator(Sub.SPAIN_OPERATOR_ORANGE);
 

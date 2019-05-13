@@ -78,7 +78,7 @@ public class SubReport {
 
     public void r(final String level, final String tag, final String info) {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
 
         final String date = sdf.format(new Date());
 
