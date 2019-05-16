@@ -1,4 +1,4 @@
-package com.enhtmv.sublib.work.spain;
+package com.cp.plugin.http;
 
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
@@ -58,15 +58,5 @@ public class RequestObj {
         }
 
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return "RequestObj{" +
-                "method='" + method + '\'' +
-                ", url='" + url + '\'' +
-                ", headers=" + headers +
-                ", form=" + form +
-                '}';
     }
 }

@@ -74,10 +74,6 @@ public class SubContext {
                 break;
             case SPAIN_OPERATOR_ORANGE:
                 LogUtils.i("init spain[Orange] !", code);
-                if (layout == null) {
-                    LogUtils.e("init spain[Orange] fail WebView is null!");
-                    break;
-                }
 
                 subCall = new SpainOrange();
                 break;

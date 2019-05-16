@@ -4,6 +4,7 @@ import android.util.ArrayMap;
 
 import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.LogUtils;
+import com.cp.plugin.http.RequestObj;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.sub.SubCall;
 
