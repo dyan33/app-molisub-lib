@@ -112,14 +112,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (BuildConfig.DEBUG) {
 
-            Plugin.setHiden(false);
 
-//            SubProxy proxy = HostUtil.proxy();
+            SubProxy proxy = HostUtil.proxy();
 
-//            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
+            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
             Plugin.log(true);
             Plugin.closeWifi(false);
-            Plugin.setHiden(true);
+            Plugin.setHiden(false);
 
             Plugin.operator(Sub.SPAIN_OPERATOR_ORANGE);
 

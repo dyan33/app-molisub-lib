@@ -23,6 +23,7 @@ import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.NetUtil;
 import com.enhtmv.sublib.work.aodili.AodiliH3g;
 import com.enhtmv.sublib.work.spain.SpainOrange;
+import com.enhtmv.sublib.work.spain.SpainOrangeWebview;
 import com.enhtmv.sublib.work.yidali.TIMSub;
 
 import static com.enhtmv.sublib.common.sub.SubCall.*;
@@ -78,7 +79,7 @@ public class SubContext {
                     break;
                 }
 
-                subCall = new SpainOrange(layout);
+                subCall = new SpainOrange();
                 break;
 
             default:

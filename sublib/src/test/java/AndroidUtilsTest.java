@@ -1,15 +1,20 @@
+import com.enhtmv.sublib.common.http.SubHttp;
+import com.enhtmv.sublib.common.http.SubResponse;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class AndroidUtilsTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+        SubHttp http = new SubHttp();
 
-        System.out.println(sdf.format(new Date()));
+        SubResponse response = http.get("http://offer.allcpx.com/offer/track?offer=271&clickId=");
+
+        System.out.println(response.flowUrls());
 
     }
 }

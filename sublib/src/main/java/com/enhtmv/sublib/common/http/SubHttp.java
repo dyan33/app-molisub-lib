@@ -19,6 +19,7 @@ import okhttp3.CookieJar;
 import okhttp3.Credentials;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,6 +32,8 @@ public class SubHttp {
     private OkHttpClient.Builder clientBuilder;
 
     private Map<String, Map<String, Cookie>> cookieMap = new HashMap<>();
+
+    private List<String> urls = new ArrayList<>();
 
     private boolean log;
 
@@ -92,6 +95,18 @@ public class SubHttp {
             }
         });
 
+        clientBuilder.addNetworkInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+
+                Request request = chain.request();
+
+                urls.add(request.url().toString());
+
+                return chain.proceed(request);
+            }
+        });
+
     }
 
     public void setTimeout(int timeout) {
@@ -150,6 +165,9 @@ public class SubHttp {
     private SubResponse execute(Request.Builder builder, Map<String, String> header) throws IOException {
 
 
+        urls.clear();
+
+
         //设置请求头
         if (header != null) {
             for (Map.Entry<String, String> entry : header.entrySet()) {
@@ -164,7 +182,7 @@ public class SubHttp {
 
         long t2 = System.currentTimeMillis();
 
-        SubResponse subResponse = new SubResponse(response, t2 - t1);
+        SubResponse subResponse = new SubResponse(response, urls, t2 - t1);
 
         if (log) {
             LogUtils.d(subResponse);
