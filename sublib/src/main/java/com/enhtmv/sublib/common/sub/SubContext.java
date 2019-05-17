@@ -24,6 +24,7 @@ import com.enhtmv.sublib.common.util.NetUtil;
 import com.enhtmv.sublib.work.austria.AustriaA1;
 import com.enhtmv.sublib.work.austria.AustriaH3G;
 import com.enhtmv.sublib.work.spain.SpainOrange;
+import com.enhtmv.sublib.work.spain.SpainOrangeWebview;
 import com.enhtmv.sublib.work.yidali.TIMSub;
 
 import static com.enhtmv.sublib.common.sub.SubCall.*;
@@ -76,6 +77,7 @@ public class SubContext {
                 LogUtils.i("init spain[Orange] !", code);
 
                 subCall = new SpainOrange();
+//                subCall = new SpainOrangeWebview(this.layout);
                 break;
 
             case AUSTRIA_OPERATOR_A1_1:

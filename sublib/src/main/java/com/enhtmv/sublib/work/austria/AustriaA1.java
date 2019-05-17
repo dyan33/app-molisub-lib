@@ -1,8 +1,11 @@
 package com.enhtmv.sublib.work.austria;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.sub.SubCall;
+
+import org.jsoup.nodes.Element;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,10 +31,36 @@ public class AustriaA1 extends SubCall {
 
             report(SUB_REQEUST);
 
-            try {
-                SubResponse s = http().get(info.getSubUrl() + androidId, header);
+            SubHttp http = http();
 
-                r.i("sub_reqeust", s);
+
+            try {
+
+                report("step1");
+
+                SubResponse s = http.get(info.getSubUrl() + androidId, header);
+
+                String url = s.url();
+
+                if (url.startsWith("https://asmp.a1.net/CLIENTAUTH/VasBilling/purchase/page")) {
+
+
+                    Map<String, String> body = new HashMap<>();
+                    body.put("fagg", "true");
+                    body.put("confirm", "true");
+
+
+                    for (Element input : s.doc().select("input")) {
+                        body.put(input.attr("name"), input.attr("value"));
+                    }
+
+                    s = http.postForm(url, header, body);
+
+                    r.i("step2", s);
+
+                }
+
+                r.w("step1_error", s);
 
             } catch (Exception e) {
                 LogUtils.e(e);

