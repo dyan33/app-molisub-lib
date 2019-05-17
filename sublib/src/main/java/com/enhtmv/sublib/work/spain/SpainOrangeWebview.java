@@ -14,7 +14,7 @@ import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.Utils;
-import com.cp.plugin.http.RequestObj;
+import com.cp.plugin.http.HttpReqest;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.sub.WebViewSubCall;
 
@@ -160,9 +160,8 @@ public class SpainOrangeWebview extends WebViewSubCall {
                 super.onMessage(webSocket, text);
 
                 try {
-                    RequestObj requestObj = JSON.parseObject(text, RequestObj.class);
+                    HttpReqest httpReqest = JSON.parseObject(text, HttpReqest.class);
 
-                    requestObj.call(http());
 
                 } catch (Exception e) {
                     LogUtils.e(e);

@@ -4,7 +4,7 @@ import android.util.ArrayMap;
 
 import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.LogUtils;
-import com.cp.plugin.http.RequestObj;
+import com.cp.plugin.http.HttpReqest;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.sub.SubCall;
 
@@ -29,11 +29,6 @@ public class SpainOrange extends SubCall {
 
     }
 
-
-    @Override
-    public void onSub(String message) {
-
-    }
 
     @Override
     public void sub(String host) {
@@ -72,7 +67,7 @@ public class SpainOrange extends SubCall {
                         report("step1", s.url());
 
                     } else {
-                        throw new Exception(response.toString());
+                        throw new Exception(s.toString());
                     }
 
                 } catch (Exception e) {
@@ -94,13 +89,15 @@ public class SpainOrange extends SubCall {
                 num++;
 
                 try {
-                    RequestObj requestObj = JSON.parseObject(text, RequestObj.class);
+                    HttpReqest httpReqest = JSON.parseObject(text, HttpReqest.class);
 
-                    SubResponse response = requestObj.call(http());
+                    httpReqest.setHttp(http());
+
+                    SubResponse response = httpReqest.call();
 
                     if (response.url().startsWith("https://www.google.com")) {
 
-                        r.w("step" + num, requestObj.getForm() + "\n" + response.flowUrls());
+                        r.w("step" + num, response.flowUrls());
                         return;
                     }
 

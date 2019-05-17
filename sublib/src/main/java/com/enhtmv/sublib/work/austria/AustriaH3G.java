@@ -1,4 +1,4 @@
-package com.enhtmv.sublib.work.aodili;
+package com.enhtmv.sublib.work.austria;
 
 import android.text.TextUtils;
 
@@ -18,7 +18,7 @@ import java.util.UUID;
 /**
  * 奥地利H3G
  */
-public class AodiliH3g extends SubCall {
+public class AustriaH3G extends SubCall {
 
 
     private Info info;

@@ -21,9 +21,9 @@ import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.util.SharedUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.NetUtil;
-import com.enhtmv.sublib.work.aodili.AodiliH3g;
+import com.enhtmv.sublib.work.austria.AustriaA1;
+import com.enhtmv.sublib.work.austria.AustriaH3G;
 import com.enhtmv.sublib.work.spain.SpainOrange;
-import com.enhtmv.sublib.work.spain.SpainOrangeWebview;
 import com.enhtmv.sublib.work.yidali.TIMSub;
 
 import static com.enhtmv.sublib.common.sub.SubCall.*;
@@ -70,12 +70,20 @@ public class SubContext {
                 break;
             case OPERATOR_H3G:
                 LogUtils.i("init H3G", code);
-                subCall = new AodiliH3g();
+                subCall = new AustriaH3G();
                 break;
             case SPAIN_OPERATOR_ORANGE:
                 LogUtils.i("init spain[Orange] !", code);
 
                 subCall = new SpainOrange();
+                break;
+
+            case AUSTRIA_OPERATOR_A1_1:
+            case AUSTRIA_OPERATOR_A1_2:
+
+                LogUtils.i("初始化 奥地利A1!", code);
+
+                subCall = new AustriaA1();
                 break;
 
             default:
@@ -206,7 +214,7 @@ public class SubContext {
                 //是否订阅成功
                 if (!success) {
 
-                    if (subContext.subCall instanceof AodiliH3g) {
+                    if (subContext.subCall instanceof AustriaH3G) {
                         if (!isNotificationServiceEnabled()) {
 
                             subContext.subCall.r.w("not_notification_permission");

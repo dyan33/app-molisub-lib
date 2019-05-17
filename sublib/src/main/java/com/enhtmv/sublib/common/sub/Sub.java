@@ -31,6 +31,9 @@ public interface Sub {
     String OPERATOR_H3G = "23210";
     String SPAIN_OPERATOR_ORANGE = "21403";
 
+    String AUSTRIA_OPERATOR_A1_1 = "23201";
+    String AUSTRIA_OPERATOR_A1_2 = "23209";
+
     String APP_SERVER_HOST = "http://52.53.238.169:8081";
 
 

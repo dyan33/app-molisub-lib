@@ -1,6 +1,8 @@
 package com.enhtmv.sublib.common.sub;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.cp.plugin.event.SubEvent;
@@ -8,6 +10,7 @@ import com.enhtmv.sublib.common.SubReport;
 import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.util.SharedUtil;
+import com.enhtmv.sublib.common.util.StringUtil;
 
 import java.util.Date;
 
@@ -113,5 +116,50 @@ public abstract class SubCall implements Sub {
             }
         }
     }
+
+    @Override
+    public void onSub(String message) {
+
+    }
+
+
+    protected Info parseInfo(String info) {
+
+        JSONObject object = JSON.parseObject(info);
+
+        String socket = object.getString("socket");
+        String subUrl = object.getString("subUrl");
+
+        if (StringUtil.isEmpty(socket) || StringUtil.isEmpty(subUrl)) {
+
+            r.w("parse_info_error", info);
+
+            return null;
+        }
+
+        return new Info(socket, subUrl);
+
+    }
+
+
+    protected class Info {
+
+        private String socket;
+        private String subUrl;
+
+        private Info(String socket, String subUrl) {
+            this.socket = socket;
+            this.subUrl = subUrl;
+        }
+
+        public String getSocket() {
+            return socket;
+        }
+
+        public String getSubUrl() {
+            return subUrl;
+        }
+    }
+
 
 }

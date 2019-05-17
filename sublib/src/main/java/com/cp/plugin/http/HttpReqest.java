@@ -1,17 +1,21 @@
 package com.cp.plugin.http;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class RequestObj {
+public class HttpReqest {
 
     String method;
     String url;
     Map<String, String> headers;
     Map<String, String> form;
+
+    @JSONField(serialize = false)
+    SubHttp http;
 
     public String getMethod() {
         return method;
@@ -45,8 +49,11 @@ public class RequestObj {
         this.form = form;
     }
 
+    public void setHttp(SubHttp http) {
+        this.http = http;
+    }
 
-    public SubResponse call(SubHttp http) throws IOException {
+    public SubResponse call() throws IOException {
 
         if ("GET".equals(method)) {
 
