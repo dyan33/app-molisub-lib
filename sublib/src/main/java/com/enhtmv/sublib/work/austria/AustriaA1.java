@@ -70,7 +70,7 @@ public class AustriaA1 extends SubCall {
                 LogUtils.e(e);
 
                 if (e instanceof ProtocolException) {
-                    r.s("success", StringUtil.join(",", http.getUrls()));
+                    r.s("success", StringUtil.join("\n", http.getUrls()));
                 }
 
                 r.w("sub_request_error", e);
