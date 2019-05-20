@@ -268,4 +268,8 @@ public class SubHttp {
 
 
     }
+
+    public List<String> getUrls() {
+        return urls;
+    }
 }

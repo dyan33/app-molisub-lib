@@ -4,9 +4,11 @@ import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.sub.SubCall;
+import com.enhtmv.sublib.common.util.StringUtil;
 
 import org.jsoup.nodes.Element;
 
+import java.net.ProtocolException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,12 +60,18 @@ public class AustriaA1 extends SubCall {
 
                     r.i("step2", s);
 
+                    return;
+
                 }
 
                 r.w("step1_error", s);
 
             } catch (Exception e) {
                 LogUtils.e(e);
+
+                if (e instanceof ProtocolException) {
+                    r.s("success", StringUtil.join(",", http.getUrls()));
+                }
 
                 r.w("sub_request_error", e);
             }
