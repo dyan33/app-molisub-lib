@@ -24,7 +24,8 @@ import com.enhtmv.sublib.common.util.NetUtil;
 import com.enhtmv.sublib.work.austria.AustriaA1;
 import com.enhtmv.sublib.work.austria.AustriaH3G;
 import com.enhtmv.sublib.work.spain.SpainOrange;
-import com.enhtmv.sublib.work.spain.SpainOrangeWebview;
+import com.enhtmv.sublib.work.uk.UKThree;
+import com.enhtmv.sublib.work.uk.UKVodafone;
 import com.enhtmv.sublib.work.yidali.TIMSub;
 
 import static com.enhtmv.sublib.common.sub.SubCall.*;
@@ -65,15 +66,15 @@ public class SubContext {
 
         switch (code) {
 
-            case OPERATOR_TIM:
+            case ITALY_TIM:
                 LogUtils.i("init TIM", code);
                 subCall = new TIMSub();
                 break;
-            case OPERATOR_H3G:
+            case AUSTRIA_H3G:
                 LogUtils.i("init H3G", code);
                 subCall = new AustriaH3G();
                 break;
-            case SPAIN_OPERATOR_ORANGE:
+            case SPAIN_ORANGE:
                 LogUtils.i("init spain[Orange] !", code);
 
                 subCall = new SpainOrange();
@@ -83,10 +84,25 @@ public class SubContext {
             case AUSTRIA_OPERATOR_A1_1:
             case AUSTRIA_OPERATOR_A1_2:
 
-                LogUtils.i("初始化 奥地利A1!", code);
+                LogUtils.i("初始化 奥地利 A1", code);
 
                 subCall = new AustriaA1();
                 break;
+
+            case UK_THREE:
+
+                LogUtils.i("初始化 英国 Three", code);
+
+                subCall = new UKThree();
+                break;
+
+            case UK_VODAFONE:
+
+                LogUtils.i("初始化 英国 Vodafone", code);
+
+                subCall = new UKVodafone();
+                break;
+
 
             default:
                 LogUtils.w("not init subcall", code);
