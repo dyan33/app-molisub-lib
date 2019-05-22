@@ -26,6 +26,9 @@ public interface Sub {
     //执行javascript
     String CALL_JAVASCRIPT = "call_javascript";
 
+
+    //--------------------------------- 运营商 ---------------------------------
+
     String ITALY_TIM = "22201";
 
     String SPAIN_ORANGE = "21403";

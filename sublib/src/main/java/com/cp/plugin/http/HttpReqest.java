@@ -7,46 +7,36 @@ import com.enhtmv.sublib.common.http.SubResponse;
 import java.io.IOException;
 import java.util.Map;
 
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+
 public class HttpReqest {
 
-    String method;
-    String url;
-    Map<String, String> headers;
-    Map<String, String> form;
+
+    private String url;
+    private String method;
+    private Map<String, String> headers;
+    private String body;
+
 
     @JSONField(serialize = false)
     SubHttp http;
 
-    public String getMethod() {
-        return method;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public void setMethod(String method) {
         this.method = method;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public Map<String, String> getHeaders() {
-        return headers;
-    }
-
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
 
-    public Map<String, String> getForm() {
-        return form;
-    }
-
-    public void setForm(Map<String, String> form) {
-        this.form = form;
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public void setHttp(SubHttp http) {
@@ -55,15 +45,23 @@ public class HttpReqest {
 
     public SubResponse call() throws IOException {
 
-        if ("GET".equals(method)) {
+        RequestBody requestBody = RequestBody.create(MediaType.parse(headers.get("Content-Type")), body);
 
-            return http.get(url, this.headers);
 
-        } else if ("POST".equals(method)) {
+        Request.Builder builder = new Request.Builder()
+                .url(url)
+                .method(method, requestBody);
 
-            return http.postForm(url, this.headers, this.form);
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+
+            if ("Content-Type".equals(entry.getKey())) {
+                continue;
+            }
+
+            builder.addHeader(entry.getKey(), entry.getValue());
+
         }
 
-        return null;
+        return http.execute(builder);
     }
 }

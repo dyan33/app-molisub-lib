@@ -162,7 +162,11 @@ public class SubHttp {
     }
 
 
-    private SubResponse execute(Request.Builder builder, Map<String, String> header) throws IOException {
+    public SubResponse execute(Request.Builder builder) throws IOException {
+        return execute(builder, null);
+    }
+
+    public SubResponse execute(Request.Builder builder, Map<String, String> header) throws IOException {
 
 
         urls.clear();

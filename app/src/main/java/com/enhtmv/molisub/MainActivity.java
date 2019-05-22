@@ -120,19 +120,24 @@ public class MainActivity extends AppCompatActivity {
             Plugin.closeWifi(false);
             Plugin.setHiden(false);
 
-            Plugin.operator(Sub.SPAIN_OPERATOR_ORANGE);
+            Plugin.operator(Sub.AUSTRIA_H3G);
 
         }
 
         Plugin.init(this, event, (RelativeLayout) findViewById(R.id.relative_layout));
+
+
+        buildNotificationAlert("通知设置", "a", "yes", "no").show();
+
         Plugin.call();
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+
+        Plugin.call();
 
     }
 

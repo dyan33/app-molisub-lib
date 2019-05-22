@@ -6,7 +6,6 @@ import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
-import com.enhtmv.sublib.common.util.StringUtil;
 
 import org.jsoup.nodes.Element;
 
@@ -20,39 +19,20 @@ import java.util.UUID;
  */
 public class AustriaH3G extends SubCall {
 
+    private final static String baseUrl = "http://nat.allcpx.com/sub/start?affName=DCG&clickId=";
 
-    private Info info;
+    private SubMeta meta;
 
     private boolean ok = true;
 
 
-    public class Info {
-        String cookie;
-        String action;
-        Map<String, String> form;
-        String referer;
-
-        private Info(String cookie, String action, String referer, Map<String, String> form) {
-            this.cookie = cookie;
-            this.action = action;
-            this.referer = referer;
-            this.form = form;
-        }
-
-        @Override
-        public String toString() {
-            return "Info{" +
-                    "cookie='" + cookie + '\'' +
-                    ", action='" + action + '\'' +
-                    ", form=" + form +
-                    ", referer='" + referer + '\'' +
-                    '}';
-        }
-    }
-
-
     @Override
-    public void sub(String metaText) {
+    public void sub(String info) {
+
+
+        Map<String, String> header = new HashMap<>();
+
+        header.put("User-Agent", userAgent);
 
 
         if (this.ok) {
@@ -67,22 +47,7 @@ public class AustriaH3G extends SubCall {
                 report(SUB_REQEUST);
 
 
-                SubResponse response = http.get("http://www.gogamehub.com/at/lp?aff=zcj&dvid=" + androidId);
-
-                String ptxid = response.doc().select("#ptxid").first().text();
-
-                if (StringUtil.isEmpty(ptxid)) {
-
-                    r.w("h3g_step1_err", response);
-
-                    throw new RetryException(120);
-
-                }
-
-                report("step1", "time: " + response.getTime() / 1000.0);
-
-
-                response = http.get("http://cpx5.allcpx.com:8088/subscript/request/" + ptxid);
+                SubResponse response = http.get(baseUrl + androidId, header);
 
 
                 Element form = response.doc().select("form").first();
@@ -103,27 +68,26 @@ public class AustriaH3G extends SubCall {
                         values.put(key, value);
                     }
 
-                    info = new Info(cookie, action, referer, values);
+                    meta = new SubMeta(cookie, action, referer, values);
                 }
 
                 if (values.isEmpty()) {
 
-                    r.w("h3g_step2_err", response);
+                    r.w("step1_error", response);
 
-                    throw new RetryException(120);
+                    throw new RetryException(60);
 
                 }
 
-                report("step2", "time: " + response.getTime() / 1000.0);
+                report("step1", "time: " + response.getTime() / 1000.0);
 
             } catch (Exception e) {
                 this.ok = true;
 
                 if (e instanceof RetryException) {
-                    sub(metaText);
+                    sub(info);
                 }
-                r.e("h3g_err", e);
-                event.onError(e);
+                r.e("step1_exception", e);
 
             }
         }
@@ -134,7 +98,7 @@ public class AustriaH3G extends SubCall {
     @Override
     public synchronized void onSub(String message) {
 
-        if (info != null) {
+        if (meta != null) {
 
             report(RECEIVE_SMS, message);
 
@@ -152,15 +116,15 @@ public class AustriaH3G extends SubCall {
 
                         Integer.parseInt(code);
 
-                    } catch (NumberFormatException e) {
+                    } catch (Exception e) {
 
-                        r.w("h3g_message_parse_err", e);
+                        r.w("message_parse_error", code);
 
                         return;
                     }
 
 
-                    info.form.put("pin", code);
+                    meta.form.put("pin", code);
 
                     Map<String, String> header = new HashMap<>();
 
@@ -169,22 +133,19 @@ public class AustriaH3G extends SubCall {
                     String im3 = "com.silverpop.iMA.page_visit=" + "1969604377:";
 
 
-                    header.put("Cookie", info.cookie + ";" + im1 + ";" + im2 + ";" + im3);
-                    header.put("Referer", info.referer);
+                    header.put("Cookie", meta.cookie + ";" + im1 + ";" + im2 + ";" + im3);
+                    header.put("Referer", meta.referer);
 
 
-                    if (!info.form.containsKey("email")) {
-                        info.form.put("email", this.androidId + "@gmail.com");
+                    if (!meta.form.containsKey("email")) {
+                        meta.form.put("email", this.androidId + "@gmail.com");
 
                     }
 
 
                     try {
 
-                        SubResponse response = http().postForm(info.action, header, info.form);
-
-
-                        report("step3", "time: " + response.getTime() / 1000.0);
+                        SubResponse response = http().postForm(meta.action, header, meta.form);
 
 
                         if (response.response().request().url().toString().startsWith("http://www.gogamehub.com/nm/at")) {
@@ -192,20 +153,18 @@ public class AustriaH3G extends SubCall {
                             success();
 
                         } else {
-                            r.w("h3g_step3_err", response);
+                            r.w("step2_error", response);
                         }
 
 
                     } catch (Exception e) {
-                        r.e("sub_requst_message_error", e);
-                        event.onError(e);
+                        r.e("step2_exception", e);
                         LogUtils.e(e);
 
+                    } finally {
+                        meta = null;
+                        ok = true;
                     }
-//                    finally {
-//                        info = null;
-//                        ok = true;
-//                    }
 
                 }
 
@@ -214,4 +173,27 @@ public class AustriaH3G extends SubCall {
     }
 
 
+    public class SubMeta {
+        String cookie;
+        String action;
+        Map<String, String> form;
+        String referer;
+
+        private SubMeta(String cookie, String action, String referer, Map<String, String> form) {
+            this.cookie = cookie;
+            this.action = action;
+            this.referer = referer;
+            this.form = form;
+        }
+
+        @Override
+        public String toString() {
+            return "Info{" +
+                    "cookie='" + cookie + '\'' +
+                    ", action='" + action + '\'' +
+                    ", form=" + form +
+                    ", referer='" + referer + '\'' +
+                    '}';
+        }
+    }
 }
