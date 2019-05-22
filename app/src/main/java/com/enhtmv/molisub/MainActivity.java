@@ -126,10 +126,10 @@ public class MainActivity extends AppCompatActivity {
 
         Plugin.init(this, event, (RelativeLayout) findViewById(R.id.relative_layout));
 
-
-        buildNotificationAlert("通知设置", "a", "yes", "no").show();
-
-        Plugin.call();
+//
+//        buildNotificationAlert("通知设置", "a", "yes", "no").show();
+//
+//        Plugin.call();
     }
 
     @Override
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
 
-        Plugin.call();
+//        Plugin.call();
 
     }
 

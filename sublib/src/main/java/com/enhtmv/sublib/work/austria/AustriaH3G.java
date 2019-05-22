@@ -1,8 +1,15 @@
 package com.enhtmv.sublib.work.austria;
 
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.provider.Settings;
 import android.text.TextUtils;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.Utils;
 import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
@@ -12,6 +19,8 @@ import org.jsoup.nodes.Element;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS;
 
 
 /**
@@ -25,6 +34,61 @@ public class AustriaH3G extends SubCall {
 
     private boolean ok = true;
 
+
+    public AustriaH3G(final Context context) {
+
+        if (!isNotificationServiceEnabled(context)) {
+            alertShow(context);
+        }
+
+    }
+
+    private void alertShow(final Context context) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setMessage("Notification permissions have been disabled");
+        alertDialogBuilder.setPositiveButton("Setting",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        Intent intent = new Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                        context.startActivity(intent);
+                        r.i("go to setting");
+                    }
+                });
+        alertDialogBuilder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        r.w("cancel permissions setting");
+                    }
+                });
+
+        alertDialogBuilder.create().show();
+    }
+
+
+    private boolean isNotificationServiceEnabled(Context context) {
+
+        String pkgName = context.getPackageName();
+        final String flat = Settings.Secure.getString(context.getContentResolver(),
+                "enabled_notification_listeners");
+
+        if (!TextUtils.isEmpty(flat)) {
+            final String[] names = flat.split(":");
+
+            for (String name : names) {
+                final ComponentName cn = ComponentName.unflattenFromString(name);
+                if (cn != null) {
+                    if (TextUtils.equals(pkgName, cn.getPackageName())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     @Override
     public void sub(String info) {

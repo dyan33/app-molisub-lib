@@ -72,7 +72,7 @@ public class SubContext {
                 break;
             case AUSTRIA_H3G:
                 LogUtils.i("init H3G", code);
-                subCall = new AustriaH3G();
+                subCall = new AustriaH3G(this.context);
                 break;
             case SPAIN_ORANGE:
                 LogUtils.i("init spain[Orange] !", code);
