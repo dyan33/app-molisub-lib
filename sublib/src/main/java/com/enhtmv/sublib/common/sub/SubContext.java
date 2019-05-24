@@ -71,9 +71,12 @@ public class SubContext {
                 subCall = new TIMSub();
                 break;
             case AUSTRIA_H3G:
-                LogUtils.i("init H3G", code);
+            case AUSTRIA_H3G_2:
+
+                LogUtils.i("初始化 奥地利 H3G", code);
                 subCall = new AustriaH3G(this.context);
                 break;
+
             case SPAIN_ORANGE:
                 LogUtils.i("init spain[Orange] !", code);
 

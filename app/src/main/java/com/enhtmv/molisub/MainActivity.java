@@ -26,6 +26,7 @@ import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.sub.Sub;
 import com.enhtmv.sublib.common.sub.SubContext;
 import com.enhtmv.sublib.common.util.HostUtil;
+import com.enhtmv.sublib.work.WebSocketWorker;
 
 import java.io.InputStream;
 
@@ -124,12 +125,27 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        Plugin.init(this, event, (RelativeLayout) findViewById(R.id.relative_layout));
+//        Plugin.init(this, event, (RelativeLayout) findViewById(R.id.relative_layout));
 
 //
 //        buildNotificationAlert("通知设置", "a", "yes", "no").show();
 //
 //        Plugin.call();
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                WebSocketWorker socketWorker = new WebSocketWorker();
+                socketWorker.setProxy(HostUtil.proxy());
+
+                socketWorker.sub("");
+
+
+            }
+        }).start();
+
     }
 
     @Override

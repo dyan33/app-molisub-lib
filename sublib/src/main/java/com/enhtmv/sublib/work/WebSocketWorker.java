@@ -1,5 +1,9 @@
 package com.enhtmv.sublib.work;
 
+import com.alibaba.fastjson.JSON;
+import com.blankj.utilcode.util.LogUtils;
+import com.cp.plugin.http.HttpReqest;
+import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.sub.SubCall;
 
 import okhttp3.OkHttpClient;
@@ -14,6 +18,7 @@ public class WebSocketWorker extends SubCall {
     @Override
     public void sub(String host) {
 
+        host = "ws://10.0.2.2:8010/ws";
 
         OkHttpClient client = new OkHttpClient.Builder().build();
 
@@ -25,15 +30,36 @@ public class WebSocketWorker extends SubCall {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 super.onOpen(webSocket, response);
+                LogUtils.i("websocket open");
+
+                webSocket.send("start");
+
             }
 
             @Override
-            public void onMessage(WebSocket webSocket, String text) {
+            public void onMessage(final WebSocket webSocket, final String text) {
                 super.onMessage(webSocket, text);
 
+                LogUtils.i("websocket message", text);
 
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            HttpReqest reqest = JSON.parseObject(text, HttpReqest.class);
+
+                            reqest.setHttp(http());
+
+                            SubResponse response = reqest.call();
+
+                            webSocket.send(JSON.toJSONString(response));
+
+                        } catch (Exception e) {
+                            LogUtils.e(e);
+                        }
+                    }
+                }).start();
             }
-
         });
 
     }

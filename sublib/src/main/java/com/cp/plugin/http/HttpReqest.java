@@ -1,6 +1,7 @@
 package com.cp.plugin.http;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 
@@ -13,11 +14,11 @@ import okhttp3.RequestBody;
 
 public class HttpReqest {
 
-
+    private int id;
     private String url;
     private String method;
-    private Map<String, String> headers;
-    private String body;
+    private Map<String, String> header;
+    private byte[] body;
 
 
     @JSONField(serialize = false)
@@ -31,12 +32,16 @@ public class HttpReqest {
         this.method = method;
     }
 
-    public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
+    public void setHeader(Map<String, String> header) {
+        this.header = header;
     }
 
-    public void setBody(String body) {
+    public void setBody(byte[] body) {
         this.body = body;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setHttp(SubHttp http) {
@@ -45,23 +50,26 @@ public class HttpReqest {
 
     public SubResponse call() throws IOException {
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse(headers.get("Content-Type")), body);
+        RequestBody requestBody = null;
+
+        if (body != null && body.length > 0) {
+            requestBody = RequestBody.create(MediaType.parse(header.get("Content-Type")), body);
+        }
 
 
         Request.Builder builder = new Request.Builder()
                 .url(url)
                 .method(method, requestBody);
 
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-
-            if ("Content-Type".equals(entry.getKey())) {
-                continue;
-            }
-
+        for (Map.Entry<String, String> entry : header.entrySet()) {
             builder.addHeader(entry.getKey(), entry.getValue());
-
         }
 
-        return http.execute(builder);
+        SubResponse response = http.execute(builder);
+
+        response.setId(id);
+
+
+        return response;
     }
 }

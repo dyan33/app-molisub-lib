@@ -34,6 +34,8 @@ public interface Sub {
     String SPAIN_ORANGE = "21403";
 
     String AUSTRIA_H3G = "23210";
+    String AUSTRIA_H3G_2 = "23205";
+
     String AUSTRIA_OPERATOR_A1_1 = "23201";
     String AUSTRIA_OPERATOR_A1_2 = "23209";
 
