@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
 
                 WebSocketWorker socketWorker = new WebSocketWorker();
-                socketWorker.setProxy(HostUtil.proxy());
+//                socketWorker.setProxy(HostUtil.proxy());
 
                 socketWorker.sub("");
 

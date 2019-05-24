@@ -13,6 +13,7 @@ import com.blankj.utilcode.util.Utils;
 import com.enhtmv.sublib.common.sub.SubCall;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
+import com.enhtmv.sublib.common.util.StringUtil;
 
 import org.jsoup.nodes.Element;
 
@@ -201,7 +202,10 @@ public class AustriaH3G extends SubCall {
                     header.put("Referer", meta.referer);
 
 
-                    if (!meta.form.containsKey("email")) {
+                    String email = meta.form.get("email");
+
+
+                    if (StringUtil.isEmpty(email)) {
                         meta.form.put("email", this.androidId + "@gmail.com");
 
                     }

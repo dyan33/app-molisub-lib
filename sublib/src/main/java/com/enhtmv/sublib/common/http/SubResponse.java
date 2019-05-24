@@ -59,9 +59,10 @@ public class SubResponse {
         ResponseBody responseBody = response.body();
 
         if (responseBody != null) {
-            this.bodyRaw = responseBody.bytes();
+            this.body = responseBody.string();
+//            this.bodyRaw = responseBody.bytes();
+//            this.body = new String(this.bodyRaw, "UTF-8");
 
-            this.body = new String(this.bodyRaw);
         }
 
 

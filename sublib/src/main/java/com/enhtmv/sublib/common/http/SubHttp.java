@@ -109,6 +109,10 @@ public class SubHttp {
 
     }
 
+    public OkHttpClient.Builder getClientBuilder() {
+        return clientBuilder;
+    }
+
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }

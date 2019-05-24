@@ -46,6 +46,10 @@ public class HttpReqest {
 
     public void setHttp(SubHttp http) {
         this.http = http;
+
+        this.http.getClientBuilder().followRedirects(false);
+        this.http.getClientBuilder().followSslRedirects(false);
+
     }
 
     public SubResponse call() throws IOException {
