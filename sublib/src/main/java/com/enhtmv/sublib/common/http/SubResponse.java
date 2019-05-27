@@ -1,5 +1,6 @@
 package com.enhtmv.sublib.common.http;
 
+
 import com.alibaba.fastjson.annotation.JSONField;
 import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.util.StringUtil;
@@ -10,6 +11,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +46,29 @@ public class SubResponse {
     private long time;
 
 
+    public SubResponse(int id, String url, Throwable throwable) {
+
+
+        this.id = id;
+        this.code = 555;
+        this.headers = new HashMap<>();
+        String content = "<!DOCTYPE html>" +
+                "<html lang=\"en\">" +
+                "<head>" +
+                "<meta charset=\"UTF-8\">" +
+                "<meta name=\"viewport\"" +
+                "content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\">" +
+                "<title>ERROR</title>" +
+                "</head>" +
+                "<body>" +
+                "<div>" + url + "</div>" +
+                "<div>" + throwable.getMessage() + "</div>" +
+                "</body>" +
+                "</html>";
+        this.bodyRaw = content.getBytes();
+
+    }
+
     public SubResponse(Response response, List<String> urls, long time) throws IOException {
 
         this.response = response;
@@ -59,13 +84,18 @@ public class SubResponse {
         ResponseBody responseBody = response.body();
 
         if (responseBody != null) {
-            this.body = responseBody.string();
-//            this.bodyRaw = responseBody.bytes();
-//            this.body = new String(this.bodyRaw, "UTF-8");
+
+            this.bodyRaw = responseBody.bytes();
+
+            List<String> headers = this.headers.get("Content-Type");
+
+            if (headers != null && headers.size() > 0) {
+                if (headers.get(0).contains("text/html")) {
+                    this.body = new String(this.bodyRaw, "UTF-8");
+                }
+            }
 
         }
-
-
     }
 
     public int getId() {

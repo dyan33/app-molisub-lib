@@ -52,28 +52,36 @@ public class HttpReqest {
 
     }
 
-    public SubResponse call() throws IOException {
+    public SubResponse call() {
 
-        RequestBody requestBody = null;
+        try {
 
-        if (body != null && body.length > 0) {
-            requestBody = RequestBody.create(MediaType.parse(header.get("Content-Type")), body);
+            RequestBody requestBody = null;
+
+            if (body != null && body.length > 0) {
+                requestBody = RequestBody.create(MediaType.parse(header.get("Content-Type")), body);
+            }
+
+
+            Request.Builder builder = new Request.Builder()
+                    .url(url)
+                    .method(method, requestBody);
+
+            for (Map.Entry<String, String> entry : header.entrySet()) {
+                builder.addHeader(entry.getKey(), entry.getValue());
+            }
+
+
+            SubResponse response = http.execute(builder);
+            response.setId(id);
+            return response;
+
+        } catch (Exception e) {
+
+            LogUtils.e(e);
+
+            return new SubResponse(id, url, e);
         }
 
-
-        Request.Builder builder = new Request.Builder()
-                .url(url)
-                .method(method, requestBody);
-
-        for (Map.Entry<String, String> entry : header.entrySet()) {
-            builder.addHeader(entry.getKey(), entry.getValue());
-        }
-
-        SubResponse response = http.execute(builder);
-
-        response.setId(id);
-
-
-        return response;
     }
 }
