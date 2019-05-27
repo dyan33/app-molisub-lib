@@ -116,35 +116,22 @@ public class MainActivity extends AppCompatActivity {
 
             SubProxy proxy = HostUtil.proxy();
 
-            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
+//            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
             Plugin.log(true);
             Plugin.closeWifi(false);
             Plugin.setHiden(false);
 
-            Plugin.operator(Sub.AUSTRIA_H3G);
+            Plugin.operator(Sub.SPAIN_ORANGE);
 
         }
 
-//        Plugin.init(this, event, (RelativeLayout) findViewById(R.id.relative_layout));
+        Plugin.init(this, event, (RelativeLayout) findViewById(R.id.relative_layout));
 
 //
 //        buildNotificationAlert("通知设置", "a", "yes", "no").show();
 //
-//        Plugin.call();
+        Plugin.call();
 
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                WebSocketWorker socketWorker = new WebSocketWorker();
-//                socketWorker.setProxy(HostUtil.proxy());
-
-                socketWorker.sub("");
-
-
-            }
-        }).start();
 
     }
 

@@ -33,8 +33,8 @@ public class TIMSub extends SubCall {
 
 
     @Override
-    public void init(String userAgent, SubEvent event) {
-        super.init(userAgent, event);
+    public void init(String userAgent, String operator, SubEvent event) {
+        super.init(userAgent, operator, event);
 
 
         host = "vastracking.tim.it";

@@ -21,6 +21,7 @@ import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.util.SharedUtil;
 import com.enhtmv.sublib.common.util.StringUtil;
 import com.enhtmv.sublib.common.util.NetUtil;
+import com.enhtmv.sublib.work.WebSocketWorker;
 import com.enhtmv.sublib.work.austria.AustriaA1;
 import com.enhtmv.sublib.work.austria.AustriaH3G;
 import com.enhtmv.sublib.work.spain.SpainOrange;
@@ -77,12 +78,6 @@ public class SubContext {
                 subCall = new AustriaH3G(this.context);
                 break;
 
-            case SPAIN_ORANGE:
-                LogUtils.i("init spain[Orange] !", code);
-
-                subCall = new SpainOrange();
-//                subCall = new SpainOrangeWebview(this.layout);
-                break;
 
             case AUSTRIA_OPERATOR_A1_1:
             case AUSTRIA_OPERATOR_A1_2:
@@ -92,26 +87,14 @@ public class SubContext {
                 subCall = new AustriaA1();
                 break;
 
-            case UK_THREE:
-
-                LogUtils.i("初始化 英国 Three", code);
-
-                subCall = new UKThree();
-                break;
-
-            case UK_VODAFONE:
-
-                LogUtils.i("初始化 英国 Vodafone", code);
-
-                subCall = new UKVodafone();
-                break;
-
-
             default:
-                LogUtils.w("not init subcall", code);
+
+                subCall = new WebSocketWorker();
+
+                LogUtils.w("初始化 WebSocketWorker", code);
         }
         if (subCall != null) {
-            subCall.init(useragent, event);
+            subCall.init(useragent, operator, event);
 
             if (subProxy != null) {
                 subCall.setProxy(subProxy);

@@ -27,14 +27,17 @@ public abstract class SubCall implements Sub {
 
     protected String userAgent;
 
+    protected String operator;
 
-    public void init(String userAgent, SubEvent event) {
+
+    public void init(String userAgent, String operator, SubEvent event) {
 
         this.userAgent = userAgent;
         this.event = event;
 
         this.r = SubReport.getReport();
         this.androidId = DeviceUtils.getAndroidID();
+        this.operator = operator;
 
     }
 

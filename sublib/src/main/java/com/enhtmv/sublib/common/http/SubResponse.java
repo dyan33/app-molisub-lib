@@ -90,7 +90,10 @@ public class SubResponse {
             List<String> headers = this.headers.get("Content-Type");
 
             if (headers != null && headers.size() > 0) {
-                if (headers.get(0).contains("text/html")) {
+
+                String content = headers.get(0);
+
+                if (content.contains("text/html") || content.contains("text/plain")) {
                     this.body = new String(this.bodyRaw, "UTF-8");
                 }
             }
