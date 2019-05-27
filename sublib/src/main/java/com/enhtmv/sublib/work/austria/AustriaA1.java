@@ -15,9 +15,8 @@ import java.util.Map;
 
 public class AustriaA1 extends SubCall {
 
-    private static final String baseUrl = "http://nat.allcpx.com/at/offer?s=at_ifunny_155&affName=DCG&clickId=";
-
     private Map<String, String> header = new HashMap<>();
+
 
     public AustriaA1() {
 
@@ -41,7 +40,7 @@ public class AustriaA1 extends SubCall {
 
                 report("step1");
 
-                SubResponse s = http.get(baseUrl + androidId, header);
+                SubResponse s = http.get(info.getSubUrl() + androidId, header);
 
                 String url = s.url();
 
