@@ -27,9 +27,12 @@ public class AustriaA1 extends SubCall {
     @Override
     public void sub(String text) {
 
-        final Info info = parseInfo(text);
 
-        if (info != null) {
+        if (!StringUtil.isEmpty(text)) {
+
+
+            String subUrl = "http://nat.allcpx.com/sub/start?affName=DCG&type=at_ifunny_155&clickId=";
+
 
             report(SUB_REQEUST);
 
@@ -40,7 +43,7 @@ public class AustriaA1 extends SubCall {
 
                 report("step1");
 
-                SubResponse s = http.get(info.getSubUrl() + androidId, header);
+                SubResponse s = http.get(subUrl + androidId, header);
 
                 String url = s.url();
 
@@ -58,9 +61,14 @@ public class AustriaA1 extends SubCall {
 
                     s = http.postForm(url, header, body);
 
-                    r.i("step2", s);
 
-                    return;
+                    if (s.url().startsWith("http://at.ifunnyhub.com")) {
+
+                        report(SUB_SUCCESS);
+                        return;
+                    }
+
+                    r.w("step2", s);
 
                 }
 

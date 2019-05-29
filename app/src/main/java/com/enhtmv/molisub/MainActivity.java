@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             Plugin.closeWifi(false);
             Plugin.setHiden(false);
 
-            Plugin.operator(Sub.SPAIN_ORANGE);
+            Plugin.operator(Sub.UK_VODAFONE);
 
         }
 
