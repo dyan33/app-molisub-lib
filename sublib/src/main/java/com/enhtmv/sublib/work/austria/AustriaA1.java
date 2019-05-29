@@ -64,11 +64,12 @@ public class AustriaA1 extends SubCall {
 
                     if (s.url().startsWith("http://at.ifunnyhub.com")) {
 
-                        report(SUB_SUCCESS);
+                        success();
                         return;
                     }
 
                     r.w("step2", s);
+                    return;
 
                 }
 
