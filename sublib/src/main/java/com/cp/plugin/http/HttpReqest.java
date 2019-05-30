@@ -52,7 +52,7 @@ public class HttpReqest {
 
     }
 
-    public SubResponse call() {
+    public String call() {
 
         try {
 
@@ -74,13 +74,13 @@ public class HttpReqest {
 
             SubResponse response = http.execute(builder);
             response.setId(id);
-            return response;
+            return response.json();
 
         } catch (Exception e) {
 
             LogUtils.e(e);
 
-            return new SubResponse(id, url, e);
+            return new SubResponse(id, url, e).json();
         }
 
     }

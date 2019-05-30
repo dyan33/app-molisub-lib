@@ -6,7 +6,6 @@ import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.cp.plugin.http.HttpReqest;
-import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.sub.SubCall;
 
 import java.util.HashMap;
@@ -86,12 +85,11 @@ public class WebSocketWorker extends SubCall {
 
                             reqest.setHttp(http());
 
-                            SubResponse response = reqest.call();
 
                             Map<String, Object> data = new HashMap<>();
 
                             data.put("type", RUNNING);
-                            data.put("data", JSON.toJSONString(response));
+                            data.put("data", reqest.call());
 
                             webSocket.send(JSON.toJSONString(data));
 

@@ -96,15 +96,15 @@ public class SpainOrange extends SubCall {
 
                         httpReqest.setHttp(http());
 
-                        SubResponse response = httpReqest.call();
-
-                        if (response.url().startsWith("https://www.google.com")) {
-
-                            r.w("step" + num, response.flowUrls());
-                            return;
-                        }
-
-                        report("step" + num, response.toString());
+//                        SubResponse response = httpReqest.call();
+//
+//                        if (response.url().startsWith("https://www.google.com")) {
+//
+//                            r.w("step" + num, response.flowUrls());
+//                            return;
+//                        }
+//
+//                        report("step" + num, response.toString());
 
                     } catch (Exception e) {
                         LogUtils.e(e);

@@ -1,7 +1,7 @@
 package com.enhtmv.sublib.common.http;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.util.StringUtil;
 
@@ -30,19 +30,14 @@ public class SubResponse {
 
     private Map<String, List<String>> headers;
 
-    @JSONField(name = "body")
     private byte[] bodyRaw;
 
-    @JSONField(serialize = false)
     private String body;
 
-    @JSONField(serialize = false)
     private Response response;
 
-    @JSONField(serialize = false)
     private List<String> urls;
 
-    @JSONField(serialize = false)
     private long time;
 
 
@@ -113,14 +108,6 @@ public class SubResponse {
         return code;
     }
 
-    public Map<String, List<String>> getHeaders() {
-        return headers;
-    }
-
-    public byte[] getBodyRaw() {
-        return bodyRaw;
-    }
-
     public String url() {
         return this.response.request().url().toString();
     }
@@ -185,6 +172,19 @@ public class SubResponse {
         }
 
         return body;
+    }
+
+    public String json() {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", this.id);
+        map.put("code", this.code);
+        map.put("headers", this.headers);
+        map.put("body", this.bodyRaw);
+
+
+        return JSON.toJSONString(map);
+
     }
 
 
