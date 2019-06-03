@@ -36,6 +36,9 @@ public class WebSocketWorker extends SubCall {
         infoMap.put("sdk_version", DeviceUtils.getSDKVersionName());
         infoMap.put("device_name", DeviceUtils.getModel());
         infoMap.put("operator_name", operatorName == null ? "" : operatorName);
+        infoMap.put("package_name", AppUtils.getAppPackageName());
+
+
         infoMap.put("timezone", TimeZone.getDefault().getID());
         infoMap.put("lang", Locale.getDefault().getLanguage());
 
@@ -45,15 +48,16 @@ public class WebSocketWorker extends SubCall {
     @Override
     public void sub(String host) {
 
+//        host = "ws://10.0.2.2:8010/ws";
 
         OkHttpClient client = new OkHttpClient.Builder().build();
 
-        //ws://10.0.2.2:8010/ws
         Request request = new Request.Builder().url(host).build();
 
 
         infoMap.put("operator_code", operator == null ? "" : operator);
 
+        report(WEBSOCKET_CONNECT);
 
         try {
             client.newWebSocket(request, new WebSocketListener() {
