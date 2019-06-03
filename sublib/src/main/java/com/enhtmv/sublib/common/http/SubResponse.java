@@ -24,7 +24,7 @@ import okio.Buffer;
 
 public class SubResponse {
 
-    private int id;
+    private long id;
 
     private int code;
 
@@ -41,7 +41,7 @@ public class SubResponse {
     private long time;
 
 
-    public SubResponse(int id, String url, Throwable throwable) {
+    public SubResponse(long id, String url, Throwable throwable) {
 
 
         this.id = id;
@@ -96,11 +96,11 @@ public class SubResponse {
         }
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

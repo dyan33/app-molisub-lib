@@ -14,7 +14,7 @@ import okhttp3.RequestBody;
 
 public class HttpReqest {
 
-    private int id;
+    private long id;
     private String url;
     private String method;
     private Map<String, String> header;
@@ -40,7 +40,7 @@ public class HttpReqest {
         this.body = body;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -115,6 +115,10 @@ public class MainActivity extends AppCompatActivity {
 
 
             SubProxy proxy = HostUtil.proxy();
+            //        this.setProxy(new SubProxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 11285));
+
+
+            Plugin.proxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 10223);
 
 //            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
             Plugin.log(true);
