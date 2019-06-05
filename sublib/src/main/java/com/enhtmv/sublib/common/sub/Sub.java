@@ -42,6 +42,7 @@ public interface Sub {
     String AUSTRIA_OPERATOR_A1_2 = "23209";
 
     String UK_VODAFONE = "23415";
+    String TH_AIS = "52003";
     String UK_THREE = "23420";
 
     String SUB_TEST = "test";
