@@ -44,6 +44,8 @@ public interface Sub {
     String UK_VODAFONE = "23415";
     String UK_THREE = "23420";
 
+    String TH_AIS = "52003";
+
     String SUB_TEST = "test";
 
     String APP_SERVER_HOST = "http://52.53.238.169:8081";
