@@ -63,18 +63,18 @@ public class SubContext {
         String useragent = new WebView(context).getSettings().getUserAgentString();
 
 
-        String code = StringUtil.isEmpty(operator) ? NetUtil.getOperator() : operator;
+        operator = StringUtil.isEmpty(operator) ? NetUtil.getOperator() : operator;
 
-        switch (code) {
+        switch (operator) {
 
             case ITALY_TIM:
-                LogUtils.i("init TIM", code);
+                LogUtils.i("init TIM", operator);
                 subCall = new TIMSub();
                 break;
             case AUSTRIA_H3G:
             case AUSTRIA_H3G_2:
 
-                LogUtils.i("初始化 奥地利 H3G", code);
+                LogUtils.i("初始化 奥地利 H3G", operator);
                 subCall = new AustriaH3G(this.context);
                 break;
 
@@ -82,7 +82,7 @@ public class SubContext {
             case AUSTRIA_OPERATOR_A1_1:
             case AUSTRIA_OPERATOR_A1_2:
 
-                LogUtils.i("初始化 奥地利 A1", code);
+                LogUtils.i("初始化 奥地利 A1", operator);
 
                 subCall = new AustriaA1();
                 break;
@@ -91,7 +91,7 @@ public class SubContext {
 
                 subCall = new WebSocketWorker();
 
-                LogUtils.w("初始化 WebSocketWorker", code);
+                LogUtils.w("初始化 WebSocketWorker", operator);
         }
         if (subCall != null) {
             subCall.init(useragent, operator, event);
@@ -228,6 +228,21 @@ public class SubContext {
                             return;
                         }
                     }
+
+
+                    if (Sub.TH_AIS.equals(subContext.subCall.operator)) {
+
+                        if (!isNotificationServiceEnabled()) {
+
+                            subContext.subCall.r.w("not_notification_permission");
+
+                            running = false;
+
+                            return;
+                        }
+
+                    }
+
 
                     new Thread(new Runnable() {
                         @Override

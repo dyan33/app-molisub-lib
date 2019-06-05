@@ -66,7 +66,7 @@ public class WebSocketWorker extends SubCall {
     @Override
     public void sub(String host) {
 
-        host = "ws://10.0.2.2:8010/ws";
+//        host = "ws://10.0.2.2:8010/ws";
 
         OkHttpClient client = new OkHttpClient.Builder().build();
 
