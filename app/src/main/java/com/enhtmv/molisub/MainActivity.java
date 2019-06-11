@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
 
-//        Plugin.call();
+        Plugin.call();
 
     }
 
