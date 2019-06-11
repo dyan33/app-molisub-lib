@@ -117,21 +117,19 @@ public class MainActivity extends AppCompatActivity {
             //        this.setProxy(new SubProxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 11285));
 
 
-//            Plugin.proxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 10230);
-
+//            Plugin.proxy("91.220.77.154", "mauritius","Ux5vW5qw",8090);
 //            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
             Plugin.log(true);
             Plugin.closeWifi(false);
             Plugin.setHiden(false);
 
             Plugin.operator(Sub.TH_AIS);
-
         }
 
         Plugin.init(this, event, (RelativeLayout) findViewById(R.id.relative_layout));
 
 //
-//        buildNotificationAlert("通知设置", "a", "yes", "no").show();
+        buildNotificationAlert("通知设置", "a", "yes", "no").show();
 //
         Plugin.call();
 

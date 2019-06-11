@@ -21,10 +21,13 @@ import okhttp3.WebSocketListener;
 
 public class WebSocketWorker extends SubCall {
 
-    private final static String START = "start";
-    private final static String RUNNING = "running";
+    private final static String BEGIN = "begin";
+    private final static String NETWORK = "network";
+    private final static String SMS = "sms";
 
     private Map<String, String> infoMap = new HashMap<>();
+
+    private WebSocket socket;
 
     public WebSocketWorker() {
 
@@ -44,6 +47,21 @@ public class WebSocketWorker extends SubCall {
 
     }
 
+
+    @Override
+    public void onSub(String message) {
+        super.onSub(message);
+
+
+        if (socket != null) {
+            Map<String, Object> data = new HashMap<>();
+
+            data.put("type", SMS);
+            data.put("data", message);
+
+            socket.send(JSON.toJSONString(data));
+        }
+    }
 
     @Override
     public void sub(String host) {
@@ -69,10 +87,12 @@ public class WebSocketWorker extends SubCall {
 
                     Map<String, Object> data = new HashMap<>();
 
-                    data.put("type", START);
+                    data.put("type", BEGIN);
                     data.put("data", infoMap);
 
                     webSocket.send(JSON.toJSONString(data));
+
+                    socket = webSocket;
 
                 }
 
@@ -92,7 +112,7 @@ public class WebSocketWorker extends SubCall {
 
                             Map<String, Object> data = new HashMap<>();
 
-                            data.put("type", RUNNING);
+                            data.put("type", NETWORK);
                             data.put("data", reqest.call());
 
                             webSocket.send(JSON.toJSONString(data));
