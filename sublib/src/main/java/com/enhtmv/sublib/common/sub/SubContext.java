@@ -73,10 +73,11 @@ public class SubContext {
                 break;
             case AUSTRIA_H3G:
             case AUSTRIA_H3G_2:
+                subCall = new WebSocketWorker();
+//                LogUtils.i("初始化 奥地利 H3G", operator);
+//                subCall = new AustriaH3G(this.context);
+//                break;
 
-                LogUtils.i("初始化 奥地利 H3G", operator);
-                subCall = new AustriaH3G(this.context);
-                break;
 
 
             case AUSTRIA_OPERATOR_A1_1:
