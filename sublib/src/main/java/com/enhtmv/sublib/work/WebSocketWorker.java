@@ -7,6 +7,7 @@ import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.cp.plugin.http.HttpReqest;
 import com.enhtmv.sublib.common.sub.SubCall;
+import com.enhtmv.sublib.common.util.NetUtil;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -72,16 +73,17 @@ public class WebSocketWorker extends SubCall {
 
         Request request = new Request.Builder().url(host).build();
 
-
         infoMap.put("operator_code", operator == null ? "" : operator);
+        infoMap.put("network", NetUtil.getNetworkName());
 
-        report(WEBSOCKET_CONNECT);
 
         try {
             client.newWebSocket(request, new WebSocketListener() {
                 @Override
                 public void onOpen(WebSocket webSocket, Response response) {
                     super.onOpen(webSocket, response);
+
+                    report(WEBSOCKET_CONNECT);
                     LogUtils.i("websocket open");
 
 

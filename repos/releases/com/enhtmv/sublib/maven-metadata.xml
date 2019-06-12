@@ -3,7 +3,7 @@
   <groupId>com.enhtmv</groupId>
   <artifactId>sublib</artifactId>
   <versioning>
-    <release>7.4.3</release>
+    <release>7.4.4</release>
     <versions>
       <version>3.2.2</version>
       <version>3.2.3</version>
@@ -44,7 +44,8 @@
       <version>7.4.1</version>
       <version>7.4.2</version>
       <version>7.4.3</version>
+      <version>7.4.4</version>
     </versions>
-    <lastUpdated>20190612032908</lastUpdated>
+    <lastUpdated>20190612075324</lastUpdated>
   </versioning>
 </metadata>
