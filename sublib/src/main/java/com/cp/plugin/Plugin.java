@@ -25,6 +25,20 @@ public class Plugin {
         init(context, event, null);
     }
 
+    public static void init(Context context) {
+        init(context, new SubEvent() {
+            @Override
+            public void onMessage(String tag, String content) {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
+    }
+
     public static void setHiden(boolean h) {
         hiden = h;
     }

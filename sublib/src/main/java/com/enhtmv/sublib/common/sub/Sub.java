@@ -29,6 +29,9 @@ public interface Sub {
     //开始WebSocket连接
     String WEBSOCKET_CONNECT = "websocket_connect";
 
+    //关闭WebSocket连接
+    String WEBSOCKET_CLOSE = "websocket_close";
+
     //--------------------------------- 运营商 ---------------------------------
 
     String ITALY_TIM = "22201";

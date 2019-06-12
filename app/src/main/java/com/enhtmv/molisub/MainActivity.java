@@ -119,11 +119,12 @@ public class MainActivity extends AppCompatActivity {
 
 //            Plugin.proxy("91.220.77.154", "mauritius","Ux5vW5qw",8090);
 //            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
+            Plugin.proxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 11248);
             Plugin.log(true);
             Plugin.closeWifi(false);
             Plugin.setHiden(false);
 
-            Plugin.operator(Sub.TH_AIS);
+            Plugin.operator(Sub.AUSTRIA_H3G);
         }
 
         Plugin.init(this, event, (RelativeLayout) findViewById(R.id.relative_layout));

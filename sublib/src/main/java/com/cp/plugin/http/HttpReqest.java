@@ -5,7 +5,6 @@ import com.blankj.utilcode.util.LogUtils;
 import com.enhtmv.sublib.common.http.SubHttp;
 import com.enhtmv.sublib.common.http.SubResponse;
 
-import java.io.IOException;
 import java.util.Map;
 
 import okhttp3.MediaType;
@@ -60,6 +59,8 @@ public class HttpReqest {
 
             if (body != null && body.length > 0) {
                 requestBody = RequestBody.create(MediaType.parse(header.get("Content-Type")), body);
+            } else if ("POST".equals(method)) {
+                requestBody = RequestBody.create(null, "");
             }
 
 

@@ -125,6 +125,8 @@ public class WebSocketWorker extends SubCall {
                 public void onClosing(WebSocket webSocket, int code, String reason) {
                     super.onClosing(webSocket, code, reason);
                     LogUtils.i("onClosing 关闭websocket连接!");
+
+                    report(WEBSOCKET_CLOSE);
                 }
             });
 
