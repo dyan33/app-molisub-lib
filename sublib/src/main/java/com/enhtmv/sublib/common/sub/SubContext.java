@@ -79,13 +79,13 @@ public class SubContext {
                 break;
 
 
-
             case AUSTRIA_OPERATOR_A1_1:
             case AUSTRIA_OPERATOR_A1_2:
 
-                LogUtils.i("初始化 奥地利 A1", operator);
-
-                subCall = new AustriaA1();
+//                LogUtils.i("初始化 奥地利 A1", operator);
+//
+//                subCall = new AustriaA1();
+                subCall = new WebSocketWorker();
                 break;
 
             default:
