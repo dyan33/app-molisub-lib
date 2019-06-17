@@ -13,17 +13,6 @@ public class Plugin {
 
     private static boolean hiden = true;
 
-    public static void init(Context context, SubEvent event, RelativeLayout layout) {
-
-        SubContext.init(context, event, layout);
-
-
-    }
-
-
-    public static void init(Context context, SubEvent event) {
-        init(context, event, null);
-    }
 
     public static void init(Context context) {
         init(context, new SubEvent() {
@@ -37,6 +26,18 @@ public class Plugin {
 
             }
         });
+    }
+
+    public static void init(Context context, SubEvent event) {
+//        init(context, event, null);
+        SubContext.init(context, event);
+    }
+
+    public static void init(Context context, SubEvent event, RelativeLayout layout) {
+
+        SubContext.init(context, event, layout);
+
+
     }
 
     public static void setHiden(boolean h) {

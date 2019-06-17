@@ -103,6 +103,26 @@ public class SubContext {
         }
     }
 
+    public static void init(Context context, SubEvent event) {
+
+        synchronized (SubEvent.class) {
+
+
+            Utils.init(context);
+
+            SubReport.init(APP_SERVER_HOST);
+
+
+            if (subContext == null) {
+
+                subContext = new SubContext(context, event);
+
+            }
+
+        }
+
+    }
+
     public static void init(Context context, SubEvent event, RelativeLayout layout) {
 
         synchronized (SubEvent.class) {
@@ -118,6 +138,25 @@ public class SubContext {
                 subContext = new SubContext(context, event, layout);
 
             }
+
+        }
+
+    }
+
+    private SubContext(Context context, SubEvent event) {
+
+        this.context = context;
+        this.event = event;
+
+        initSubCall();
+
+        if (!SharedUtil.isInstalled()) {
+
+            event.onMessage(INSTALLED, null);
+            SubReport.getReport().i(INSTALLED);
+
+
+            SharedUtil.installed();
 
         }
 
