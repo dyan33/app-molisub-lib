@@ -28,16 +28,17 @@ public class Plugin {
         });
     }
 
+    /**
+     * 调用初始化init方法
+     * @param context
+     * @param event
+     */
     public static void init(Context context, SubEvent event) {
-//        init(context, event, null);
         SubContext.init(context, event);
     }
 
     public static void init(Context context, SubEvent event, RelativeLayout layout) {
-
         SubContext.init(context, event, layout);
-
-
     }
 
     public static void setHiden(boolean h) {

@@ -42,8 +42,6 @@ public class SubResponse {
 
 
     public SubResponse(long id, String url, Throwable throwable) {
-
-
         this.id = id;
         this.code = 520;
         this.headers = new HashMap<>();

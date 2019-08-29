@@ -40,6 +40,10 @@ public class SubReport {
     private SubHttp http;
 
 
+    /**
+     * 传递客户端必要上报信息
+     * @param host = http://52.53.238.169:8081
+     */
     private SubReport(String host) {
 
         this.host = host;
@@ -56,13 +60,17 @@ public class SubReport {
     }
 
 
+    /**
+     * 日志上报初始化
+     * @param host
+     */
     public static void init(String host) {
-
 
         synchronized (SubReport.class) {
 
             if (report == null) {
 
+                //创建实例，并传入上报地址
                 report = new SubReport(host);
 
             }
@@ -82,7 +90,6 @@ public class SubReport {
 
         final String date = sdf.format(new Date());
 
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -101,10 +108,7 @@ public class SubReport {
                     body.put("operator_code", operatorCode == null ? "" : operatorCode);
                     body.put("network", NetUtil.getNetworkName());
 
-
                     String json = JSON.toJSONString(body);
-
-
                     http.postJson(host + "/app/log?name=" + packageName, json);
                 } catch (Exception e) {
                     LogUtils.e(e);
@@ -151,8 +155,11 @@ public class SubReport {
         r(SUCCESS, tag, object.toString());
     }
 
+    /**
+     * 封装日志上报所有信息以及解密过程
+     * @return
+     */
     public String info() {
-
         String content = null;
 
         try {

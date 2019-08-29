@@ -52,7 +52,9 @@ public abstract class SubCall implements Sub {
 
         http.setLog(LogUtils.getConfig().isLogSwitch());
 
+        //这里proxy 在SubContext 的initSubCall方法中赋值，仅调试设置
         if (this.proxy != null) {
+
             http.setProxy(proxy);
         }
 

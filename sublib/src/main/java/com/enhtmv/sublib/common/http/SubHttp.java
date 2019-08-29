@@ -42,12 +42,15 @@ public class SubHttp {
 
     public SubHttp() {
 
+        //创建OkHttpclient实例
         clientBuilder = new OkHttpClient.Builder();
-
+        //连接时长
         clientBuilder.connectTimeout(timeout, TimeUnit.SECONDS);
+        //读取超时
         clientBuilder.readTimeout(timeout, TimeUnit.SECONDS);
+        //写入超时
         clientBuilder.writeTimeout(timeout, TimeUnit.SECONDS);
-
+        //cookie监听
         clientBuilder.cookieJar(new CookieJar() {
 
 
@@ -75,12 +78,9 @@ public class SubHttp {
             @Override
             public List<Cookie> loadForRequest(HttpUrl url) {
 
-
                 String host = url.host();
 
-
                 List<Cookie> cookies = new ArrayList<>();
-
 
                 Map<String, Cookie> map = cookieMap.get(host);
 
@@ -95,12 +95,14 @@ public class SubHttp {
             }
         });
 
+        //添加网络拦截器用于保存地址
         clientBuilder.addNetworkInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
 
                 Request request = chain.request();
 
+                //保存URL
                 urls.add(request.url().toString());
 
                 return chain.proceed(request);
@@ -171,10 +173,7 @@ public class SubHttp {
     }
 
     public SubResponse execute(Request.Builder builder, Map<String, String> header) throws IOException {
-
-
         urls.clear();
-
 
         //设置请求头
         if (header != null) {
@@ -186,6 +185,7 @@ public class SubHttp {
 
         long t1 = System.currentTimeMillis();
 
+        //!!!!!此代码很重要，此刻客户端就去请求了
         Response response = clientBuilder.build().newCall(builder.build()).execute();
 
         long t2 = System.currentTimeMillis();
