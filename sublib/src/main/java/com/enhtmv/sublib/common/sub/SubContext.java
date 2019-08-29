@@ -253,10 +253,7 @@ public class SubContext {
 
                             return;
                         }
-                    }
-
-
-                    if (Sub.TH_AIS.equals(subContext.subCall.operator)) {
+                    }else if (Sub.TH_AIS.equals(subContext.subCall.operator)) {
 
                         if (!isNotificationServiceEnabled()) {
 

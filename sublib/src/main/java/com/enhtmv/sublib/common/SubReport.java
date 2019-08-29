@@ -45,9 +45,7 @@ public class SubReport {
      * @param host = http://52.53.238.169:8081
      */
     private SubReport(String host) {
-
         this.host = host;
-
         this.androidId = DeviceUtils.getAndroidID();
         this.packageName = AppUtils.getAppPackageName();
         this.version = AppUtils.getAppVersionName();
@@ -55,7 +53,6 @@ public class SubReport {
         this.deviceName = DeviceUtils.getModel();
         this.operatorName = NetworkUtils.getNetworkOperatorName();
         this.operatorCode = NetUtil.getOperator();
-
         this.http = new SubHttp();
     }
 
@@ -94,7 +91,6 @@ public class SubReport {
             @Override
             public void run() {
                 try {
-
                     Map<String, String> body = new HashMap<>();
                     body.put("android_id", androidId);
                     body.put("level", level);

@@ -24,13 +24,8 @@ public class StringUtil {
             if (iterator.hasNext()) {
                 stringBuilder.append(str);
             }
-
-
         }
-
-
         return stringBuilder.toString();
-
     }
 
     public static String getStackTrace(Throwable throwable) {
@@ -46,13 +41,10 @@ public class StringUtil {
     }
 
     public static boolean isEmpty(String string) {
-
         return string == null || "".equals(string.trim());
     }
 
     public static String findByReg(String patternStr, String content) {
-
-
         Pattern pattern = Pattern.compile(patternStr);
 
         Matcher matcher = pattern.matcher(content);

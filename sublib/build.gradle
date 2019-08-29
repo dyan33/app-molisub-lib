@@ -4,7 +4,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'stringfog'
 
 stringfog {
-    key '9SZlsy1X3CB7yynnHs1n9ph6dWRYLW5f9tfwynfrVC1QkMZRXHhPzhMRpmEsmW87'
+    key '9SZlsy1X3CB7yynnHs1n9ph6dWRYLW5f9tfwynfrVC1QkMZRXHhPzhMRpmEsmW'
     enable true
     debug false
     // 指定加解密的具体实现类，可以用默认实现的xor库或者aes-cbc库，也可以自己定制实现，记得配置dependencies
@@ -20,8 +20,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 10
-        versionName "7.4.7"
+        versionCode 11
+        versionName "7.4.8"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
