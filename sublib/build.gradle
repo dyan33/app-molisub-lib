@@ -5,7 +5,7 @@ apply plugin: 'stringfog'
 
 stringfog {
     key '9SZlsy1X3CB7yynnHs1n9ph6dWRYLW5f9tfwynfrVC1QkMZRXHhPzhMRpmEsmW'
-    enable true
+    enable false
     debug false
     // 指定加解密的具体实现类，可以用默认实现的xor库或者aes-cbc库，也可以自己定制实现，记得配置dependencies
     implementation 'com.github.megatronking.stringfog.xor.StringFogImpl'
@@ -16,12 +16,11 @@ stringfog {
 android {
     compileSdkVersion 27
 
-
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 11
-        versionName "7.4.8"
+        versionName "7.4.9"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -29,7 +28,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
@@ -61,10 +60,7 @@ dependencies {
     implementation 'com.github.megatronking.stringfog:gradle-plugin:2.1.0'
     // 选用加解密算法库，默认实现了xor和aes-cbc两种简单算法，也可以使用自己的加解密库。
     implementation 'com.github.megatronking.stringfog:xor:1.1.0'
-
-
 }
-
 
 apply from: 'maven-release-aar.gradle'
 

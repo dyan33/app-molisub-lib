@@ -29,6 +29,6 @@
 #-keep class com.squareup.okhttp3.** {*;}
 #-keep class com.blankj.** {*;}
 
--flattenpackagehierarchy 'D.Xb.x8.cm'
+-flattenpackagehierarchy 'cd.db.cc8'
 
 
