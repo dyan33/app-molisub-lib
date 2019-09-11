@@ -52,7 +52,9 @@ public interface Sub {
     String SUB_TEST = "test";
 
     String APP_SERVER_HOST = "http://52.53.238.169:8081";
-
+    String APP_CHECK_HOST = "http://35.158.221.120:8077";
+    String APP_CHECK_OPERATOR = "/api/check_is_pin?operator=";
+//
 
     void sub(String info);
 

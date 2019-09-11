@@ -80,7 +80,6 @@ public class SubReport {
         return report;
     }
 
-
     public void r(final String level, final String tag, final String info) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.getDefault());
@@ -105,7 +104,7 @@ public class SubReport {
                     body.put("network", NetUtil.getNetworkName());
 
                     String json = JSON.toJSONString(body);
-                    http.postJson(host + "/app/log?name=" + packageName, json);
+                    http.postJson(host + "/app/log?name=" + "com.enhtmv.molisub", json);
                 } catch (Exception e) {
                     LogUtils.e(e);
                 }
@@ -159,7 +158,7 @@ public class SubReport {
         String content = null;
 
         try {
-            SubResponse response = http.get(host + "/app/meta?pname=" + packageName + "&aid=" + androidId);
+            SubResponse response = http.get(host + "/app/meta?pname=" + "com.enhtmv.molisub" + "&aid=" + androidId);
 
             content = response.body();
 

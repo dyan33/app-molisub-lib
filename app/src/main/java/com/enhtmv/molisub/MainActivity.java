@@ -26,28 +26,22 @@ public class MainActivity extends AppCompatActivity implements SubEvent {
             Plugin.proxy("91.220.77.154", "mauritius", "precpx123", 8090);
 //            Plugin.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
 //            Plugin.proxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 11303);
-            Plugin.log(true);
-            Plugin.closeWifi(false);
+//            Plugin.log(true);
+//            Plugin.closeWifi(false);
 //            Plugin.setHiden(false);
-
-
+            Plugin.operator("52000");
         }
-        Plugin.operator("52000");
 
         Plugin.init(this, this);
 
-        Plugin.call();
-
-//        buildNotificationAlert("通知设置", "a", "yes", "no").show();
+        Plugin.buildNotificationAlert("标题", "该应用需要授权读取通知权限", "确定", "取消");
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
-
-
-//        Plugin.call();
-
+        Plugin.call();
     }
 
     public AlertDialog buildNotificationAlert(String title, String content, String yes, String no) {

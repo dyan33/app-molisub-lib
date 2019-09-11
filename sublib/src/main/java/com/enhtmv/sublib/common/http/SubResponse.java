@@ -73,7 +73,6 @@ public class SubResponse {
         this.code = response.code();
         this.headers = response.headers().toMultimap();
 
-
         ResponseBody responseBody = response.body();
 
         if (responseBody != null) {

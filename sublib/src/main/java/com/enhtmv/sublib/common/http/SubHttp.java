@@ -125,9 +125,7 @@ public class SubHttp {
             cookieMap.put(host, new HashMap<String, Cookie>());
         }
 
-
         cookieMap.get(host).put(name, new Cookie.Builder().name(name).value(vaule).domain(host).build());
-
 
     }
 
@@ -185,7 +183,6 @@ public class SubHttp {
 
         long t1 = System.currentTimeMillis();
 
-        //!!!!!此代码很重要，此刻客户端就去请求了
         Response response = clientBuilder.build().newCall(builder.build()).execute();
 
         long t2 = System.currentTimeMillis();
