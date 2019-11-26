@@ -3,8 +3,8 @@ apply plugin: 'maven'
 
 // 2.maven-信息
 ext {// ext is a gradle closure allowing the declaration of global properties
-    PUBLISH_GROUP_ID = 'com.enhtmv'
-    PUBLISH_ARTIFACT_ID = 'sublib'
+    PUBLISH_GROUP_ID = 'com.mos'
+    PUBLISH_ARTIFACT_ID = 'lib'
     PUBLISH_VERSION = android.defaultConfig.versionName
 }
 

@@ -1,50 +1,51 @@
-package com.mos.lib.common.http
+package com.mos.lib.common.http;
 
 
-import com.alibaba.fastjson.JSON
-import com.blankj.utilcode.util.LogUtils
-import com.mos.lib.common.util.StringUtil
+import com.alibaba.fastjson.JSON;
+import com.blankj.utilcode.util.LogUtils;
+import com.mos.lib.common.util.StringUtil;
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
-import java.io.IOException
-import java.net.HttpCookie
-import java.util.ArrayList
-import java.util.HashMap
+import java.io.IOException;
+import java.net.HttpCookie;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import okhttp3.Headers
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-import okhttp3.ResponseBody
-import okio.Buffer
+import okhttp3.Headers;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.Buffer;
 
-class SubResponse {
+public class SubResponse {
 
-    var id: Long = 0
+    private long id;
 
-    var code: Int = 0
-        private set
+    private int code;
 
-    private var headers: Map<String, List<String>>? = null
+    private Map<String, List<String>> headers;
 
-    private var bodyRaw: ByteArray? = null
+    private byte[] bodyRaw;
 
-    private var body: String? = null
+    private String body;
 
-    private val response: Response
+    private Response response;
 
-    private val urls: List<String>
+    private List<String> urls;
 
-    val time: Long
+    private long time;
 
 
-    constructor(id: Long, url: String, throwable: Throwable) {
-        this.id = id
-        this.code = 520
-        this.headers = HashMap()
-        val content = "<!DOCTYPE html>" +
+    public SubResponse(long id, String url, Throwable throwable) {
+        this.id = id;
+        this.code = 520;
+        this.headers = new HashMap<>();
+        String content = "<!DOCTYPE html>" +
                 "<html lang=\"en\">" +
                 "<head>" +
                 "<meta charset=\"UTF-8\">" +
@@ -54,141 +55,157 @@ class SubResponse {
                 "</head>" +
                 "<body>" +
                 "<div>" + url + "</div>" +
-                "<div>" + throwable.message + "</div>" +
+                "<div>" + throwable.getMessage() + "</div>" +
                 "</body>" +
-                "</html>"
-        this.bodyRaw = content.toByteArray()
+                "</html>";
+        this.bodyRaw = content.getBytes();
 
     }
 
-    @Throws(IOException::class)
-    constructor(response: Response, urls: List<String>, time: Long) {
+    public SubResponse(Response response, List<String> urls, long time) throws IOException {
 
-        this.response = response
+        this.response = response;
 
-        this.time = time
+        this.time = time;
 
-        this.urls = urls
+        this.urls = urls;
 
-        this.code = response.code()
-        this.headers = response.headers().toMultimap()
+        this.code = response.code();
+        this.headers = response.headers().toMultimap();
 
-        val responseBody = response.body()
+        ResponseBody responseBody = response.body();
 
         if (responseBody != null) {
 
-            this.bodyRaw = responseBody.bytes()
+            this.bodyRaw = responseBody.bytes();
 
-            val headers = this.headers!!["Content-Type"]
+            List<String> headers = this.headers.get("Content-Type");
 
-            if (headers != null && headers.size > 0) {
+            if (headers != null && headers.size() > 0) {
 
-                val content = headers[0]
+                String content = headers.get(0);
 
                 if (content.contains("text/html") || content.contains("text/plain")) {
-                    this.body = String(this.bodyRaw, "UTF-8")
+                    this.body = new String(this.bodyRaw, "UTF-8");
                 }
             }
 
         }
     }
 
-    fun url(): String {
-        return this.response.request().url().toString()
+    public long getId() {
+        return id;
     }
 
-    fun body(): String? {
-        return body
+    public void setId(long id) {
+        this.id = id;
     }
 
-    fun response(): Response {
-        return response
+    public int getCode() {
+        return code;
     }
 
-    fun doc(): Document {
-        return Jsoup.parse(body!!)
+    public String url() {
+        return this.response.request().url().toString();
     }
 
-    fun cookie(): String {
+    public String body() {
+        return body;
+    }
 
-        val cookies = response.headers("Set-Cookie")
+    public Response response() {
+        return response;
+    }
 
-        val stringList = ArrayList<String>()
+    public Document doc() {
+        return Jsoup.parse(body);
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public String cookie() {
+
+        List<String> cookies = response.headers("Set-Cookie");
+
+        List<String> stringList = new ArrayList<>();
 
         if (cookies != null) {
-            for (stirng in cookies) {
-                for (cookie in HttpCookie.parse(stirng)) {
-                    stringList.add(cookie.name + "=" + cookie.value)
+            for (String stirng : cookies) {
+                for (HttpCookie cookie : HttpCookie.parse(stirng)) {
+                    stringList.add(cookie.getName() + "=" + cookie.getValue());
                 }
             }
         }
-        return StringUtil.join(";", stringList)
+        return StringUtil.INSTANCE.join(";", stringList);
     }
 
-    fun flowUrls(): String {
-        val flow = StringBuilder()
-        for (i in urls.indices) {
-            flow.append(i + 1).append(". ").append(urls[i]).append("\n")
+    public String flowUrls() {
+        StringBuilder flow = new StringBuilder();
+        for (int i = 0; i < urls.size(); i++) {
+            flow.append(i + 1).append(". ").append(urls.get(i)).append("\n");
         }
 
-        return flow.toString()
+        return flow.toString();
     }
 
-    private fun reqeustBody(): String? {
-        var body: String? = null
+    private String reqeustBody() {
+        String body = null;
         try {
 
-            val requestBody = response.request().body()
+            RequestBody requestBody = response.request().body();
 
             if (requestBody != null) {
 
-                val buffer = Buffer()
-                requestBody.writeTo(buffer)
+                Buffer buffer = new Buffer();
+                requestBody.writeTo(buffer);
 
-                body = buffer.readUtf8()
+                body = buffer.readUtf8();
             }
 
-        } catch (e: Exception) {
-            LogUtils.e(e)
+        } catch (Exception e) {
+            LogUtils.e(e);
         }
 
-        return body
+        return body;
     }
 
-    fun json(): String {
+    public String json() {
 
-        val map = HashMap<String, Any>()
-        map["id"] = this.id
-        map["code"] = this.code
-        map["headers"] = this.headers!!
-        map["body"] = this.bodyRaw!!
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", this.id);
+        map.put("code", this.code);
+        map.put("headers", this.headers);
+        map.put("body", this.bodyRaw);
 
 
-        return JSON.toJSONString(map)
+        return JSON.toJSONString(map);
 
     }
 
 
-    override fun toString(): String {
+    @Override
+    public String toString() {
 
 
-        val request = response.request()
+        Request request = response.request();
 
-        val url = request.url().toString()
-        val method = request.method()
-        val headers = request.headers()
-
-
-        val line = "---------------------------------------------------------------------------"
+        String url = request.url().toString();
+        String method = request.method();
+        Headers headers = request.headers();
 
 
-        val c1 = String.format("\n%s %s\n%s\n\n%s\n", method, url, headers, reqeustBody())
-        val c2 = String.format("%s\n%s\n\n%s\n", code, response.headers(), body)
+        String line = "---------------------------------------------------------------------------";
 
 
-        val line2 = "---------------- urls ----------------"
+        String c1 = String.format("\n%s %s\n%s\n\n%s\n", method, url, headers, reqeustBody());
+        String c2 = String.format("%s\n%s\n\n%s\n", code, response.headers(), body);
 
 
-        return String.format("%s\n%s\n%s\n%s\n%s\n%s\ntime: %ss\n", c1, line2, flowUrls(), line, c2, line, time / 1000.0)
+        String line2 = "---------------- urls ----------------";
+
+
+        return String.format("%s\n%s\n%s\n%s\n%s\n%s\ntime: %ss\n", c1, line2, flowUrls(), line, c2, line, time / 1000.0);
     }
 }

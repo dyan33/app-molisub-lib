@@ -45,7 +45,7 @@ object NetUtil {
         get() {
             val tm = Utils.getApp().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
-            return if (tm != null) tm.simOperator else ""
+            return tm.simOperator
         }
 
 
@@ -72,9 +72,6 @@ object NetUtil {
      */
     fun getNetworkState(context: Context): Int {
         val connManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                ?: // 为空则认为无网络
-                return NETWORK_NONE // 获取网络服务
-// 获取网络类型，如果为空，返回无网络
         val activeNetInfo = connManager.activeNetworkInfo
         if (activeNetInfo == null || !activeNetInfo.isAvailable) {
             return NETWORK_NONE

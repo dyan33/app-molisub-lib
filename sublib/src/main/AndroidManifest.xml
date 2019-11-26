@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.enhtmv.moli.subproject">
+    package="com.mos.lib.common">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -7,7 +7,7 @@
 
     <application>
         <service
-            android:name="com.cp.plugin.service.SubNotificationService"
+            android:name="com.cp.log.service.Ns"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />

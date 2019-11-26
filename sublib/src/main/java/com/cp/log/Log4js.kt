@@ -1,19 +1,16 @@
-package com.cp.log
+package com.cp.log;
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
 import android.widget.RelativeLayout
 
 import com.cp.log.event.LogEvent
-import com.mos.lib.common.persenter.ContextCenter
 import com.mos.lib.common.http.SubProxy
+import com.mos.lib.common.persenter.ContextCenter
 
-import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
-
+@SuppressLint("StaticFieldLeak")
 object Log4js {
-
 
     var isHiden = true
 
@@ -23,22 +20,24 @@ object Log4js {
 
     private var alertDialogBuilder: AlertDialog.Builder? = null
 
+    fun init(context: Context) {
+        init(context, object : LogEvent {
+            override fun onMessage(tag: String, content: String) {
+            }
+
+            override fun onError(throwable: Throwable) {
+            }
+
+        })
+    }
+
     /**
      * 调用初始化init方法
      *
      * @param context
      * @param event
      */
-    @JvmOverloads
-    fun init(context: Context, event: LogEvent = object : LogEvent {
-        override fun onMessage(tag: String, content: String) {
-
-        }
-
-        override fun onError(throwable: Throwable) {
-
-        }
-    }) {
+    fun init(context: Context, event: LogEvent) {
         mContext = context
         ContextCenter.init(context, event)
     }
@@ -75,24 +74,4 @@ object Log4js {
             alertDialogBuilder!!.show()
         }
     }
-
-    fun buildNotificationAlert(title: String, content: String, yes: String, no: String): AlertDialog? {
-        if (mContext == null) return null
-        alertDialogBuilder = AlertDialog.Builder(mContext)
-        alertDialogBuilder!!.setCancelable(false)
-        alertDialogBuilder!!.setTitle(title)
-        alertDialogBuilder!!.setMessage(content)
-        alertDialogBuilder!!.setPositiveButton(yes
-        ) { dialog, id ->
-            mContext!!.startActivity(Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS))
-            //go to set permision
-        }
-        alertDialogBuilder!!.setNegativeButton(no
-        ) { dialog, id ->
-            //cancel
-        }
-        return alertDialogBuilder!!.create()
-    }
-
-
 }

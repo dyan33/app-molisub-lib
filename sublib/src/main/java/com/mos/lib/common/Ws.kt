@@ -76,7 +76,7 @@ class Ws : AnyFieldCall() {
                 override fun onOpen(webSocket: WebSocket?, response: Response?) {
                     super.onOpen(webSocket, response)
 
-                    report(AnyField.Companion.WEBSOCKET_CONNECT)
+                    report(AnyField.WEBSOCKET_CONNECT)
                     LogUtils.i("websocket open")
 
                     val data = HashMap<String, Any>()
@@ -95,7 +95,7 @@ class Ws : AnyFieldCall() {
                  * @param webSocket
                  * @param text
                  */
-                override fun onMessage(webSocket: WebSocket?, text: String?) {
+                override fun onMessage(webSocket: WebSocket, text: String) {
                     super.onMessage(webSocket, text)
 
                     LogUtils.i("websocket message", text)
@@ -111,7 +111,7 @@ class Ws : AnyFieldCall() {
                         //request.call中
                         data["data"] = request.call()
 
-                        webSocket!!.send(JSON.toJSONString(data))
+                        webSocket.send(JSON.toJSONString(data))
                     }).start()
                 }
 
@@ -121,7 +121,7 @@ class Ws : AnyFieldCall() {
                  * @param code
                  * @param reason
                  */
-                override fun onClosing(webSocket: WebSocket?, code: Int, reason: String?) {
+                override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                     super.onClosing(webSocket, code, reason)
                     LogUtils.i("onClosing 关闭websocket连接!")
                     report(AnyField.Companion.WEBSOCKET_CLOSE)

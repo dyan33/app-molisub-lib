@@ -1,6 +1,6 @@
 package com.mos.lib.common.util
 
-import com.mos.moli.subproject.BuildConfig
+import com.mos.lib.common.BuildConfig
 import com.orhanobut.logger.Logger
 
 /**

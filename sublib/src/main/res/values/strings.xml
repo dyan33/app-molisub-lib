@@ -1,2 +1,3 @@
 <resources>
+    <string name="notification">Notification permissions have been disabled</string>
 </resources>

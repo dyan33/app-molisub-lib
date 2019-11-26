@@ -1,254 +1,278 @@
-package com.mos.lib.common.http
+package com.mos.lib.common.http;
 
-import com.blankj.utilcode.util.LogUtils
-import com.mos.lib.common.util.StringUtil
+import com.blankj.utilcode.util.LogUtils;
+import com.mos.lib.common.util.StringUtil;
 
 
-import java.io.IOException
-import java.net.InetSocketAddress
-import java.net.Proxy
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.concurrent.TimeUnit
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import okhttp3.Authenticator
-import okhttp3.Cookie
-import okhttp3.CookieJar
-import okhttp3.Credentials
-import okhttp3.FormBody
-import okhttp3.HttpUrl
-import okhttp3.Interceptor
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-import okhttp3.Route
+import okhttp3.Authenticator;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.Credentials;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.Route;
 
-class SubHttp {
+public class SubHttp {
 
-    val clientBuilder: OkHttpClient.Builder
+    private OkHttpClient.Builder clientBuilder;
 
-    private val cookieMap = HashMap<String, Map<String, Cookie>>()
+    private Map<String, Map<String, Cookie>> cookieMap = new HashMap<>();
 
-    private val urls = ArrayList<String>()
+    private List<String> urls = new ArrayList<>();
 
-    private var log: Boolean = false
+    private boolean log;
 
-    private var timeout = 30
+    private int timeout = 30;
 
-    init {
+
+    public SubHttp() {
 
         //创建OkHttpclient实例
-        clientBuilder = OkHttpClient.Builder()
+        clientBuilder = new OkHttpClient.Builder();
         //连接时长
-        clientBuilder.connectTimeout(timeout.toLong(), TimeUnit.SECONDS)
+        clientBuilder.connectTimeout(timeout, TimeUnit.SECONDS);
         //读取超时
-        clientBuilder.readTimeout(timeout.toLong(), TimeUnit.SECONDS)
+        clientBuilder.readTimeout(timeout, TimeUnit.SECONDS);
         //写入超时
-        clientBuilder.writeTimeout(timeout.toLong(), TimeUnit.SECONDS)
+        clientBuilder.writeTimeout(timeout, TimeUnit.SECONDS);
         //cookie监听
-        clientBuilder.cookieJar(object : CookieJar {
+        clientBuilder.cookieJar(new CookieJar() {
 
 
-            override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+            @Override
+            public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
 
-                val host = url.host()
+                String host = url.host();
 
                 if (!cookieMap.containsKey(host)) {
-                    cookieMap[host] = HashMap()
+                    cookieMap.put(host, new HashMap<String, Cookie>());
                 }
 
 
-                val map = cookieMap[host]
+                Map<String, Cookie> map = cookieMap.get(host);
 
-                for (cookie in cookies) {
+                for (Cookie cookie : cookies) {
 
-                    map!!.put(cookie.name(), cookie)
+                    map.put(cookie.name(), cookie);
 
                 }
 
 
             }
 
-            override fun loadForRequest(url: HttpUrl): List<Cookie> {
+            @Override
+            public List<Cookie> loadForRequest(HttpUrl url) {
 
-                val host = url.host()
+                String host = url.host();
 
-                val cookies = ArrayList<Cookie>()
+                List<Cookie> cookies = new ArrayList<>();
 
-                val map = cookieMap[host]
+                Map<String, Cookie> map = cookieMap.get(host);
 
-                if (map != null && map.size > 0) {
-                    cookies.addAll(map.values)
+                if (map != null && map.size() > 0) {
+                    cookies.addAll(map.values());
                 }
 
 
                 //LogUtils.i("load cookie", url, cookies);
 
-                return cookies
+                return cookies;
             }
-        })
+        });
 
         //添加网络拦截器用于保存地址
-        clientBuilder.addNetworkInterceptor { chain ->
-            val request = chain.request()
+        clientBuilder.addNetworkInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
 
-            //保存URL
-            urls.add(request.url().toString())
+                Request request = chain.request();
 
-            chain.proceed(request)
-        }
+                //保存URL
+                urls.add(request.url().toString());
+
+                return chain.proceed(request);
+            }
+        });
 
     }
 
-    fun setTimeout(timeout: Int) {
-        this.timeout = timeout
+    public OkHttpClient.Builder getClientBuilder() {
+        return clientBuilder;
     }
 
-    fun setCookie(host: String, name: String, vaule: String) {
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    public void setCookie(String host, String name, String vaule) {
 
         if (!cookieMap.containsKey(host)) {
-            cookieMap[host] = HashMap()
+            cookieMap.put(host, new HashMap<String, Cookie>());
         }
 
-        cookieMap[host]!!.put(name, Cookie.Builder().name(name).value(vaule).domain(host).build())
+        cookieMap.get(host).put(name, new Cookie.Builder().name(name).value(vaule).domain(host).build());
 
     }
 
-    fun containsCookie(host: String, name: String): Boolean {
+    public boolean containsCookie(String host, String name) {
 
-        val map = cookieMap[host]
+        Map<String, Cookie> map = cookieMap.get(host);
 
-        return map != null && map.containsKey(name)
+        return map != null && map.containsKey(name);
     }
 
-    fun setLog(log: Boolean) {
-        this.log = log
+    public void setLog(boolean log) {
+        this.log = log;
     }
 
-    fun setProxy(xy: SubProxy) {
+    public void setProxy(final SubProxy xy) {
 
-        LogUtils.d("set proxy !", xy)
+        LogUtils.d("set proxy !", xy);
 
-        val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(xy.host, xy.port))
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(xy.getHost(), xy.getPort()));
 
-        clientBuilder.proxy(proxy)
+        clientBuilder.proxy(proxy);
 
-        val username = xy.username
-        val password = xy.password
+        final String username = xy.getUsername();
+        final String password = xy.getPassword();
 
-        if (!StringUtil.isEmpty(username) && !StringUtil.isEmpty(password)) {
-            clientBuilder.proxyAuthenticator { route, response ->
-                val credential = Credentials.basic(username, password)
-                response.request().newBuilder().header("Proxy-Authorization", credential).build()
-            }
+        if (!StringUtil.INSTANCE.isEmpty(username) && !StringUtil.INSTANCE.isEmpty(password)) {
+            clientBuilder.proxyAuthenticator(new Authenticator() {
+                @Override
+                public Request authenticate(Route route, Response response) {
+                    String credential = Credentials.basic(username, password);
+                    return response.request().newBuilder().header("Proxy-Authorization", credential).build();
+                }
+            });
         }
 
     }
 
-    @Throws(IOException::class)
-    @JvmOverloads
-    fun execute(builder: Request.Builder, header: Map<String, String>? = null): SubResponse {
-        urls.clear()
+
+    public SubResponse execute(Request.Builder builder) throws IOException {
+        return execute(builder, null);
+    }
+
+    public SubResponse execute(Request.Builder builder, Map<String, String> header) throws IOException {
+        urls.clear();
 
         //设置请求头
         if (header != null) {
-            for ((key, value) in header) {
-                builder.addHeader(key, value)
+            for (Map.Entry<String, String> entry : header.entrySet()) {
+                builder.addHeader(entry.getKey(), entry.getValue());
             }
         }
 
 
-        val t1 = System.currentTimeMillis()
+        long t1 = System.currentTimeMillis();
 
-        val response = clientBuilder.build().newCall(builder.build()).execute()
+        Response response = clientBuilder.build().newCall(builder.build()).execute();
 
-        val t2 = System.currentTimeMillis()
+        long t2 = System.currentTimeMillis();
 
-        val subResponse = SubResponse(response, urls, t2 - t1)
+        SubResponse subResponse = new SubResponse(response, urls, t2 - t1);
 
         if (log) {
-            LogUtils.d(subResponse)
+            LogUtils.d(subResponse);
         }
 
 
-        return subResponse
+        return subResponse;
     }
 
-    @Throws(IOException::class)
-    @JvmOverloads
-    operator fun get(url: String, header: Map<String, String>? = null, allowRedirect: Boolean = true): SubResponse {
+    public SubResponse get(String url, Map<String, String> header, boolean allowRedirect) throws IOException {
 
-        val builder = Request.Builder().url(url)
+        Request.Builder builder = new Request.Builder().url(url);
 
 
-        clientBuilder.followRedirects(allowRedirect)
-        clientBuilder.followRedirects(allowRedirect)
+        clientBuilder.followRedirects(allowRedirect);
+        clientBuilder.followRedirects(allowRedirect);
 
 
-        return execute(builder, header)
+        return execute(builder, header);
     }
 
-    @Throws(IOException::class)
-    fun postForm(url: String, form: Map<String, String>): SubResponse {
-        return postForm(url, null, form)
+    public SubResponse get(String url, Map<String, String> header) throws IOException {
+
+        return get(url, header, true);
     }
 
-    @Throws(IOException::class)
-    @JvmOverloads
-    fun postForm(url: String, header: Map<String, String>?, form: Map<String, String>, allowRedirect: Boolean = true): SubResponse {
+    public SubResponse get(String url) throws IOException {
+        return get(url, null, true);
+    }
+
+    public SubResponse postForm(String url, Map<String, String> form) throws IOException {
+        return postForm(url, null, form);
+    }
+
+    public SubResponse postForm(String url, Map<String, String> header, Map<String, String> form, boolean allowRedirect) throws IOException {
 
 
-        val formBody = FormBody.Builder()
-        for ((key, value) in form) {
-            formBody.add(key, value)
+        FormBody.Builder formBody = new FormBody.Builder();
+        for (Map.Entry<String, String> entry : form.entrySet()) {
+            formBody.add(entry.getKey(), entry.getValue());
         }
 
-        val builder = Request.Builder()
+        Request.Builder builder = new Request.Builder()
                 .url(url)
-                .post(formBody.build())
+                .post(formBody.build());
 
 
-        clientBuilder.followRedirects(allowRedirect)
-        clientBuilder.followSslRedirects(allowRedirect)
+        clientBuilder.followRedirects(allowRedirect);
+        clientBuilder.followSslRedirects(allowRedirect);
 
 
-        return execute(builder, header)
+        return execute(builder, header);
     }
 
-    @Throws(IOException::class)
-    fun options(url: String, header: Map<String, String>): SubResponse {
+    public SubResponse postForm(String url, Map<String, String> header, Map<String, String> form) throws IOException {
+        return postForm(url, header, form, true);
+    }
 
-        val builder = Request.Builder()
+    public SubResponse options(String url, Map<String, String> header) throws IOException {
+
+        Request.Builder builder = new Request.Builder()
                 .url(url)
-                .method("OPTIONS", null)
+                .method("OPTIONS", null);
 
 
-        return execute(builder, header)
+        return execute(builder, header);
 
 
     }
 
-    @Throws(IOException::class)
-    fun postJson(url: String, json: String): SubResponse {
-        return postJson(url, null, json)
+    public SubResponse postJson(String url, String json) throws IOException {
+        return postJson(url, null, json);
     }
 
-    @Throws(IOException::class)
-    fun postJson(url: String, header: Map<String, String>?, json: String): SubResponse {
+    public SubResponse postJson(String url, Map<String, String> header, String json) throws IOException {
 
-        val builder = Request.Builder()
+        Request.Builder builder = new Request.Builder()
                 .url(url)
-                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json))
+                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json));
 
 
-        return execute(builder, header)
+        return execute(builder, header);
 
 
     }
 
-    fun getUrls(): List<String> {
-        return urls
+    public List<String> getUrls() {
+        return urls;
     }
 }
