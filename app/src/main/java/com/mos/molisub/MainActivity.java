@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements LogEvent {
 
     @Override
     public void onError(Throwable throwable) {
-
     }
 }
 

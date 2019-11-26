@@ -61,7 +61,7 @@ class Ws : AnyFieldCall() {
 
         val request = Request.Builder().url(host).build()
 
-        infoMap["operator_code"] = if (operator == null) "" else operator
+        infoMap["operator_code"] = operator
         infoMap["network"] = NetUtil.networkName
 
 
