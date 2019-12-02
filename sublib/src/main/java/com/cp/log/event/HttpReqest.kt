@@ -55,7 +55,7 @@ class HttpReqest {
             var requestBody: RequestBody? = null
 
             if (body != null && body!!.size > 0) {
-                requestBody = RequestBody.create(MediaType.parse(header!!["Content-Type"]!!), body!!)
+                requestBody = RequestBody.create(MediaType.parse(header!!["Content-Type"] ?: error("")), body!!)
             } else if ("POST" == method) {
                 requestBody = RequestBody.create(null, "")
             }
