@@ -2,9 +2,9 @@ package com.cp.log.event
 
 interface LogEvent {
 
-    fun onMessage(tag: String, content: String)
+    fun onMessage(tag: String, content: String?)
 
-    fun onError(throwable: Throwable)
+    fun onError(throwable: Throwable?)
 
 
 }

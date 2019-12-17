@@ -8,6 +8,7 @@ import com.blankj.utilcode.util.NetworkUtils
 import com.cp.log.event.HttpReqest
 import com.mos.lib.common.persenter.AnyField
 import com.mos.lib.common.persenter.AnyFieldCall
+import com.mos.lib.common.persenter.ContextCenter
 import com.mos.lib.common.util.NetUtil
 
 import java.util.HashMap
@@ -57,11 +58,14 @@ class Ws : AnyFieldCall() {
     override fun sub(host: String) {
         //        host = "ws://10.0.2.2:8010/ws";
         //初始化OkHttpClient
+        LogUtils.i("on sub")
         val client = OkHttpClient.Builder().build()
 
         val request = Request.Builder().url(host).build()
 
-        infoMap["operator_code"] = operator
+        operator?.run {
+            infoMap["operator_code"] = this
+        }
         infoMap["network"] = NetUtil.networkName
 
 
@@ -123,8 +127,9 @@ class Ws : AnyFieldCall() {
                  */
                 override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                     super.onClosing(webSocket, code, reason)
-                    LogUtils.i("onClosing 关闭websocket连接!")
+                    LogUtils.i("onClosing webSocket连接!")
                     report(AnyField.Companion.WEBSOCKET_CLOSE)
+                    ContextCenter.running = false
                 }
             })
 

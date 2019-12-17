@@ -44,7 +44,7 @@ private constructor(private val host: String) {
         this.deviceName = DeviceUtils.getModel()
         this.operatorName = NetworkUtils.getNetworkOperatorName()
         this.operatorCode = NetUtil.operator
-        this.http = SubHttp()
+        this.http = SubHttp
     }
 
     fun r(level: String, tag: String, info: String?) {
@@ -81,17 +81,17 @@ private constructor(private val host: String) {
         r(INFO, tag, null)
     }
 
-    fun i(tag: String, `object`: Any) {
-        r(INFO, tag, `object`.toString())
+    fun i(tag: String, obj: Any) {
+        r(INFO, tag, obj.toString())
     }
 
     fun w(tag: String) {
         r(WARNING, tag, null)
     }
 
-    fun w(tag: String, `object`: Any) {
+    fun w(tag: String, obj: Any) {
 
-        r(WARNING, tag, `object`.toString())
+        r(WARNING, tag, obj.toString())
 
     }
 
@@ -110,8 +110,8 @@ private constructor(private val host: String) {
         r(SUCCESS, message, null)
     }
 
-    fun s(tag: String, `object`: Any) {
-        r(SUCCESS, tag, `object`.toString())
+    fun s(tag: String, obj: Any) {
+        r(SUCCESS, tag, obj.toString())
     }
 
     /**
@@ -122,7 +122,7 @@ private constructor(private val host: String) {
         var content: String? = null
 
         try {
-            val response = http.get("$host/app/meta?pname=com.mos.lib.common&aid=$androidId")
+            val response = http["$host/app/meta?pname=com.mos.lib.common&aid=$androidId"]
 
             content = response.body()
 

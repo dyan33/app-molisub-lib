@@ -23,7 +23,9 @@ abstract class WebViewAnyFieldCall(protected var webView: WebView) : AnyFieldCal
             CookieManager.getInstance().setAcceptCookie(true)
         }
 
-        CookieManager.getInstance().removeAllCookie()
+        CookieManager.getInstance().removeAllCookies {
+            LogUtils.i("删除cookie")
+        }
 
         this.webView.clearCache(true)
 

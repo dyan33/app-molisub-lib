@@ -20,8 +20,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 62
-        versionName "7.6.2"
+        versionCode 126
+        versionName "1.2.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -53,8 +53,8 @@ dependencies {
 
 //    implementation 'com.android.support:appcompat-v7:27.0.2'
     testImplementation 'junit:junit:4.12'
-    androidTestApi 'androidx.test:runner:1.2.0'
-    androidTestApi 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     api 'com.squareup.okhttp3:okhttp:3.10.0'
     api 'com.alibaba:fastjson:1.2.59'

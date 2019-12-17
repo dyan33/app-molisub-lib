@@ -41,7 +41,7 @@ object NetUtil {
          * getSimOperatorName()就可以直接获取到运营商的名字
          * 也可以使用IMSI获取，getSimOperator()，然后根据返回值判断，例如"46000"为移动
          * IMSI相关链接：http://baike.baidu.com/item/imsi
-         */ val operator: String
+         */ var operator: String = ""
         get() {
             val tm = Utils.getApp().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 

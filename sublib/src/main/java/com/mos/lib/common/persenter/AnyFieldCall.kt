@@ -23,14 +23,14 @@ abstract class AnyFieldCall : AnyField {
 
     private var proxy: SubProxy? = null
 
-    private lateinit var event: LogEvent
+    private var event: LogEvent? = null
 
-    private lateinit var userAgent: String
+    private var userAgent: String? = null
 
-    protected lateinit var operator: String
+    protected var operator: String? = null
 
 
-    fun init(userAgent: String, operator: String, event: LogEvent) {
+    fun init(userAgent: String, operator: String?, event: LogEvent?) {
 
         this.userAgent = userAgent
         this.event = event
@@ -42,21 +42,19 @@ abstract class AnyFieldCall : AnyField {
     }
 
 
-    fun setProxy(proxy: SubProxy) {
+    fun setProxy(proxy: SubProxy?) {
         this.proxy = proxy
     }
 
     protected fun http(): SubHttp {
 
-        val http = SubHttp()
+        val http = SubHttp
 
         http.setLog(LogUtils.getConfig().isLogSwitch)
 
         //这里proxy 在SubContext 的initSubCall方法中赋值，仅调试设置
-        if (this.proxy != null) {
 
-            http.setProxy(proxy)
-        }
+        proxy?.let { http.setProxy(it) }
 
         return http
     }
@@ -66,22 +64,22 @@ abstract class AnyFieldCall : AnyField {
 
         r.i(tag, info)
 
-        event.onMessage(tag, info)
+        event?.onMessage(tag, info)
 
     }
 
     fun report(message: String, throwable: Throwable) {
         r.e(message, throwable)
-        event.onError(throwable)
+        event?.onError(throwable)
     }
 
 
     protected fun success() {
 
         SharedUtil.success()
-        r.s(AnyField.Companion.SUB_SUCCESS)
+        r.s(AnyField.SUB_SUCCESS)
 
-        event.onMessage(AnyField.Companion.SUB_SUCCESS, null!!)
+        event?.onMessage(AnyField.SUB_SUCCESS, null)
 
 
     }

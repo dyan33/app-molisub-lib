@@ -3,8 +3,8 @@ apply plugin: 'maven'
 
 // 2.maven-信息
 ext {// ext is a gradle closure allowing the declaration of global properties
-    PUBLISH_GROUP_ID = 'com.mos'
-    PUBLISH_ARTIFACT_ID = 'lib'
+    PUBLISH_GROUP_ID = 'com.cp'
+    PUBLISH_ARTIFACT_ID = 'log'
     PUBLISH_VERSION = android.defaultConfig.versionName
 }
 
@@ -26,11 +26,11 @@ uploadArchives {
 
 //以下代码会生成jar包源文件，如果是不开源码，请不要输入这段
 //aar包内包含注释
-task androidSourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.sourceFiles
-}
+//task androidSourcesJar(type: Jar) {
+//    classifier = 'sources'
+//    from android.sourceSets.main.java.sourceFiles
+//}
 
-artifacts {
-    archives androidSourcesJar
-}
+//artifacts {
+//    archives androidSourcesJar
+//}

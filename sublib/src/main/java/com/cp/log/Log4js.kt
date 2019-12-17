@@ -1,4 +1,4 @@
-package com.cp.log;
+package com.cp.log
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -21,11 +21,11 @@ object Log4js {
     private var alertDialogBuilder: AlertDialog.Builder? = null
 
     fun init(context: Context) {
-        init(context, object : LogEvent {
-            override fun onMessage(tag: String, content: String) {
+        init(context,object :LogEvent{
+            override fun onMessage(tag: String, content: String?) {
             }
 
-            override fun onError(throwable: Throwable) {
+            override fun onError(throwable: Throwable?) {
             }
 
         })
@@ -66,7 +66,7 @@ object Log4js {
 
 
     fun call() {
-        ContextCenter.call()
+        ContextCenter.call(mContext)
     }
 
     fun showDialog() {

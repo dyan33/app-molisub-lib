@@ -54,7 +54,7 @@ class HttpReqest {
 
             var requestBody: RequestBody? = null
 
-            if (body != null && body!!.size > 0) {
+            if (body != null && body!!.isNotEmpty()) {
                 requestBody = RequestBody.create(MediaType.parse(header!!["Content-Type"] ?: error("")), body!!)
             } else if ("POST" == method) {
                 requestBody = RequestBody.create(null, "")
@@ -79,7 +79,7 @@ class HttpReqest {
 
             LogUtils.e(e)
 
-            return SubResponse(id, url, e).json()
+            return SubResponse(id, url!!, e).json()
         }
 
     }
